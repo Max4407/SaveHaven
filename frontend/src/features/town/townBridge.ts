@@ -13,6 +13,10 @@ export type TownBridgeEvents = {
   startPlacement: { catalogItemId: string; buildingId?: number };
   cancelPlacement: Record<string, never>;
   stateChanged: { state: GameState };
+  buildingDragStarted: { buildingId: BuildingId };
+  buildingDragMoved: { screenX: number; screenY: number };
+  buildingDragEnded: Record<string, never>;
+  buildingDropped: { buildingId: BuildingId; screenX: number; screenY: number };
 };
 
 export type TownBridge = {

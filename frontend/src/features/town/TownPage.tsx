@@ -14,6 +14,7 @@ import {
 } from "../../api/game";
 import type { GameState, SimulatedWeek, TownCatalogItem } from "../../api/types";
 import { TownCanvas } from "./TownCanvas";
+import { BUILDING_DRAG_TYPE, buildingCatalog, type BuildingId } from "./catalog/buildingCatalog";
 import { createTownBridge } from "./townBridge";
 
 type PlacementStatus = { active: boolean; valid: boolean; reason: string | null };
@@ -190,12 +191,14 @@ function TownPage() {
 
       <aside className={`town-sidebar${isSidebarOpen ? " open" : ""}`} id="town-sidebar" aria-label="Building catalog">
         <header className="town-sidebar-header">
-          <span className="page-mark" aria-hidden="true">S</span>
           <div>
             <p className="eyebrow">Level {state.wallet.level} · {state.wallet.level_name}</p>
             <h1>Your future haven</h1>
             <p>Saving progress grows the district. Buildings make it yours.</p>
           </div>
+          <Link className="route-arrow" to="/dashboard" aria-label="Open bank and goals">
+            <span aria-hidden="true">→</span>
+          </Link>
         </header>
 
         <div className="town-resources" aria-label="Town resources">

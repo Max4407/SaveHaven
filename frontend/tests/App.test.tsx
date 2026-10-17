@@ -3,11 +3,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../src/api/client";
 import type { Dashboard } from "../src/api/types";
 import App from "../src/App";
+import { AppShell } from "../src/components/AppShell";
 
 const mocks = vi.hoisted(() => ({
   acceptGoalPlan: vi.fn(),
@@ -43,9 +44,9 @@ vi.mock("../src/api/finance", () => ({
 }));
 
 vi.mock("recharts", () => ({
-  Area: () => null,
-  AreaChart: () => <div />,
   CartesianGrid: () => null,
+  Line: ({ type }: { type: string }) => <div data-testid="balance-line" data-line-type={type} />,
+  LineChart: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   ResponsiveContainer: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   Tooltip: () => null,
   XAxis: () => null,
@@ -122,6 +123,24 @@ function renderApp() {
   );
 }
 
+function renderShell(pathname: "/town" | "/dashboard") {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[pathname]}>
+        <Routes>
+          <Route element={<AppShell user={{ id: "demo-player", display_name: "Demo Player" }} />}>
+            <Route path="town" element={<div>Town screen</div>} />
+            <Route path="dashboard" element={<div>Financial screen</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+}
+
 afterEach(cleanup);
 
 describe("application API integration", () => {
@@ -141,9 +160,16 @@ describe("application API integration", () => {
   it("renders the backend dashboard response instead of placeholder finance data", async () => {
     renderApp();
 
-    expect(await screen.findByRole("heading", { name: "Your money, at a glance." })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Bank" })).toBeInTheDocument();
     expect(screen.getByText("$9,677")).toBeInTheDocument();
-    expect(screen.getByText("Everyday Checking")).toBeInTheDocument();
+    expect(screen.getByText("$1,548")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Savings goals" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Car fund" })).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "Car fund progress" })).toHaveAttribute("aria-valuenow", "31");
+    expect(screen.getByRole("heading", { name: "Money over time" })).toBeInTheDocument();
+    expect(screen.getByTestId("balance-line")).toHaveAttribute("data-line-type", "linear");
+    expect(screen.queryByText("Everyday Checking")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Transactions" })).toBeInTheDocument();
     expect(screen.getByText("Paycheck")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Town" })).toHaveAttribute("href", "/town");
     expect(screen.getByRole("link", { name: "Bank & goals" })).toHaveAttribute("href", "/dashboard");

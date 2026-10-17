@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
-  Area,
-  AreaChart,
   CartesianGrid,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -20,6 +21,11 @@ import {
   syncBank,
 } from "../../api/finance";
 import type { Dashboard, Transaction } from "../../api/types";
+
+const demoSavingsGoals = [
+  { id: "car-fund", name: "Car fund", targetCents: 2_000_000, mark: "C" },
+  { id: "emergency-cushion", name: "Emergency cushion", targetCents: 1_000_000, mark: "E" },
+] as const;
 
 function formatDollars(cents: number, options?: Intl.NumberFormatOptions) {
   return new Intl.NumberFormat("en-US", {
@@ -106,6 +112,9 @@ function ConnectBankPanel() {
   return (
     <main className="onboarding-page">
       <header className="onboarding-heading">
+        <Link className="route-arrow" to="/town" aria-label="Back to town">
+          <span aria-hidden="true">←</span>
+        </Link>
         <span className="page-mark" aria-hidden="true">S</span>
         <div>
           <p className="eyebrow">Capital One Nessie sandbox</p>
@@ -289,17 +298,17 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
     mutationFn: syncBank,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["dashboard"] }),
   });
-  const largestCategory = dashboard.spending_by_category[0];
-
   return (
-    <main className="dashboard-page">
-      <header className="topbar">
+    <main className="dashboard-page bank-page">
+      <header className="topbar bank-topbar">
         <div className="page-heading">
-          <span className="page-mark" aria-hidden="true">S</span>
+          <Link className="route-arrow" to="/town" aria-label="Back to town">
+            <span aria-hidden="true">←</span>
+          </Link>
           <div>
-            <p className="eyebrow">Bank overview</p>
-            <h1>Your money, at a glance.</h1>
-            <p>Updated through {formatDate(dashboard.summary.as_of)} for {dashboard.connection.display_name}.</p>
+            <p className="eyebrow">SaveHaven finances</p>
+            <h1>Bank</h1>
+            <p>Updated {formatDate(dashboard.summary.as_of)}</p>
           </div>
         </div>
         <div className="topbar-actions">
@@ -332,55 +341,93 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
         <span><small>Resources represented</small><strong>{dashboard.import_summary.transaction_types.map(titleCase).join(", ") || "None"}</strong></span>
       </section>
 
-      <section className="stat-grid" aria-label="Financial summary">
-        <article className="stat-card accent-blue">
-          <span className="stat-icon" aria-hidden="true">$</span>
+      {dashboard.connection.data_source !== "live" ? (
+        <p className="fallback-warning" role="status"><strong>Fixture fallback:</strong> Nessie was unavailable or live mode is not enabled. This data is fictional local fallback data, not a live sandbox sync.</p>
+      ) : null}
+
+      <section className="import-strip" aria-label="Nessie import provenance">
+        <span><small>Last sync</small><strong>{formatDateTime(dashboard.connection.last_synced_at)}</strong></span>
+        <span><small>Accounts imported</small><strong>{dashboard.import_summary.account_count}</strong></span>
+        <span><small>Transactions imported</small><strong>{dashboard.import_summary.transaction_count}</strong></span>
+        <span><small>Resources represented</small><strong>{dashboard.import_summary.transaction_types.map(titleCase).join(", ") || "None"}</strong></span>
+      </section>
+
+      <section className="stat-grid bank-summary-grid" aria-label="Financial summary">
+        <article className="stat-card">
           <p>Total balance</p>
           <h2>{formatDollars(dashboard.summary.total_balance_cents)}</h2>
-          <small>Across {dashboard.accounts.length} connected accounts</small>
+          <small>Across connected accounts</small>
         </article>
-        <article className="stat-card accent-green">
-          <span className="stat-icon" aria-hidden="true">↗</span>
-          <p>Income · 30 days</p>
-          <h2>{formatDollars(dashboard.summary.income_last_30_days_cents)}</h2>
-          <small>Transfers excluded</small>
-        </article>
-        <article className="stat-card accent-gold">
-          <span className="stat-icon" aria-hidden="true">↘</span>
+        <article className="stat-card">
           <p>Spending · 30 days</p>
           <h2>{formatDollars(dashboard.summary.spending_last_30_days_cents)}</h2>
-          <small>{largestCategory ? `${titleCase(largestCategory.category)} is the largest category` : "No spending recorded"}</small>
+          <small>Recent outflow</small>
         </article>
+      </section>
+
+      <section className="bank-goals-section" aria-labelledby="savings-goals-heading">
+        <div className="bank-section-heading">
+          <div>
+            <p className="eyebrow">Milestones</p>
+            <h2 id="savings-goals-heading">Savings goals</h2>
+          </div>
+          <span>{demoSavingsGoals.length} demo goals</span>
+        </div>
+        <div className="bank-goal-grid">
+          {demoSavingsGoals.map((goal) => {
+            const progress = Math.min(
+              100,
+              Math.round(dashboard.summary.savings_balance_cents / goal.targetCents * 100),
+            );
+            return (
+              <article className="bank-goal-card" key={goal.id}>
+                <div className="bank-goal-title">
+                  <span aria-hidden="true">{goal.mark}</span>
+                  <h3>{goal.name}</h3>
+                </div>
+                <p>
+                  <strong>{formatDollars(dashboard.summary.savings_balance_cents)}</strong>
+                  <span> of {formatDollars(goal.targetCents)}</span>
+                </p>
+                <div
+                  className="bank-goal-progress"
+                  role="progressbar"
+                  aria-label={`${goal.name} progress`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={progress}
+                >
+                  <span style={{ width: `${progress}%` }} />
+                </div>
+                <small>{progress}% complete · Based on current savings</small>
+              </article>
+            );
+          })}
+        </div>
       </section>
 
       <section className="panel money-history-panel" aria-label="Money over time">
         <div className="panel-heading money-history-heading">
           <div>
-            <p className="eyebrow">Imported activity</p>
-            <h2>Balance history</h2>
+            <p className="eyebrow">Recent activity</p>
+            <h2>Money over time</h2>
           </div>
           <div className="balance-change">
             <strong>{formatDollars(dashboard.summary.savings_balance_cents)}</strong>
-            <span>currently in savings</span>
+            <span>in savings</span>
           </div>
         </div>
 
         {balanceHistory.length > 0 ? (
           <div className="money-chart" aria-label="Balance history from imported transactions">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={balanceHistory} margin={{ top: 24, right: 16, left: 8, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="balanceFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#4d8a6a" stopOpacity={0.3} />
-                    <stop offset="100%" stopColor="#4d8a6a" stopOpacity={0.02} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid stroke="#e5e7df" strokeDasharray="3 5" vertical={false} />
-                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: "#7b7d75", fontSize: 11 }} />
+              <LineChart data={balanceHistory} margin={{ top: 24, right: 16, left: 8, bottom: 0 }}>
+                <CartesianGrid stroke="#c7b77a" strokeDasharray="4 4" vertical={false} />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: "#685b3d", fontSize: 11 }} />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#7b7d75", fontSize: 11 }}
+                  tick={{ fill: "#685b3d", fontSize: 11 }}
                   tickFormatter={(value) => `$${Math.round(Number(value) / 100000)}k`}
                   width={48}
                 />
@@ -390,17 +437,18 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
                     const date = entries[0]?.payload?.date as string | undefined;
                     return date ? formatDate(date) : "";
                   }}
-                  contentStyle={{ borderRadius: 10, border: "1px solid #dfe2d9", boxShadow: "0 12px 30px rgba(31,44,38,.1)" }}
+                  contentStyle={{ borderRadius: 0, border: "2px solid #9d7e43", boxShadow: "3px 3px 0 rgba(94,72,34,.28)" }}
                 />
-                <Area
-                  type="monotone"
+                <Line
+                  type="linear"
                   dataKey="balance"
-                  stroke="#356b4d"
-                  fill="url(#balanceFill)"
+                  stroke="#175c32"
                   strokeWidth={3}
-                  activeDot={{ r: 5, fill: "#356b4d", stroke: "#fbfcf8", strokeWidth: 3 }}
+                  dot={{ r: 4, fill: "#e6c766", stroke: "#175c32", strokeWidth: 2 }}
+                  activeDot={{ r: 6, fill: "#f0c75b", stroke: "#175c32", strokeWidth: 3 }}
+                  isAnimationActive={false}
                 />
-              </AreaChart>
+              </LineChart>
             </ResponsiveContainer>
           </div>
         ) : <p className="empty-state">No imported activity yet.</p>}
@@ -408,46 +456,12 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
 
       <GoalPlanner dashboard={dashboard} />
 
-      <div className="dashboard-detail-grid">
-        <section className="panel" aria-labelledby="accounts-heading">
-          <div className="panel-heading">
-            <div><p className="eyebrow">Connected accounts</p><h2 id="accounts-heading">Balances</h2></div>
-          </div>
-          <ul className="account-list">
-            {dashboard.accounts.map((account) => (
-              <li key={account.source_account_id}>
-                <span><strong>{account.nickname}</strong><small>{titleCase(account.account_type)}</small></span>
-                <strong>{formatDollars(account.balance_cents, { maximumFractionDigits: 2 })}</strong>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="panel" aria-labelledby="spending-heading">
-          <div className="panel-heading">
-            <div><p className="eyebrow">Last 30 days</p><h2 id="spending-heading">Spending by category</h2></div>
-          </div>
-          {dashboard.spending_by_category.length > 0 ? (
-            <ul className="category-list">
-              {dashboard.spending_by_category.map((category) => {
-                const width = dashboard.summary.spending_last_30_days_cents === 0
-                  ? 0
-                  : Math.round(category.amount_cents / dashboard.summary.spending_last_30_days_cents * 100);
-                return (
-                  <li key={category.category}>
-                    <span><strong>{titleCase(category.category)}</strong><small>{formatDollars(category.amount_cents, { maximumFractionDigits: 2 })}</small></span>
-                    <span className="spend-track"><span style={{ width: `${width}%` }} /></span>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : <p className="empty-state">No spending recorded in this period.</p>}
-        </section>
-      </div>
-
-      <section className="panel transactions-panel" aria-labelledby="transactions-heading">
+      <section className="panel transactions-panel bank-transactions-panel" aria-labelledby="transactions-heading">
         <div className="panel-heading">
-          <div><p className="eyebrow">Normalized ledger</p><h2 id="transactions-heading">Recent transactions</h2></div>
+          <div>
+            <p className="eyebrow">Past activity</p>
+            <h2 id="transactions-heading">Transactions</h2>
+          </div>
           <span className="record-count">{dashboard.recent_transactions.length} records</span>
         </div>
         {dashboard.recent_transactions.length > 0 ? (
@@ -460,8 +474,7 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
       </section>
 
       <footer>
-        <span>Educational demo only — not financial advice.</span>
-        <span>All banking data shown is fictional.</span>
+        <span>Fictional demo data · Educational use only</span>
       </footer>
     </main>
   );
