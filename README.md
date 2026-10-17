@@ -2,9 +2,9 @@
 
 SaveHaven is a hackathon prototype that turns progress toward a fictional savings plan into
 rewards for a decorative town-building game. The current backend first pass provides signed demo
-sessions, selectable fictional Nessie profiles, normalized financial data, SQLite persistence,
-and a dashboard summary. Forecasting, goals, plans, rewards, and town state are intentionally left
-for their feature owners.
+sessions, selectable fictional Nessie profiles, normalized financial data, explainable savings
+plans, a controlled Nessie event lab, and SQLite persistence. Rewards and town state remain
+server-authoritative and separate from the financial-planning flow.
 
 ## Backend setup
 
@@ -39,6 +39,8 @@ ruff check .
 - `NESSIE_API_KEY`: server-only Nessie key. Never expose it to Vite or commit it.
 - `NESSIE_BASE_URL`: defaults to `https://prod-api.nessieisreal.com`.
 - `NESSIE_ALLOW_FIXTURE_FALLBACK`: when true, a failed live read uses the matching fixture.
+- `DEMO_CONTROLS_ENABLED`: enables authenticated Nessie Lab mutation routes. Keep false outside
+  the fictional sandbox demonstration.
 
 The frontend should send cookies with API calls (`credentials: "include"`). Money fields are
 integer cents, and transaction amounts are signed: income is positive and spending is negative.
@@ -51,9 +53,13 @@ POST /api/auth/demo-login
 GET  /api/auth/session
 POST /api/auth/logout
 GET  /api/demo/nessie-profiles
+POST /api/demo/nessie-events
 POST /api/bank-connections
 POST /api/bank-connections/sync
 GET  /api/dashboard
+POST /api/goals
+GET  /api/goals/{goal_id}/plan
+POST /api/goals/{goal_id}/accept-plan
 ```
 
 Only `/health` and `/api/auth/demo-login` are public API routes. The built frontend is public and
@@ -94,11 +100,23 @@ SESSION_COOKIE_SECURE=true
 FRONTEND_ORIGIN=https://<generated-domain>.up.railway.app
 NESSIE_DATA_MODE=fixture
 NESSIE_ALLOW_FIXTURE_FALLBACK=true
+DEMO_CONTROLS_ENABLED=false
 ```
 
-Do not put these production values in GitHub Actions or commit them to the repository. In
-particular, the Nessie key stays unset while fixture mode is active. Railway supplies `PORT` at
-runtime, and the image binds to it automatically.
+For the Nessie judge demo, first seed the fictional profiles as described in `scripts/README.md`,
+commit only the resulting fixture customer IDs, then change the last variables to:
+
+```dotenv
+NESSIE_API_KEY=<sealed-server-side-key>
+NESSIE_DATA_MODE=live
+NESSIE_ALLOW_FIXTURE_FALLBACK=true
+DEMO_CONTROLS_ENABLED=true
+```
+
+Do not put these production values in GitHub Actions or commit them to the repository. Railway
+supplies `PORT` at runtime, and the image binds to it automatically. Keep fallback enabled for
+judging, but verify the full path once with fallback disabled so a fixture cannot masquerade as a
+successful live sync.
 
 ### Verify and shut down
 
@@ -109,6 +127,8 @@ After a successful deploy, check the generated HTTPS URL and verify:
   succeed.
 - Refreshing a React route such as `/town` loads the application instead of returning 404.
 - Town assets load and the SQLite state survives a redeploy.
+- The dashboard badge reads `Live Nessie Sandbox`, each Nessie Lab event changes the normalized
+  ledger after a resync, and fixture fallback is visibly labeled amber.
 - A deliberately failing pull-request check does not update the healthy Railway deployment.
 
 Record the backup demo before judging. Afterwards, export any SQLite state worth keeping, then
@@ -141,9 +161,9 @@ cookie, so no frontend environment variable is required for local development or
 deployment. If the API is hosted on a separate allowed origin, set `VITE_API_BASE_URL` in
 `frontend/.env.local` and set the backend's `FRONTEND_ORIGIN` to the frontend origin.
 
-The current integrated flow covers demo login, fictional Nessie profile selection, bank sync, and
-the financial dashboard. The town is intentionally marked as a preview until the game catalog,
-wallet, rewards, and placement endpoints listed in `docs/PLAN.md` are implemented.
+The Nessie flow covers demo login, fictional profile selection, live/fallback provenance, bank
+sync, explainable goal plans, and the separate Nessie Lab without changing the game architecture
+described in `docs/PLAN.md`.
 
 Run checks from `frontend/` with:
 

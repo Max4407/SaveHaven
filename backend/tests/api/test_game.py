@@ -1,0 +1,92 @@
+from fastapi.testclient import TestClient
+
+
+def test_catalog_and_starter_wallet_are_server_authoritative(
+    logged_in_client: TestClient,
+) -> None:
+    catalog = logged_in_client.get("/api/game/catalog")
+    state = logged_in_client.get("/api/game/state")
+    rewards = logged_in_client.get("/api/game/rewards")
+
+    assert catalog.status_code == 200
+    assert len(catalog.json()["items"]) == 12
+    assert state.status_code == 200
+    assert state.json()["wallet"] == {
+        "coin_balance": 300,
+        "total_coins_earned": 300,
+        "xp": 0,
+        "level": 1,
+        "level_name": "Homestead",
+        "streak_weeks": 0,
+    }
+    assert rewards.json()["rewards"][0]["reward_type"] == "starter_grant"
+
+
+def test_purchase_move_and_sale_return_confirmed_state(
+    logged_in_client: TestClient,
+) -> None:
+    purchase = logged_in_client.post(
+        "/api/game/buildings",
+        json={"catalog_item_id": "woodshed_01", "grid_x": 4, "grid_y": 4},
+    )
+    building_id = purchase.json()["buildings"][0]["id"]
+    move = logged_in_client.patch(
+        f"/api/game/buildings/{building_id}",
+        json={"grid_x": 5, "grid_y": 4},
+    )
+    sale = logged_in_client.delete(f"/api/game/buildings/{building_id}")
+
+    assert purchase.status_code == 201
+    assert purchase.json()["wallet"]["coin_balance"] == 200
+    assert move.status_code == 200
+    assert move.json()["wallet"]["coin_balance"] == 200
+    assert (move.json()["buildings"][0]["grid_x"], move.json()["buildings"][0]["grid_y"]) == (
+        5,
+        4,
+    )
+    assert sale.status_code == 200
+    assert sale.json()["wallet"]["coin_balance"] == 260
+    assert sale.json()["buildings"] == []
+
+
+def test_failed_mutations_return_structured_conflicts_without_charging(
+    logged_in_client: TestClient,
+) -> None:
+    locked = logged_in_client.post(
+        "/api/game/buildings",
+        json={"catalog_item_id": "bakery_01", "grid_x": 4, "grid_y": 4},
+    )
+    road = logged_in_client.post(
+        "/api/game/buildings",
+        json={"catalog_item_id": "woodshed_01", "grid_x": 7, "grid_y": 5},
+    )
+    outside = logged_in_client.post(
+        "/api/game/buildings",
+        json={"catalog_item_id": "woodshed_01", "grid_x": 3, "grid_y": 4},
+    )
+    state = logged_in_client.get("/api/game/state")
+
+    assert locked.status_code == 409
+    assert locked.json()["detail"]["code"] == "level_locked"
+    assert road.json()["detail"]["code"] == "infrastructure_reserved"
+    assert outside.json()["detail"]["code"] == "outside_unlocked_district"
+    assert state.json()["wallet"]["coin_balance"] == 300
+    assert state.json()["buildings"] == []
+
+
+def test_buildings_are_not_accessible_across_users(logged_in_client: TestClient) -> None:
+    purchase = logged_in_client.post(
+        "/api/game/buildings",
+        json={"catalog_item_id": "woodshed_01", "grid_x": 4, "grid_y": 4},
+    )
+    building_id = purchase.json()["buildings"][0]["id"]
+    logged_in_client.post("/api/auth/demo-login", json={"user_id": "demo-reviewer"})
+
+    move = logged_in_client.patch(
+        f"/api/game/buildings/{building_id}",
+        json={"grid_x": 5, "grid_y": 4},
+    )
+    sale = logged_in_client.delete(f"/api/game/buildings/{building_id}")
+
+    assert move.status_code == 404
+    assert sale.status_code == 404

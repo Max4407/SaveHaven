@@ -52,11 +52,13 @@ class BankSyncService:
         connection = get_bank_connection(session, user_id)
         if connection is None:
             raise BankConnectionNotFoundError(user_id)
+        profile = self.fixture_store.get_profile(connection.profile_id)
+        customer_id = profile.customer_id if profile is not None else connection.nessie_customer_id
         return self._sync_snapshot(
             session,
             user_id=user_id,
             profile_id=connection.profile_id,
-            customer_id=connection.nessie_customer_id,
+            customer_id=customer_id,
         )
 
     def _sync_snapshot(

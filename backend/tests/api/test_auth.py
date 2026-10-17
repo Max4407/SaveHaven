@@ -2,9 +2,31 @@ from fastapi.testclient import TestClient
 
 
 def test_protected_routes_require_a_signed_demo_session(client: TestClient) -> None:
-    response = client.get("/api/demo/nessie-profiles")
-
-    assert response.status_code == 401
+    assert client.get("/api/demo/nessie-profiles").status_code == 401
+    assert client.get("/api/game/catalog").status_code == 401
+    assert client.get("/api/game/state").status_code == 401
+    assert client.get("/api/game/rewards").status_code == 401
+    assert client.post(
+        "/api/goals",
+        json={
+            "name": "Emergency fund",
+            "target_amount_cents": 300_000,
+            "amount_already_saved_cents": 0,
+            "target_date": "2027-10-17",
+        },
+    ).status_code == 401
+    assert client.post(
+        "/api/demo/nessie-events",
+        json={
+            "event_type": "paycheck",
+            "amount_cents": 185_000,
+            "idempotency_key": "auth-demo-001",
+        },
+    ).status_code == 401
+    assert client.post(
+        "/api/demo/simulate-successful-week",
+        json={"idempotency_key": "auth-week-001"},
+    ).status_code == 401
 
 
 def test_demo_login_grants_access_without_collecting_credentials(client: TestClient) -> None:

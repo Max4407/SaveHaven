@@ -49,6 +49,7 @@ def test_internal_savings_transfer_is_not_income_or_spending(monkeypatch) -> Non
     monkeypatch.setattr(dashboard_service, "get_bank_connection", lambda *_: connection)
     monkeypatch.setattr(dashboard_service, "list_accounts", lambda *_: accounts)
     monkeypatch.setattr(dashboard_service, "list_transactions", lambda *_: transactions)
+    monkeypatch.setattr(dashboard_service, "get_active_goal", lambda *_: None)
 
     dashboard = dashboard_service.build_dashboard(None, user_id="demo-player")
 
@@ -57,3 +58,4 @@ def test_internal_savings_transfer_is_not_income_or_spending(monkeypatch) -> Non
     assert [(item.category, item.amount_cents) for item in dashboard.spending_by_category] == [
         ("groceries", 10_000)
     ]
+    assert dashboard.import_summary.transaction_types == ["deposit", "purchase", "transfer"]
