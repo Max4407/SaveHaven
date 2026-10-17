@@ -1,15 +1,18 @@
 import { useEffect, useRef } from "react";
 import type { DragEvent } from "react";
 import Phaser from "phaser";
+import type { GameState, TownCatalog } from "../../api/types";
 import { BUILDING_DRAG_TYPE, isBuildingId } from "./catalog/buildingCatalog";
-import { EmptyTownScene } from "./scenes/EmptyTownScene";
+import { TownScene } from "./scenes/TownScene";
 import type { TownBridge } from "./townBridge";
 
 type TownCanvasProps = {
   bridge: TownBridge;
+  catalog: TownCatalog;
+  state: GameState;
 };
 
-export function TownCanvas({ bridge }: TownCanvasProps) {
+export function TownCanvas({ bridge, catalog, state }: TownCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
@@ -45,7 +48,7 @@ export function TownCanvas({ bridge }: TownCanvasProps) {
       type: Phaser.AUTO,
       parent: containerRef.current,
       transparent: true,
-      scene: [new EmptyTownScene(bridge)],
+      scene: [new TownScene(bridge, catalog.items, state)],
       scale: {
         mode: Phaser.Scale.RESIZE,
         width: "100%",
@@ -58,8 +61,9 @@ export function TownCanvas({ bridge }: TownCanvasProps) {
     });
 
     return () => game.destroy(true);
-  }, [bridge]);
+  }, [bridge, catalog, state]);
 
+  return <div className="town-canvas" ref={containerRef} aria-label="Interactive town map" />;
   return (
     <div
       className="town-canvas"

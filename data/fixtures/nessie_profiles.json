@@ -5,7 +5,7 @@
       "display_name": "Jordan Lee",
       "description": "Predictable biweekly income with moderate recurring expenses.",
       "income_pattern": "Biweekly paycheck",
-      "customer_id": "demo-nessie-jordan",
+      "customer_id": "53015148-5faf-4c47-9012-4707a74e1f92",
       "as_of": "2026-10-17",
       "accounts": [
         {
@@ -106,7 +106,7 @@
       "display_name": "Alex Morgan",
       "description": "Freelance income that varies in both amount and timing.",
       "income_pattern": "Variable freelance payments",
-      "customer_id": "demo-nessie-alex",
+      "customer_id": "7a878ec0-29d8-4b89-bf3a-cc261d5024c4",
       "as_of": "2026-10-17",
       "accounts": [
         {
@@ -207,7 +207,7 @@
       "display_name": "Taylor Kim",
       "description": "Stable monthly income with a relatively tight discretionary budget.",
       "income_pattern": "Monthly paycheck",
-      "customer_id": "demo-nessie-taylor",
+      "customer_id": "c9eab5d7-3701-4df6-8130-bfa1f8ec06f1",
       "as_of": "2026-10-17",
       "accounts": [
         {

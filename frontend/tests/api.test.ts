@@ -2,10 +2,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { demoLogin, getSession, logout } from "../src/api/auth";
 import { ApiError } from "../src/api/client";
 import {
+  acceptGoalPlan,
   connectBank,
+  createGoal,
   getDashboard,
   getDemoProfiles,
   getHealth,
+  regenerateGoalPlan,
+  runNessieEvent,
   syncBank,
 } from "../src/api/finance";
 
@@ -37,6 +41,19 @@ describe("backend endpoint contracts", () => {
     await connectBank("steady-paycheck");
     await syncBank();
     await getDashboard();
+    await createGoal({
+      name: "Emergency fund",
+      target_amount_cents: 300000,
+      amount_already_saved_cents: 0,
+      target_date: "2027-10-17",
+    });
+    await regenerateGoalPlan(12);
+    await acceptGoalPlan(12);
+    await runNessieEvent({
+      event_type: "paycheck",
+      amount_cents: 185000,
+      idempotency_key: "event-demo-001",
+    });
 
     expect(fetchMock.mock.calls.map(([path]) => path)).toEqual([
       "/health",
@@ -47,12 +64,33 @@ describe("backend endpoint contracts", () => {
       "/api/bank-connections",
       "/api/bank-connections/sync",
       "/api/dashboard",
+      "/api/goals",
+      "/api/goals/12/plan",
+      "/api/goals/12/accept-plan",
+      "/api/demo/nessie-events",
     ]);
     expect(fetchMock.mock.calls.every(([, init]) => init.credentials === "include")).toBe(true);
     expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: "POST" });
     expect(fetchMock.mock.calls[5][1]).toMatchObject({
       method: "POST",
       body: JSON.stringify({ profile_id: "steady-paycheck" }),
+    });
+    expect(fetchMock.mock.calls[8][1]).toMatchObject({
+      method: "POST",
+      body: JSON.stringify({
+        name: "Emergency fund",
+        target_amount_cents: 300000,
+        amount_already_saved_cents: 0,
+        target_date: "2027-10-17",
+      }),
+    });
+    expect(fetchMock.mock.calls[11][1]).toMatchObject({
+      method: "POST",
+      body: JSON.stringify({
+        event_type: "paycheck",
+        amount_cents: 185000,
+        idempotency_key: "event-demo-001",
+      }),
     });
   });
 

@@ -75,6 +75,8 @@ def normalize_nessie_snapshot(
                 source_id = str(record.get("_id") or record.get("id") or "")
                 if not source_id:
                     source_id = f"{kind}-{account_id}-{occurred_at.isoformat()}-{amount_cents}"
+                if description_metadata.event_id:
+                    source_id = f"demo:{description_metadata.event_id}:{kind}:{source_id}"
 
                 normalized_transactions.append(
                     SnapshotTransaction(

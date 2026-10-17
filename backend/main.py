@@ -10,13 +10,15 @@ from api.bank_connections import router as bank_connections_router
 from api.dashboard import router as dashboard_router
 from api.demo import router as demo_router
 from api.frontend import create_frontend_router
+from api.game import router as game_router
+from api.goals import router as goals_router
 from api.health import router as health_router
 from auth import SessionManager
 from config import Settings, get_settings
 from database import Database
 from integrations.nessie import FixtureProfileStore, NessieClient
 from repository import seed_demo_users
-from services import BankSyncService
+from services import BankSyncService, DemoWeekService, GameService, NessieEventService, TownCatalog
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -29,6 +31,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         else secrets.token_urlsafe(48)
     )
     nessie_client = _build_nessie_client(resolved_settings)
+    town_catalog = TownCatalog.load(resolved_settings.town_catalog_path)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
@@ -47,10 +50,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         session_secret,
         resolved_settings.session_max_age_seconds,
     )
-    app.state.bank_sync_service = BankSyncService(
+    app.state.town_catalog = town_catalog
+    app.state.game_service = GameService(town_catalog)
+    bank_sync_service = BankSyncService(
         settings=resolved_settings,
         fixture_store=fixture_store,
         nessie_client=nessie_client,
+    )
+    app.state.bank_sync_service = bank_sync_service
+    app.state.nessie_event_service = NessieEventService(
+        client=nessie_client,
+        bank_sync=bank_sync_service,
+    )
+    app.state.demo_week_service = DemoWeekService(
+        nessie_events=app.state.nessie_event_service,
+        game=app.state.game_service,
+        allow_fixture_fallback=resolved_settings.nessie_allow_fixture_fallback,
     )
 
     app.add_middleware(
@@ -65,6 +80,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(demo_router)
     app.include_router(bank_connections_router)
     app.include_router(dashboard_router)
+    app.include_router(goals_router)
+    app.include_router(game_router)
     app.include_router(create_frontend_router(resolved_settings.frontend_dist_path))
     return app
 

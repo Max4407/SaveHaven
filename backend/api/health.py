@@ -10,4 +10,5 @@ def health(request: Request) -> dict[str, str | bool]:
         "status": "ok",
         "data_mode": settings.nessie_data_mode,
         "nessie_configured": settings.nessie_api_key is not None,
+        "demo_controls_enabled": settings.demo_controls_enabled,
     }

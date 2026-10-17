@@ -3,6 +3,12 @@ import { Outlet, useLocation } from "react-router-dom";
 import { logout } from "../api/auth";
 import type { SessionUser } from "../api/types";
 
+const navItems = [
+  { label: "Town", icon: "◇", to: "/town" },
+  { label: "Bank & goals", icon: "$", to: "/dashboard" },
+  { label: "Nessie Lab", icon: "N", to: "/nessie-lab" },
+];
+
 type AppShellProps = {
   user: SessionUser;
 };

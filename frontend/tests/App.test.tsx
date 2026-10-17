@@ -11,12 +11,17 @@ import App from "../src/App";
 import { AppShell } from "../src/components/AppShell";
 
 const mocks = vi.hoisted(() => ({
+  acceptGoalPlan: vi.fn(),
   connectBank: vi.fn(),
+  createGoal: vi.fn(),
   demoLogin: vi.fn(),
   getDashboard: vi.fn(),
   getDemoProfiles: vi.fn(),
+  getHealth: vi.fn(),
   getSession: vi.fn(),
   logout: vi.fn(),
+  regenerateGoalPlan: vi.fn(),
+  runNessieEvent: vi.fn(),
   syncBank: vi.fn(),
 }));
 
@@ -27,9 +32,14 @@ vi.mock("../src/api/auth", () => ({
 }));
 
 vi.mock("../src/api/finance", () => ({
+  acceptGoalPlan: mocks.acceptGoalPlan,
   connectBank: mocks.connectBank,
+  createGoal: mocks.createGoal,
   getDashboard: mocks.getDashboard,
   getDemoProfiles: mocks.getDemoProfiles,
+  getHealth: mocks.getHealth,
+  regenerateGoalPlan: mocks.regenerateGoalPlan,
+  runNessieEvent: mocks.runNessieEvent,
   syncBank: mocks.syncBank,
 }));
 
@@ -81,8 +91,23 @@ const dashboard: Dashboard = {
     },
   ],
   spending_by_category: [{ category: "groceries", amount_cents: 24000 }],
-  forecast: null,
+  import_summary: {
+    account_count: 1,
+    transaction_count: 1,
+    transaction_types: ["deposit"],
+  },
+  forecast: {
+    weekly_income_cents: 92500,
+    weekly_recurring_bills_cents: 0,
+    weekly_variable_spending_cents: 0,
+    safety_buffer_cents: 9250,
+    income_cadence: "biweekly",
+    confidence: "medium",
+    detected_deposit_count: 2,
+    evidence: ["Detected two deposits."],
+  },
   active_goal: null,
+  current_plan: null,
 };
 
 function renderApp() {
@@ -125,6 +150,7 @@ describe("application API integration", () => {
     mocks.getSession.mockResolvedValue({ id: "demo-player", display_name: "Demo Player" });
     mocks.getDashboard.mockResolvedValue(dashboard);
     mocks.getDemoProfiles.mockResolvedValue([]);
+    mocks.getHealth.mockResolvedValue({ status: "ok", data_mode: "fixture", nessie_configured: false, demo_controls_enabled: false });
     mocks.connectBank.mockResolvedValue(dashboard.connection);
     mocks.syncBank.mockResolvedValue(dashboard.connection);
     mocks.demoLogin.mockResolvedValue({ id: "demo-player", display_name: "Demo Player" });
@@ -145,18 +171,9 @@ describe("application API integration", () => {
     expect(screen.queryByText("Everyday Checking")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Transactions" })).toBeInTheDocument();
     expect(screen.getByText("Paycheck")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Back to town" })).toHaveAttribute("href", "/town");
-    expect(screen.queryByRole("navigation", { name: "Main navigation" })).not.toBeInTheDocument();
-  });
-
-  it("shows session controls on the financial page but not the town map", () => {
-    const townView = renderShell("/town");
-    expect(screen.queryByLabelText("Demo session")).not.toBeInTheDocument();
-
-    townView.unmount();
-    renderShell("/dashboard");
-    expect(screen.getByLabelText("Demo session")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Sign out" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Town" })).toHaveAttribute("href", "/town");
+    expect(screen.getByRole("link", { name: "Bank & goals" })).toHaveAttribute("href", "/dashboard");
+    expect(screen.getByText(/Fixture fallback:/)).toBeInTheDocument();
   });
 
   it("shows demo login when there is no signed session", async () => {
@@ -182,11 +199,73 @@ describe("application API integration", () => {
     ]);
     renderApp();
 
-    expect(await screen.findByRole("heading", { name: "Choose a fictional financial story." })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Connect a fictional bank profile." })).toBeInTheDocument();
+    expect(screen.getByLabelText("Fictional username")).toHaveAttribute("readonly");
+    expect(screen.getByLabelText("Fictional password")).toHaveAttribute("readonly");
+    await user.click(screen.getByRole("checkbox"));
     await user.click(screen.getByRole("button", { name: "Connect selected profile" }));
 
     expect(mocks.connectBank).toHaveBeenCalled();
     expect(mocks.connectBank.mock.calls[0][0]).toBe("steady-paycheck");
-    expect(await screen.findByRole("heading", { name: "Bank" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Your money, at a glance." })).toBeInTheDocument();
+  });
+
+  it("submits a savings goal in integer cents for a data-driven recommendation", async () => {
+    const user = userEvent.setup();
+    mocks.createGoal.mockResolvedValue({ goal: {}, forecast: dashboard.forecast, plan: {} });
+    renderApp();
+
+    await screen.findByRole("heading", { name: "Savings plan" });
+    await user.clear(screen.getByLabelText("Target amount"));
+    await user.type(screen.getByLabelText("Target amount"), "4250");
+    await user.clear(screen.getByLabelText("Already saved"));
+    await user.type(screen.getByLabelText("Already saved"), "250");
+    await user.click(screen.getByRole("button", { name: "Generate recommendation" }));
+
+    expect(mocks.createGoal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "Emergency fund",
+        target_amount_cents: 425000,
+        amount_already_saved_cents: 25000,
+      }),
+      expect.anything(),
+    );
+  });
+
+  it("shows live provenance and an accepted plan without relabeling it as a draft", async () => {
+    mocks.getDashboard.mockResolvedValue({
+      ...dashboard,
+      connection: { ...dashboard.connection, data_source: "live" },
+      active_goal: {
+        id: 7,
+        name: "Emergency fund",
+        target_amount_cents: 300000,
+        amount_already_saved_cents: 50000,
+        target_date: "2027-04-17",
+      },
+      current_plan: {
+        goal_id: 7,
+        weekly_income_cents: 92500,
+        weekly_recurring_bills_cents: 31780,
+        weekly_variable_spending_cents: 4320,
+        safety_buffer_cents: 9250,
+        weekly_savings_cents: 10000,
+        safe_to_spend_cents: 41470,
+        confidence: "medium",
+        income_cadence: "biweekly",
+        feasible: true,
+        suggested_target_date: null,
+        explanation: "Accepted recommendation.",
+        evidence: ["Detected two biweekly deposits."],
+        status: "accepted",
+        accepted_at: "2026-10-17T12:00:00Z",
+      },
+    });
+    renderApp();
+
+    expect(await screen.findByText("Live Nessie Sandbox")).toBeInTheDocument();
+    expect(screen.getByText("Accepted")).toBeInTheDocument();
+    expect(screen.queryByText(/Fixture fallback:/)).not.toBeInTheDocument();
+    expect(screen.getByText(/stay fixed/)).toBeInTheDocument();
   });
 });

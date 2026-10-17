@@ -37,8 +37,15 @@ def test_connecting_profile_materializes_normalized_dashboard(
         "income_last_30_days_cents": 370000,
         "spending_last_30_days_cents": 154750,
     }
-    assert dashboard["forecast"] is None
+    assert dashboard["forecast"]["income_cadence"] == "biweekly"
+    assert dashboard["forecast"]["detected_deposit_count"] == 2
+    assert dashboard["import_summary"] == {
+        "account_count": 2,
+        "transaction_count": 7,
+        "transaction_types": ["bill", "deposit", "purchase"],
+    }
     assert dashboard["active_goal"] is None
+    assert dashboard["current_plan"] is None
 
 
 def test_sync_replaces_cached_rows_instead_of_duplicating_them(

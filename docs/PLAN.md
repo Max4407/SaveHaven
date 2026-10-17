@@ -349,7 +349,7 @@ frontend/Assets/
 
 Vite should be configured with `publicDir: "Assets"`. Phaser can then load assets using root-relative URLs such as `/houses-pack/small/cottage/cottage_1_new.png`. Do not maintain a second copy under `frontend/public/` or in a repository-level asset directory.
 
-The vendor `houses-pack/manifest.json` remains unchanged and supplies kind, group, variant, condition, file, and pivot information. SaveHaven-specific data such as price, footprint, unlock level, and Town XP belongs in the application catalog under `frontend/src/features/town/catalog/`.
+The vendor `houses-pack/manifest.json` remains unchanged and supplies kind, group, variant, condition, file, and pivot information. SaveHaven-specific data such as price, footprint, unlock level, and Town XP belongs in the authoritative application catalog at `data/catalog/town_catalog.json`.
 
 Existing vendor folder and file names are preserved even when they do not match project naming conventions. New project-owned assets should use lowercase kebab-case names.
 

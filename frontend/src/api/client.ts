@@ -7,17 +7,28 @@ type ErrorBody = {
 
 export class ApiError extends Error {
   readonly status: number;
+  readonly code?: string;
 
-  constructor(status: number, message: string) {
+  constructor(status: number, message: string, code?: string) {
     super(message);
     this.name = "ApiError";
     this.status = status;
+    this.code = code;
   }
 }
 
-function errorMessage(body: ErrorBody | null, status: number): string {
-  if (typeof body?.detail === "string") return body.detail;
-  return `SaveHaven request failed (${status})`;
+function errorDetail(body: ErrorBody | null, status: number): { message: string; code?: string } {
+  if (typeof body?.detail === "string") return { message: body.detail };
+  if (body?.detail && typeof body.detail === "object") {
+    const detail = body.detail as { message?: unknown; code?: unknown };
+    if (typeof detail.message === "string") {
+      return {
+        message: detail.message,
+        code: typeof detail.code === "string" ? detail.code : undefined,
+      };
+    }
+  }
+  return { message: `SaveHaven request failed (${status})` };
 }
 
 export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -34,7 +45,8 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
 
   if (!response.ok) {
     const body = await response.json().catch(() => null) as ErrorBody | null;
-    throw new ApiError(response.status, errorMessage(body, response.status));
+    const detail = errorDetail(body, response.status);
+    throw new ApiError(response.status, detail.message, detail.code);
   }
 
   if (response.status === 204) return undefined as T;

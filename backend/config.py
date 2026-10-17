@@ -29,8 +29,10 @@ class Settings(BaseSettings):
     nessie_base_url: str = "https://prod-api.nessieisreal.com"
     nessie_data_mode: Literal["fixture", "live"] = "fixture"
     nessie_allow_fixture_fallback: bool = True
+    demo_controls_enabled: bool = False
     nessie_timeout_seconds: float = 10.0
     nessie_fixture_path: Path = REPOSITORY_ROOT / "data" / "fixtures" / "nessie_profiles.json"
+    town_catalog_path: Path = REPOSITORY_ROOT / "data" / "catalog" / "town_catalog.json"
     frontend_dist_path: Path = REPOSITORY_ROOT / "frontend" / "dist"
 
     @model_validator(mode="after")

@@ -12,7 +12,7 @@ import argparse
 import hashlib
 import json
 import sys
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 from typing import Any, Literal
@@ -254,6 +254,38 @@ def account_opening_balance(profile: FixtureProfile, account: FixtureAccount) ->
     return final_balance - net_history
 
 
+def account_seed_balance(profile: FixtureProfile, account: FixtureAccount) -> int:
+    """Return a Nessie-valid opening balance; negative offsets are replayed as transfers."""
+    return max(0, account_opening_balance(profile, account))
+
+
+def account_balance_adjustment(
+    profile: FixtureProfile, account: FixtureAccount
+) -> FixtureTransaction | None:
+    opening_balance = account_opening_balance(profile, account)
+    if opening_balance >= 0:
+        return None
+    earliest_date = min(
+        (
+            transaction.occurred_at
+            for transaction in profile.transactions
+            if transaction.source_account_id == account.source_account_id
+        ),
+        default=profile.as_of,
+    )
+    return FixtureTransaction(
+        source_account_id=account.source_account_id,
+        source_id=f"{profile.id}-opening-adjustment-{account.source_account_id}",
+        occurred_at=earliest_date - timedelta(days=1),
+        signed_amount_cents=opening_balance * 100,
+        direction="outflow",
+        kind="transfer",
+        merchant_name="Opening Balance Adjustment",
+        category="opening-adjustment",
+        description="Nessie nonnegative opening balance adjustment",
+    )
+
+
 def account_type_for_nessie(account_type: str) -> str:
     normalized = account_type.strip().lower().replace("_", " ").replace("-", " ")
     account_types = {
@@ -334,7 +366,7 @@ def find_or_create_account(
         "type": account_type_for_nessie(account.account_type),
         "nickname": account.nickname,
         "rewards": 0,
-        "balance": account_opening_balance(profile, account),
+        "balance": account_seed_balance(profile, account),
     }
     path = f"customers/{customer_id}/accounts"
     before = client.get_list(path)
@@ -423,12 +455,13 @@ def print_plan(profiles: list[FixtureProfile]) -> None:
                 transaction.source_account_id == account.source_account_id
                 for transaction in profile.transactions
             )
-            opening = account_opening_balance(profile, account)
+            opening = account_seed_balance(profile, account)
+            adjustment_count = int(account_balance_adjustment(profile, account) is not None)
             final_balance = cents_to_nessie_dollars(account.balance_cents)
             print(
                 f"  {account.nickname}: {account_type_for_nessie(account.account_type)}, "
                 f"opening ${opening:,}, target ${final_balance:,}, "
-                f"{transaction_count} transactions"
+                f"{transaction_count + adjustment_count} transactions"
             )
     print("\nNessie v1 accepts integer dollar amounts; fixture cents are rounded half-up.")
     print("Run again with --apply to create or resume these fictional profiles.")
@@ -500,6 +533,9 @@ def apply_seed(
                     for transaction in profile.transactions
                     if transaction.source_account_id == account.source_account_id
                 ]
+                adjustment = account_balance_adjustment(profile, account)
+                if adjustment is not None:
+                    account_transactions.append(adjustment)
                 created, reused = seed_transactions(
                     client,
                     account_id=account_id,

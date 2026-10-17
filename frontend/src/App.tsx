@@ -8,6 +8,7 @@ import { LoginPage } from "./features/auth/LoginPage";
 import { DashboardPage } from "./features/dashboard/DashboardPage";
 
 const TownPage = lazy(() => import("./features/town/TownPage"));
+const NessieLabPage = lazy(() => import("./features/nessie_lab/NessieLabPage"));
 
 function App() {
   const sessionQuery = useQuery({
@@ -42,6 +43,14 @@ function App() {
       <Route element={<AppShell user={sessionQuery.data} />}>
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
+        <Route
+          path="nessie-lab"
+          element={
+            <Suspense fallback={<div className="route-loading">Preparing Nessie Lab…</div>}>
+              <NessieLabPage />
+            </Suspense>
+          }
+        />
         <Route
           path="town"
           element={

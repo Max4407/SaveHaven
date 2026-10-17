@@ -9,4 +9,5 @@ def test_health_is_public_and_reports_fixture_readiness(client: TestClient) -> N
         "status": "ok",
         "data_mode": "fixture",
         "nessie_configured": False,
+        "demo_controls_enabled": False,
     }

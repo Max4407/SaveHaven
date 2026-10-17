@@ -3,16 +3,29 @@ from datetime import timedelta
 
 from sqlalchemy.orm import Session
 
-from repository import get_bank_connection, list_accounts, list_transactions
+from repository import (
+    get_accepted_plan,
+    get_active_goal,
+    get_bank_connection,
+    list_accounts,
+    list_transactions,
+)
 from schemas import (
     AccountResponse,
     BankConnectionResponse,
     DashboardResponse,
     DashboardSummaryResponse,
+    ImportSummaryResponse,
     SpendingCategoryResponse,
     TransactionResponse,
 )
 from services.bank_sync import BankConnectionNotFoundError
+from services.planning import (
+    accepted_plan_response,
+    build_draft_plan,
+    build_forecast,
+    goal_response,
+)
 
 
 def build_dashboard(session: Session, *, user_id: str) -> DashboardResponse:
@@ -52,6 +65,16 @@ def build_dashboard(session: Session, *, user_id: str) -> DashboardResponse:
     savings_balance = sum(
         account.balance_cents for account in accounts if account.account_type == "savings"
     )
+    forecast = build_forecast(transactions)
+    active_goal = get_active_goal(session, user_id)
+    current_plan = None
+    if active_goal is not None:
+        accepted_plan = get_accepted_plan(session, user_id=user_id, goal_id=active_goal.id)
+        current_plan = (
+            accepted_plan_response(accepted_plan)
+            if accepted_plan is not None
+            else build_draft_plan(active_goal, forecast)
+        )
 
     return DashboardResponse(
         connection=BankConnectionResponse(
@@ -100,4 +123,12 @@ def build_dashboard(session: Session, *, user_id: str) -> DashboardResponse:
                 reverse=True,
             )
         ],
+        import_summary=ImportSummaryResponse(
+            account_count=len(accounts),
+            transaction_count=len(transactions),
+            transaction_types=sorted({transaction.kind for transaction in transactions}),
+        ),
+        forecast=forecast,
+        active_goal=goal_response(active_goal) if active_goal is not None else None,
+        current_plan=current_plan,
     )
