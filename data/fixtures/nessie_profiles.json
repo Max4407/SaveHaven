@@ -1,0 +1,296 @@
+{
+  "profiles": [
+    {
+      "id": "steady-paycheck",
+      "display_name": "Jordan Lee",
+      "description": "Predictable biweekly income with moderate recurring expenses.",
+      "income_pattern": "Biweekly paycheck",
+      "customer_id": "demo-nessie-jordan",
+      "as_of": "2026-10-17",
+      "accounts": [
+        {
+          "source_account_id": "jordan-checking",
+          "account_type": "checking",
+          "nickname": "Everyday Checking",
+          "balance_cents": 342650
+        },
+        {
+          "source_account_id": "jordan-savings",
+          "account_type": "savings",
+          "nickname": "Goal Savings",
+          "balance_cents": 625000
+        }
+      ],
+      "transactions": [
+        {
+          "source_account_id": "jordan-checking",
+          "source_id": "jordan-payroll-2026-10-09",
+          "occurred_at": "2026-10-09",
+          "signed_amount_cents": 185000,
+          "direction": "inflow",
+          "kind": "deposit",
+          "merchant_name": "Northstar Studio",
+          "category": "income",
+          "description": "Payroll deposit"
+        },
+        {
+          "source_account_id": "jordan-checking",
+          "source_id": "jordan-payroll-2026-09-25",
+          "occurred_at": "2026-09-25",
+          "signed_amount_cents": 185000,
+          "direction": "inflow",
+          "kind": "deposit",
+          "merchant_name": "Northstar Studio",
+          "category": "income",
+          "description": "Payroll deposit"
+        },
+        {
+          "source_account_id": "jordan-checking",
+          "source_id": "jordan-rent-2026-10",
+          "occurred_at": "2026-10-01",
+          "signed_amount_cents": -125000,
+          "direction": "outflow",
+          "kind": "bill",
+          "merchant_name": "Oak Street Apartments",
+          "category": "housing",
+          "description": "Monthly rent"
+        },
+        {
+          "source_account_id": "jordan-checking",
+          "source_id": "jordan-grocery-2026-10-12",
+          "occurred_at": "2026-10-12",
+          "signed_amount_cents": -8450,
+          "direction": "outflow",
+          "kind": "purchase",
+          "merchant_name": "Fresh Basket",
+          "category": "groceries",
+          "description": "Weekly groceries"
+        },
+        {
+          "source_account_id": "jordan-checking",
+          "source_id": "jordan-dining-2026-10-14",
+          "occurred_at": "2026-10-14",
+          "signed_amount_cents": -3860,
+          "direction": "outflow",
+          "kind": "purchase",
+          "merchant_name": "Juniper Cafe",
+          "category": "dining",
+          "description": "Dinner"
+        },
+        {
+          "source_account_id": "jordan-checking",
+          "source_id": "jordan-utility-2026-10",
+          "occurred_at": "2026-10-06",
+          "signed_amount_cents": -11240,
+          "direction": "outflow",
+          "kind": "bill",
+          "merchant_name": "City Electric",
+          "category": "utilities",
+          "description": "Electric bill"
+        },
+        {
+          "source_account_id": "jordan-checking",
+          "source_id": "jordan-transit-2026-10",
+          "occurred_at": "2026-10-03",
+          "signed_amount_cents": -6200,
+          "direction": "outflow",
+          "kind": "purchase",
+          "merchant_name": "Metro Pass",
+          "category": "transportation",
+          "description": "Monthly transit pass"
+        }
+      ]
+    },
+    {
+      "id": "variable-income",
+      "display_name": "Alex Morgan",
+      "description": "Freelance income that varies in both amount and timing.",
+      "income_pattern": "Variable freelance payments",
+      "customer_id": "demo-nessie-alex",
+      "as_of": "2026-10-17",
+      "accounts": [
+        {
+          "source_account_id": "alex-checking",
+          "account_type": "checking",
+          "nickname": "Freelance Checking",
+          "balance_cents": 218375
+        },
+        {
+          "source_account_id": "alex-savings",
+          "account_type": "savings",
+          "nickname": "Emergency Fund",
+          "balance_cents": 175000
+        }
+      ],
+      "transactions": [
+        {
+          "source_account_id": "alex-checking",
+          "source_id": "alex-client-a-2026-10-15",
+          "occurred_at": "2026-10-15",
+          "signed_amount_cents": 95000,
+          "direction": "inflow",
+          "kind": "deposit",
+          "merchant_name": "Client A",
+          "category": "income",
+          "description": "Project payment"
+        },
+        {
+          "source_account_id": "alex-checking",
+          "source_id": "alex-client-b-2026-10-02",
+          "occurred_at": "2026-10-02",
+          "signed_amount_cents": 145000,
+          "direction": "inflow",
+          "kind": "deposit",
+          "merchant_name": "Client B",
+          "category": "income",
+          "description": "Project payment"
+        },
+        {
+          "source_account_id": "alex-checking",
+          "source_id": "alex-client-a-2026-09-19",
+          "occurred_at": "2026-09-19",
+          "signed_amount_cents": 70000,
+          "direction": "inflow",
+          "kind": "deposit",
+          "merchant_name": "Client A",
+          "category": "income",
+          "description": "Project payment"
+        },
+        {
+          "source_account_id": "alex-checking",
+          "source_id": "alex-rent-2026-10",
+          "occurred_at": "2026-10-01",
+          "signed_amount_cents": -110000,
+          "direction": "outflow",
+          "kind": "bill",
+          "merchant_name": "Riverbend Apartments",
+          "category": "housing",
+          "description": "Monthly rent"
+        },
+        {
+          "source_account_id": "alex-checking",
+          "source_id": "alex-software-2026-10",
+          "occurred_at": "2026-10-05",
+          "signed_amount_cents": -7200,
+          "direction": "outflow",
+          "kind": "bill",
+          "merchant_name": "Creative Tools",
+          "category": "work",
+          "description": "Software subscriptions"
+        },
+        {
+          "source_account_id": "alex-checking",
+          "source_id": "alex-grocery-2026-10-11",
+          "occurred_at": "2026-10-11",
+          "signed_amount_cents": -9675,
+          "direction": "outflow",
+          "kind": "purchase",
+          "merchant_name": "Market Square",
+          "category": "groceries",
+          "description": "Groceries"
+        },
+        {
+          "source_account_id": "alex-checking",
+          "source_id": "alex-dining-2026-10-13",
+          "occurred_at": "2026-10-13",
+          "signed_amount_cents": -5240,
+          "direction": "outflow",
+          "kind": "purchase",
+          "merchant_name": "Harbor Kitchen",
+          "category": "dining",
+          "description": "Dinner"
+        }
+      ]
+    },
+    {
+      "id": "tight-budget",
+      "display_name": "Taylor Kim",
+      "description": "Stable monthly income with a relatively tight discretionary budget.",
+      "income_pattern": "Monthly paycheck",
+      "customer_id": "demo-nessie-taylor",
+      "as_of": "2026-10-17",
+      "accounts": [
+        {
+          "source_account_id": "taylor-checking",
+          "account_type": "checking",
+          "nickname": "Main Checking",
+          "balance_cents": 98525
+        },
+        {
+          "source_account_id": "taylor-savings",
+          "account_type": "savings",
+          "nickname": "Rainy Day Fund",
+          "balance_cents": 230000
+        }
+      ],
+      "transactions": [
+        {
+          "source_account_id": "taylor-checking",
+          "source_id": "taylor-payroll-2026-10",
+          "occurred_at": "2026-10-01",
+          "signed_amount_cents": 320000,
+          "direction": "inflow",
+          "kind": "deposit",
+          "merchant_name": "Bluebird Health",
+          "category": "income",
+          "description": "Monthly payroll"
+        },
+        {
+          "source_account_id": "taylor-checking",
+          "source_id": "taylor-rent-2026-10",
+          "occurred_at": "2026-10-02",
+          "signed_amount_cents": -142500,
+          "direction": "outflow",
+          "kind": "bill",
+          "merchant_name": "Park View Rentals",
+          "category": "housing",
+          "description": "Monthly rent"
+        },
+        {
+          "source_account_id": "taylor-checking",
+          "source_id": "taylor-insurance-2026-10",
+          "occurred_at": "2026-10-04",
+          "signed_amount_cents": -18500,
+          "direction": "outflow",
+          "kind": "bill",
+          "merchant_name": "Shield Insurance",
+          "category": "insurance",
+          "description": "Insurance premium"
+        },
+        {
+          "source_account_id": "taylor-checking",
+          "source_id": "taylor-grocery-2026-10-08",
+          "occurred_at": "2026-10-08",
+          "signed_amount_cents": -11320,
+          "direction": "outflow",
+          "kind": "purchase",
+          "merchant_name": "Neighborhood Market",
+          "category": "groceries",
+          "description": "Groceries"
+        },
+        {
+          "source_account_id": "taylor-checking",
+          "source_id": "taylor-utility-2026-10",
+          "occurred_at": "2026-10-10",
+          "signed_amount_cents": -14800,
+          "direction": "outflow",
+          "kind": "bill",
+          "merchant_name": "City Utilities",
+          "category": "utilities",
+          "description": "Utilities"
+        },
+        {
+          "source_account_id": "taylor-checking",
+          "source_id": "taylor-dining-2026-10-12",
+          "occurred_at": "2026-10-12",
+          "signed_amount_cents": -2890,
+          "direction": "outflow",
+          "kind": "purchase",
+          "merchant_name": "Corner Cafe",
+          "category": "dining",
+          "description": "Lunch"
+        }
+      ]
+    }
+  ]
+}
