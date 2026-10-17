@@ -1,0 +1,20 @@
+# Python
+backend/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Local configuration
+.env
+backend/.env
+frontend/.env.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
