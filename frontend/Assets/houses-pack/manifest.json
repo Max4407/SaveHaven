@@ -1,0 +1,8894 @@
+[
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "cottage/cottage_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 40,
+    "y": 59
+   },
+   "large": {
+    "x": 79,
+    "y": 116
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "cottage/cottage_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 40,
+    "y": 59
+   },
+   "large": {
+    "x": 79,
+    "y": 116
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "cottage/cottage_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 40,
+    "y": 59
+   },
+   "large": {
+    "x": 79,
+    "y": 116
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "cottage/cottage_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 40,
+    "y": 59
+   },
+   "large": {
+    "x": 79,
+    "y": 116
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "cottage/cottage_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 40,
+    "y": 59
+   },
+   "large": {
+    "x": 79,
+    "y": 116
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "cottage/cottage_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 40,
+    "y": 59
+   },
+   "large": {
+    "x": 79,
+    "y": 116
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "cottage/cottage_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 49
+   },
+   "large": {
+    "x": 73,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "cottage/cottage_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 49
+   },
+   "large": {
+    "x": 73,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "cottage/cottage_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 49
+   },
+   "large": {
+    "x": 73,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "cottage/cottage_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 49
+   },
+   "large": {
+    "x": 73,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "cottage/cottage_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 49
+   },
+   "large": {
+    "x": 73,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "cottage/cottage_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 49
+   },
+   "large": {
+    "x": 73,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "cottage/cottage_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 50
+   },
+   "large": {
+    "x": 72,
+    "y": 99
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "cottage/cottage_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 50
+   },
+   "large": {
+    "x": 72,
+    "y": 99
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "cottage/cottage_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 50
+   },
+   "large": {
+    "x": 72,
+    "y": 99
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "cottage/cottage_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 50
+   },
+   "large": {
+    "x": 72,
+    "y": 99
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "cottage/cottage_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 50
+   },
+   "large": {
+    "x": 72,
+    "y": 99
+   }
+  }
+ },
+ {
+  "kind": "Cottage",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "cottage/cottage_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 50
+   },
+   "large": {
+    "x": 72,
+    "y": 99
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "hut/hut_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 34,
+    "y": 53
+   },
+   "large": {
+    "x": 66,
+    "y": 104
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "hut/hut_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 34,
+    "y": 53
+   },
+   "large": {
+    "x": 66,
+    "y": 104
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "hut/hut_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 34,
+    "y": 53
+   },
+   "large": {
+    "x": 66,
+    "y": 104
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "hut/hut_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 34,
+    "y": 53
+   },
+   "large": {
+    "x": 66,
+    "y": 104
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "hut/hut_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 34,
+    "y": 53
+   },
+   "large": {
+    "x": 66,
+    "y": 104
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "hut/hut_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 34,
+    "y": 53
+   },
+   "large": {
+    "x": 66,
+    "y": 104
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Plaster",
+  "roof": "Thatch",
+  "file": "hut/hut_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 68,
+    "y": 88
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Plaster",
+  "roof": "Thatch",
+  "file": "hut/hut_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 68,
+    "y": 88
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Plaster",
+  "roof": "Thatch",
+  "file": "hut/hut_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 68,
+    "y": 88
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Plaster",
+  "roof": "Thatch",
+  "file": "hut/hut_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 68,
+    "y": 88
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Plaster",
+  "roof": "Thatch",
+  "file": "hut/hut_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 68,
+    "y": 88
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Plaster",
+  "roof": "Thatch",
+  "file": "hut/hut_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 68,
+    "y": 88
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "hut/hut_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 48
+   },
+   "large": {
+    "x": 71,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "hut/hut_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 48
+   },
+   "large": {
+    "x": 71,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "hut/hut_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 48
+   },
+   "large": {
+    "x": 71,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "hut/hut_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 48
+   },
+   "large": {
+    "x": 71,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "hut/hut_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 48
+   },
+   "large": {
+    "x": 71,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Hut",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "hut/hut_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 48
+   },
+   "large": {
+    "x": 71,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Logs",
+  "roof": "Slate",
+  "file": "cabin/cabin_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 51
+   },
+   "large": {
+    "x": 82,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Logs",
+  "roof": "Slate",
+  "file": "cabin/cabin_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 51
+   },
+   "large": {
+    "x": 82,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Logs",
+  "roof": "Slate",
+  "file": "cabin/cabin_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 51
+   },
+   "large": {
+    "x": 82,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Logs",
+  "roof": "Slate",
+  "file": "cabin/cabin_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 51
+   },
+   "large": {
+    "x": 82,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Logs",
+  "roof": "Slate",
+  "file": "cabin/cabin_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 51
+   },
+   "large": {
+    "x": 82,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Logs",
+  "roof": "Slate",
+  "file": "cabin/cabin_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 51
+   },
+   "large": {
+    "x": 82,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 41,
+    "y": 48
+   },
+   "large": {
+    "x": 79,
+    "y": 95
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 41,
+    "y": 48
+   },
+   "large": {
+    "x": 79,
+    "y": 95
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 41,
+    "y": 48
+   },
+   "large": {
+    "x": 79,
+    "y": 95
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 41,
+    "y": 48
+   },
+   "large": {
+    "x": 79,
+    "y": 95
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 41,
+    "y": 48
+   },
+   "large": {
+    "x": 79,
+    "y": 95
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 41,
+    "y": 48
+   },
+   "large": {
+    "x": 79,
+    "y": 95
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 47
+   },
+   "large": {
+    "x": 76,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 47
+   },
+   "large": {
+    "x": 76,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 47
+   },
+   "large": {
+    "x": 76,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 47
+   },
+   "large": {
+    "x": 76,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 47
+   },
+   "large": {
+    "x": 76,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Cabin",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "cabin/cabin_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 47
+   },
+   "large": {
+    "x": 76,
+    "y": 92
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 66
+   },
+   "large": {
+    "x": 105,
+    "y": 130
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 66
+   },
+   "large": {
+    "x": 105,
+    "y": 130
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 66
+   },
+   "large": {
+    "x": 105,
+    "y": 130
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 66
+   },
+   "large": {
+    "x": 105,
+    "y": 130
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 66
+   },
+   "large": {
+    "x": 105,
+    "y": 130
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 66
+   },
+   "large": {
+    "x": 105,
+    "y": 130
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "longhouse/longhouse_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 60
+   },
+   "large": {
+    "x": 105,
+    "y": 118
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "longhouse/longhouse_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 60
+   },
+   "large": {
+    "x": 105,
+    "y": 118
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "longhouse/longhouse_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 60
+   },
+   "large": {
+    "x": 105,
+    "y": 118
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "longhouse/longhouse_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 60
+   },
+   "large": {
+    "x": 105,
+    "y": 118
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "longhouse/longhouse_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 60
+   },
+   "large": {
+    "x": 105,
+    "y": 118
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "longhouse/longhouse_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 54,
+    "y": 60
+   },
+   "large": {
+    "x": 105,
+    "y": 118
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 61
+   },
+   "large": {
+    "x": 105,
+    "y": 119
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 61
+   },
+   "large": {
+    "x": 105,
+    "y": 119
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 61
+   },
+   "large": {
+    "x": 105,
+    "y": 119
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 61
+   },
+   "large": {
+    "x": 105,
+    "y": 119
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 61
+   },
+   "large": {
+    "x": 105,
+    "y": 119
+   }
+  }
+ },
+ {
+  "kind": "Longhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "longhouse/longhouse_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 61
+   },
+   "large": {
+    "x": 105,
+    "y": 119
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "farmhouse/farmhouse_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 61,
+    "y": 75
+   },
+   "large": {
+    "x": 122,
+    "y": 149
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "farmhouse/farmhouse_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 61,
+    "y": 75
+   },
+   "large": {
+    "x": 122,
+    "y": 149
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "farmhouse/farmhouse_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 61,
+    "y": 75
+   },
+   "large": {
+    "x": 122,
+    "y": 149
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "farmhouse/farmhouse_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 61,
+    "y": 75
+   },
+   "large": {
+    "x": 122,
+    "y": 149
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "farmhouse/farmhouse_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 61,
+    "y": 75
+   },
+   "large": {
+    "x": 122,
+    "y": 149
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "farmhouse/farmhouse_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 61,
+    "y": 75
+   },
+   "large": {
+    "x": 122,
+    "y": 149
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "farmhouse/farmhouse_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 57,
+    "y": 70
+   },
+   "large": {
+    "x": 110,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "farmhouse/farmhouse_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 57,
+    "y": 70
+   },
+   "large": {
+    "x": 110,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "farmhouse/farmhouse_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 57,
+    "y": 70
+   },
+   "large": {
+    "x": 110,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "farmhouse/farmhouse_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 57,
+    "y": 70
+   },
+   "large": {
+    "x": 110,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "farmhouse/farmhouse_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 57,
+    "y": 70
+   },
+   "large": {
+    "x": 110,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "farmhouse/farmhouse_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 57,
+    "y": 70
+   },
+   "large": {
+    "x": 110,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "farmhouse/farmhouse_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 58,
+    "y": 70
+   },
+   "large": {
+    "x": 112,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "farmhouse/farmhouse_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 58,
+    "y": 70
+   },
+   "large": {
+    "x": 112,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "farmhouse/farmhouse_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 58,
+    "y": 70
+   },
+   "large": {
+    "x": 112,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "farmhouse/farmhouse_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 58,
+    "y": 70
+   },
+   "large": {
+    "x": 112,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "farmhouse/farmhouse_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 58,
+    "y": 70
+   },
+   "large": {
+    "x": 112,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Farmhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "farmhouse/farmhouse_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 58,
+    "y": 70
+   },
+   "large": {
+    "x": 112,
+    "y": 137
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 80
+   },
+   "large": {
+    "x": 71,
+    "y": 159
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 80
+   },
+   "large": {
+    "x": 71,
+    "y": 159
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 80
+   },
+   "large": {
+    "x": 71,
+    "y": 159
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 80
+   },
+   "large": {
+    "x": 71,
+    "y": 159
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 80
+   },
+   "large": {
+    "x": 71,
+    "y": 159
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 80
+   },
+   "large": {
+    "x": 71,
+    "y": 159
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "townhouse/townhouse_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 91
+   },
+   "large": {
+    "x": 80,
+    "y": 179
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "townhouse/townhouse_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 91
+   },
+   "large": {
+    "x": 80,
+    "y": 179
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "townhouse/townhouse_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 91
+   },
+   "large": {
+    "x": 80,
+    "y": 179
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "townhouse/townhouse_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 91
+   },
+   "large": {
+    "x": 80,
+    "y": 179
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "townhouse/townhouse_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 91
+   },
+   "large": {
+    "x": 80,
+    "y": 179
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "townhouse/townhouse_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 91
+   },
+   "large": {
+    "x": 80,
+    "y": 179
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 89
+   },
+   "large": {
+    "x": 71,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 89
+   },
+   "large": {
+    "x": 71,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 89
+   },
+   "large": {
+    "x": 71,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 89
+   },
+   "large": {
+    "x": 71,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 89
+   },
+   "large": {
+    "x": 71,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Townhouse",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "townhouse/townhouse_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 89
+   },
+   "large": {
+    "x": 71,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Timber",
+  "roof": "Blue",
+  "file": "manor/manor_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 71,
+    "y": 94
+   },
+   "large": {
+    "x": 141,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Timber",
+  "roof": "Blue",
+  "file": "manor/manor_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 71,
+    "y": 94
+   },
+   "large": {
+    "x": 141,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Timber",
+  "roof": "Blue",
+  "file": "manor/manor_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 71,
+    "y": 94
+   },
+   "large": {
+    "x": 141,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Timber",
+  "roof": "Blue",
+  "file": "manor/manor_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 71,
+    "y": 94
+   },
+   "large": {
+    "x": 141,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Timber",
+  "roof": "Blue",
+  "file": "manor/manor_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 71,
+    "y": 94
+   },
+   "large": {
+    "x": 141,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Timber",
+  "roof": "Blue",
+  "file": "manor/manor_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 71,
+    "y": 94
+   },
+   "large": {
+    "x": 141,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "manor/manor_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 64,
+    "y": 86
+   },
+   "large": {
+    "x": 127,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "manor/manor_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 64,
+    "y": 86
+   },
+   "large": {
+    "x": 127,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "manor/manor_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 64,
+    "y": 86
+   },
+   "large": {
+    "x": 127,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "manor/manor_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 64,
+    "y": 86
+   },
+   "large": {
+    "x": 127,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "manor/manor_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 64,
+    "y": 86
+   },
+   "large": {
+    "x": 127,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "manor/manor_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 64,
+    "y": 86
+   },
+   "large": {
+    "x": 127,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Whitewash",
+  "roof": "Copper",
+  "file": "manor/manor_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 77,
+    "y": 95
+   },
+   "large": {
+    "x": 151,
+    "y": 186
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Whitewash",
+  "roof": "Copper",
+  "file": "manor/manor_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 77,
+    "y": 95
+   },
+   "large": {
+    "x": 151,
+    "y": 186
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Whitewash",
+  "roof": "Copper",
+  "file": "manor/manor_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 77,
+    "y": 95
+   },
+   "large": {
+    "x": 151,
+    "y": 186
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Whitewash",
+  "roof": "Copper",
+  "file": "manor/manor_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 77,
+    "y": 95
+   },
+   "large": {
+    "x": 151,
+    "y": 186
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Whitewash",
+  "roof": "Copper",
+  "file": "manor/manor_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 77,
+    "y": 95
+   },
+   "large": {
+    "x": 151,
+    "y": 186
+   }
+  }
+ },
+ {
+  "kind": "Manor",
+  "group": "Homes",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Whitewash",
+  "roof": "Copper",
+  "file": "manor/manor_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 77,
+    "y": 95
+   },
+   "large": {
+    "x": 151,
+    "y": 186
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "shop/shop_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 78
+   },
+   "large": {
+    "x": 89,
+    "y": 152
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "shop/shop_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 78
+   },
+   "large": {
+    "x": 89,
+    "y": 152
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "shop/shop_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 78
+   },
+   "large": {
+    "x": 89,
+    "y": 152
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "shop/shop_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 78
+   },
+   "large": {
+    "x": 89,
+    "y": 152
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "shop/shop_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 78
+   },
+   "large": {
+    "x": 89,
+    "y": 152
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Shingle",
+  "file": "shop/shop_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 78
+   },
+   "large": {
+    "x": 89,
+    "y": 152
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Plaster",
+  "roof": "Red tile",
+  "file": "shop/shop_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 67
+   },
+   "large": {
+    "x": 81,
+    "y": 133
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Plaster",
+  "roof": "Red tile",
+  "file": "shop/shop_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 67
+   },
+   "large": {
+    "x": 81,
+    "y": 133
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Plaster",
+  "roof": "Red tile",
+  "file": "shop/shop_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 67
+   },
+   "large": {
+    "x": 81,
+    "y": 133
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Plaster",
+  "roof": "Red tile",
+  "file": "shop/shop_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 67
+   },
+   "large": {
+    "x": 81,
+    "y": 133
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Plaster",
+  "roof": "Red tile",
+  "file": "shop/shop_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 67
+   },
+   "large": {
+    "x": 81,
+    "y": 133
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Plaster",
+  "roof": "Red tile",
+  "file": "shop/shop_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 67
+   },
+   "large": {
+    "x": 81,
+    "y": 133
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Brick",
+  "roof": "Thatch",
+  "file": "shop/shop_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 70
+   },
+   "large": {
+    "x": 83,
+    "y": 138
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Brick",
+  "roof": "Thatch",
+  "file": "shop/shop_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 70
+   },
+   "large": {
+    "x": 83,
+    "y": 138
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Brick",
+  "roof": "Thatch",
+  "file": "shop/shop_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 70
+   },
+   "large": {
+    "x": 83,
+    "y": 138
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Brick",
+  "roof": "Thatch",
+  "file": "shop/shop_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 70
+   },
+   "large": {
+    "x": 83,
+    "y": 138
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Brick",
+  "roof": "Thatch",
+  "file": "shop/shop_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 70
+   },
+   "large": {
+    "x": 83,
+    "y": 138
+   }
+  }
+ },
+ {
+  "kind": "Shop",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Brick",
+  "roof": "Thatch",
+  "file": "shop/shop_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 70
+   },
+   "large": {
+    "x": 83,
+    "y": 138
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Red tile",
+  "file": "tavern/tavern_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 86
+   },
+   "large": {
+    "x": 103,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Red tile",
+  "file": "tavern/tavern_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 86
+   },
+   "large": {
+    "x": 103,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Red tile",
+  "file": "tavern/tavern_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 86
+   },
+   "large": {
+    "x": 103,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Red tile",
+  "file": "tavern/tavern_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 86
+   },
+   "large": {
+    "x": 103,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Red tile",
+  "file": "tavern/tavern_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 86
+   },
+   "large": {
+    "x": 103,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Red tile",
+  "file": "tavern/tavern_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 53,
+    "y": 86
+   },
+   "large": {
+    "x": 103,
+    "y": 170
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "tavern/tavern_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 77
+   },
+   "large": {
+    "x": 99,
+    "y": 153
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "tavern/tavern_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 77
+   },
+   "large": {
+    "x": 99,
+    "y": 153
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "tavern/tavern_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 77
+   },
+   "large": {
+    "x": 99,
+    "y": 153
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "tavern/tavern_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 77
+   },
+   "large": {
+    "x": 99,
+    "y": 153
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "tavern/tavern_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 77
+   },
+   "large": {
+    "x": 99,
+    "y": 153
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "tavern/tavern_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 77
+   },
+   "large": {
+    "x": 99,
+    "y": 153
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "tavern/tavern_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 79
+   },
+   "large": {
+    "x": 93,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "tavern/tavern_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 79
+   },
+   "large": {
+    "x": 93,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "tavern/tavern_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 79
+   },
+   "large": {
+    "x": 93,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "tavern/tavern_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 79
+   },
+   "large": {
+    "x": 93,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "tavern/tavern_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 79
+   },
+   "large": {
+    "x": 93,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Tavern",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "tavern/tavern_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 79
+   },
+   "large": {
+    "x": 93,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "smithy/smithy_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 56
+   },
+   "large": {
+    "x": 71,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "smithy/smithy_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 56
+   },
+   "large": {
+    "x": 71,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "smithy/smithy_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 56
+   },
+   "large": {
+    "x": 71,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "smithy/smithy_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 56
+   },
+   "large": {
+    "x": 71,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "smithy/smithy_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 56
+   },
+   "large": {
+    "x": 71,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Thatch",
+  "file": "smithy/smithy_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 56
+   },
+   "large": {
+    "x": 71,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "smithy/smithy_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 52
+   },
+   "large": {
+    "x": 64,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "smithy/smithy_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 52
+   },
+   "large": {
+    "x": 64,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "smithy/smithy_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 52
+   },
+   "large": {
+    "x": 64,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "smithy/smithy_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 52
+   },
+   "large": {
+    "x": 64,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "smithy/smithy_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 52
+   },
+   "large": {
+    "x": 64,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "smithy/smithy_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 52
+   },
+   "large": {
+    "x": 64,
+    "y": 101
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "smithy/smithy_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 53
+   },
+   "large": {
+    "x": 65,
+    "y": 103
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "smithy/smithy_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 53
+   },
+   "large": {
+    "x": 65,
+    "y": 103
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "smithy/smithy_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 53
+   },
+   "large": {
+    "x": 65,
+    "y": 103
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "smithy/smithy_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 53
+   },
+   "large": {
+    "x": 65,
+    "y": 103
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "smithy/smithy_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 53
+   },
+   "large": {
+    "x": 65,
+    "y": 103
+   }
+  }
+ },
+ {
+  "kind": "Smithy",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "smithy/smithy_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 33,
+    "y": 53
+   },
+   "large": {
+    "x": 65,
+    "y": 103
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Whitewash",
+  "roof": "Shingle",
+  "file": "bakery/bakery_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 75
+   },
+   "large": {
+    "x": 97,
+    "y": 148
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Whitewash",
+  "roof": "Shingle",
+  "file": "bakery/bakery_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 75
+   },
+   "large": {
+    "x": 97,
+    "y": 148
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Whitewash",
+  "roof": "Shingle",
+  "file": "bakery/bakery_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 75
+   },
+   "large": {
+    "x": 97,
+    "y": 148
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Whitewash",
+  "roof": "Shingle",
+  "file": "bakery/bakery_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 75
+   },
+   "large": {
+    "x": 97,
+    "y": 148
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Whitewash",
+  "roof": "Shingle",
+  "file": "bakery/bakery_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 75
+   },
+   "large": {
+    "x": 97,
+    "y": 148
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Whitewash",
+  "roof": "Shingle",
+  "file": "bakery/bakery_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 75
+   },
+   "large": {
+    "x": 97,
+    "y": 148
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "bakery/bakery_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 69
+   },
+   "large": {
+    "x": 89,
+    "y": 136
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "bakery/bakery_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 69
+   },
+   "large": {
+    "x": 89,
+    "y": 136
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "bakery/bakery_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 69
+   },
+   "large": {
+    "x": 89,
+    "y": 136
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "bakery/bakery_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 69
+   },
+   "large": {
+    "x": 89,
+    "y": 136
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "bakery/bakery_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 69
+   },
+   "large": {
+    "x": 89,
+    "y": 136
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Timber",
+  "roof": "Red tile",
+  "file": "bakery/bakery_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 69
+   },
+   "large": {
+    "x": 89,
+    "y": 136
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Brick",
+  "roof": "Shingle",
+  "file": "bakery/bakery_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 55
+   },
+   "large": {
+    "x": 86,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Brick",
+  "roof": "Shingle",
+  "file": "bakery/bakery_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 55
+   },
+   "large": {
+    "x": 86,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Brick",
+  "roof": "Shingle",
+  "file": "bakery/bakery_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 55
+   },
+   "large": {
+    "x": 86,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Brick",
+  "roof": "Shingle",
+  "file": "bakery/bakery_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 55
+   },
+   "large": {
+    "x": 86,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Brick",
+  "roof": "Shingle",
+  "file": "bakery/bakery_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 55
+   },
+   "large": {
+    "x": 86,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Bakery",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Brick",
+  "roof": "Shingle",
+  "file": "bakery/bakery_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 55
+   },
+   "large": {
+    "x": 86,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "windmill/windmill_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 89
+   },
+   "large": {
+    "x": 76,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "windmill/windmill_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 89
+   },
+   "large": {
+    "x": 76,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "windmill/windmill_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 89
+   },
+   "large": {
+    "x": 76,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "windmill/windmill_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 89
+   },
+   "large": {
+    "x": 76,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "windmill/windmill_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 89
+   },
+   "large": {
+    "x": 76,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "windmill/windmill_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 39,
+    "y": 89
+   },
+   "large": {
+    "x": 76,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "windmill/windmill_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 74
+   },
+   "large": {
+    "x": 71,
+    "y": 147
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "windmill/windmill_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 74
+   },
+   "large": {
+    "x": 71,
+    "y": 147
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "windmill/windmill_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 74
+   },
+   "large": {
+    "x": 71,
+    "y": 147
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "windmill/windmill_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 74
+   },
+   "large": {
+    "x": 71,
+    "y": 147
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "windmill/windmill_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 74
+   },
+   "large": {
+    "x": 71,
+    "y": 147
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "windmill/windmill_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 37,
+    "y": 74
+   },
+   "large": {
+    "x": 71,
+    "y": 147
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "windmill/windmill_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 38,
+    "y": 79
+   },
+   "large": {
+    "x": 73,
+    "y": 157
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "windmill/windmill_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 38,
+    "y": 79
+   },
+   "large": {
+    "x": 73,
+    "y": 157
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "windmill/windmill_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 38,
+    "y": 79
+   },
+   "large": {
+    "x": 73,
+    "y": 157
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "windmill/windmill_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 38,
+    "y": 79
+   },
+   "large": {
+    "x": 73,
+    "y": 157
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "windmill/windmill_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 38,
+    "y": 79
+   },
+   "large": {
+    "x": 73,
+    "y": 157
+   }
+  }
+ },
+ {
+  "kind": "Windmill",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "windmill/windmill_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 38,
+    "y": 79
+   },
+   "large": {
+    "x": 73,
+    "y": 157
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "stable/stable_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 56
+   },
+   "large": {
+    "x": 94,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "stable/stable_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 56
+   },
+   "large": {
+    "x": 94,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "stable/stable_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 56
+   },
+   "large": {
+    "x": 94,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "stable/stable_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 56
+   },
+   "large": {
+    "x": 94,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "stable/stable_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 56
+   },
+   "large": {
+    "x": 94,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Wood",
+  "roof": "Slate",
+  "file": "stable/stable_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 48,
+    "y": 56
+   },
+   "large": {
+    "x": 94,
+    "y": 111
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "stable/stable_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 51
+   },
+   "large": {
+    "x": 86,
+    "y": 100
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "stable/stable_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 51
+   },
+   "large": {
+    "x": 86,
+    "y": 100
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "stable/stable_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 51
+   },
+   "large": {
+    "x": 86,
+    "y": 100
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "stable/stable_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 51
+   },
+   "large": {
+    "x": 86,
+    "y": 100
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "stable/stable_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 51
+   },
+   "large": {
+    "x": 86,
+    "y": 100
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "stable/stable_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 51
+   },
+   "large": {
+    "x": 86,
+    "y": 100
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "stable/stable_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 54
+   },
+   "large": {
+    "x": 88,
+    "y": 107
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "stable/stable_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 54
+   },
+   "large": {
+    "x": 88,
+    "y": 107
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "stable/stable_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 54
+   },
+   "large": {
+    "x": 88,
+    "y": 107
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "stable/stable_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 54
+   },
+   "large": {
+    "x": 88,
+    "y": 107
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "stable/stable_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 54
+   },
+   "large": {
+    "x": 88,
+    "y": 107
+   }
+  }
+ },
+ {
+  "kind": "Stable",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "stable/stable_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 54
+   },
+   "large": {
+    "x": 88,
+    "y": 107
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 31
+   },
+   "large": {
+    "x": 46,
+    "y": 59
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 31
+   },
+   "large": {
+    "x": 46,
+    "y": 59
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 31
+   },
+   "large": {
+    "x": 46,
+    "y": 59
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 31
+   },
+   "large": {
+    "x": 46,
+    "y": 59
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 31
+   },
+   "large": {
+    "x": 46,
+    "y": 59
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 31
+   },
+   "large": {
+    "x": 46,
+    "y": 59
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 28
+   },
+   "large": {
+    "x": 50,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 28
+   },
+   "large": {
+    "x": 50,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 28
+   },
+   "large": {
+    "x": 50,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 28
+   },
+   "large": {
+    "x": 50,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 28
+   },
+   "large": {
+    "x": 50,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 28
+   },
+   "large": {
+    "x": 50,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 27,
+    "y": 28
+   },
+   "large": {
+    "x": 53,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 27,
+    "y": 28
+   },
+   "large": {
+    "x": 53,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 27,
+    "y": 28
+   },
+   "large": {
+    "x": 53,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 27,
+    "y": 28
+   },
+   "large": {
+    "x": 53,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 27,
+    "y": 28
+   },
+   "large": {
+    "x": 53,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Stall",
+  "group": "Trade",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Wood",
+  "roof": "Thatch",
+  "file": "stall/stall_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 27,
+    "y": 28
+   },
+   "large": {
+    "x": 53,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "chapel/chapel_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 82
+   },
+   "large": {
+    "x": 93,
+    "y": 161
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "chapel/chapel_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 82
+   },
+   "large": {
+    "x": 93,
+    "y": 161
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "chapel/chapel_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 82
+   },
+   "large": {
+    "x": 93,
+    "y": 161
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "chapel/chapel_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 82
+   },
+   "large": {
+    "x": 93,
+    "y": 161
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "chapel/chapel_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 82
+   },
+   "large": {
+    "x": 93,
+    "y": 161
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "chapel/chapel_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 82
+   },
+   "large": {
+    "x": 93,
+    "y": 161
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Whitewash",
+  "roof": "Slate",
+  "file": "chapel/chapel_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 88
+   },
+   "large": {
+    "x": 91,
+    "y": 173
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Whitewash",
+  "roof": "Slate",
+  "file": "chapel/chapel_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 88
+   },
+   "large": {
+    "x": 91,
+    "y": 173
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Whitewash",
+  "roof": "Slate",
+  "file": "chapel/chapel_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 88
+   },
+   "large": {
+    "x": 91,
+    "y": 173
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Whitewash",
+  "roof": "Slate",
+  "file": "chapel/chapel_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 88
+   },
+   "large": {
+    "x": 91,
+    "y": 173
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Whitewash",
+  "roof": "Slate",
+  "file": "chapel/chapel_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 88
+   },
+   "large": {
+    "x": 91,
+    "y": 173
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Whitewash",
+  "roof": "Slate",
+  "file": "chapel/chapel_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 88
+   },
+   "large": {
+    "x": 91,
+    "y": 173
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "chapel/chapel_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 94
+   },
+   "large": {
+    "x": 92,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "chapel/chapel_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 94
+   },
+   "large": {
+    "x": 92,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "chapel/chapel_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 94
+   },
+   "large": {
+    "x": 92,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "chapel/chapel_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 94
+   },
+   "large": {
+    "x": 92,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "chapel/chapel_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 94
+   },
+   "large": {
+    "x": 92,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Chapel",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Plaster",
+  "roof": "Shingle",
+  "file": "chapel/chapel_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 47,
+    "y": 94
+   },
+   "large": {
+    "x": 92,
+    "y": 187
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 88
+   },
+   "large": {
+    "x": 60,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 88
+   },
+   "large": {
+    "x": 60,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 88
+   },
+   "large": {
+    "x": 60,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 88
+   },
+   "large": {
+    "x": 60,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 88
+   },
+   "large": {
+    "x": 60,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 88
+   },
+   "large": {
+    "x": 60,
+    "y": 174
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "watchtower/watchtower_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 112
+   },
+   "large": {
+    "x": 60,
+    "y": 222
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "watchtower/watchtower_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 112
+   },
+   "large": {
+    "x": 60,
+    "y": 222
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "watchtower/watchtower_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 112
+   },
+   "large": {
+    "x": 60,
+    "y": 222
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "watchtower/watchtower_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 112
+   },
+   "large": {
+    "x": 60,
+    "y": 222
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "watchtower/watchtower_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 112
+   },
+   "large": {
+    "x": 60,
+    "y": 222
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "watchtower/watchtower_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 112
+   },
+   "large": {
+    "x": 60,
+    "y": 222
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 31,
+    "y": 114
+   },
+   "large": {
+    "x": 60,
+    "y": 224
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 31,
+    "y": 114
+   },
+   "large": {
+    "x": 60,
+    "y": 224
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 31,
+    "y": 114
+   },
+   "large": {
+    "x": 60,
+    "y": 224
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 31,
+    "y": 114
+   },
+   "large": {
+    "x": 60,
+    "y": 224
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 31,
+    "y": 114
+   },
+   "large": {
+    "x": 60,
+    "y": 224
+   }
+  }
+ },
+ {
+  "kind": "Watchtower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "watchtower/watchtower_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 31,
+    "y": 114
+   },
+   "large": {
+    "x": 60,
+    "y": 224
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 55,
+    "y": 113
+   },
+   "large": {
+    "x": 106,
+    "y": 223
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 55,
+    "y": 113
+   },
+   "large": {
+    "x": 106,
+    "y": 223
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 55,
+    "y": 113
+   },
+   "large": {
+    "x": 106,
+    "y": 223
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 55,
+    "y": 113
+   },
+   "large": {
+    "x": 106,
+    "y": 223
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 55,
+    "y": 113
+   },
+   "large": {
+    "x": 106,
+    "y": 223
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 55,
+    "y": 113
+   },
+   "large": {
+    "x": 106,
+    "y": 223
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "keep/keep_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 46,
+    "y": 98
+   },
+   "large": {
+    "x": 89,
+    "y": 194
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "keep/keep_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 46,
+    "y": 98
+   },
+   "large": {
+    "x": 89,
+    "y": 194
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "keep/keep_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 46,
+    "y": 98
+   },
+   "large": {
+    "x": 89,
+    "y": 194
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "keep/keep_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 46,
+    "y": 98
+   },
+   "large": {
+    "x": 89,
+    "y": 194
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "keep/keep_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 46,
+    "y": 98
+   },
+   "large": {
+    "x": 89,
+    "y": 194
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "keep/keep_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 46,
+    "y": 98
+   },
+   "large": {
+    "x": 89,
+    "y": 194
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 49,
+    "y": 103
+   },
+   "large": {
+    "x": 96,
+    "y": 205
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 49,
+    "y": 103
+   },
+   "large": {
+    "x": 96,
+    "y": 205
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 49,
+    "y": 103
+   },
+   "large": {
+    "x": 96,
+    "y": 205
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 49,
+    "y": 103
+   },
+   "large": {
+    "x": 96,
+    "y": 205
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 49,
+    "y": 103
+   },
+   "large": {
+    "x": 96,
+    "y": 205
+   }
+  }
+ },
+ {
+  "kind": "Keep",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Sandstone",
+  "roof": "Blue",
+  "file": "keep/keep_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 49,
+    "y": 103
+   },
+   "large": {
+    "x": 96,
+    "y": 205
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 79
+   },
+   "large": {
+    "x": 86,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 79
+   },
+   "large": {
+    "x": 86,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 79
+   },
+   "large": {
+    "x": 86,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 79
+   },
+   "large": {
+    "x": 86,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 79
+   },
+   "large": {
+    "x": 86,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 44,
+    "y": 79
+   },
+   "large": {
+    "x": 86,
+    "y": 155
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "gatehouse/gatehouse_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 82
+   },
+   "large": {
+    "x": 81,
+    "y": 163
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "gatehouse/gatehouse_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 82
+   },
+   "large": {
+    "x": 81,
+    "y": 163
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "gatehouse/gatehouse_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 82
+   },
+   "large": {
+    "x": 81,
+    "y": 163
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "gatehouse/gatehouse_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 82
+   },
+   "large": {
+    "x": 81,
+    "y": 163
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "gatehouse/gatehouse_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 82
+   },
+   "large": {
+    "x": 81,
+    "y": 163
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "gatehouse/gatehouse_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 42,
+    "y": 82
+   },
+   "large": {
+    "x": 81,
+    "y": 163
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 84
+   },
+   "large": {
+    "x": 83,
+    "y": 165
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 84
+   },
+   "large": {
+    "x": 83,
+    "y": 165
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 84
+   },
+   "large": {
+    "x": 83,
+    "y": 165
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 84
+   },
+   "large": {
+    "x": 83,
+    "y": 165
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 84
+   },
+   "large": {
+    "x": 83,
+    "y": 165
+   }
+  }
+ },
+ {
+  "kind": "Gatehouse",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "gatehouse/gatehouse_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 43,
+    "y": 84
+   },
+   "large": {
+    "x": 83,
+    "y": 165
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Brick",
+  "roof": "Red tile",
+  "file": "tower/tower_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 128
+   },
+   "large": {
+    "x": 68,
+    "y": 253
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Brick",
+  "roof": "Red tile",
+  "file": "tower/tower_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 128
+   },
+   "large": {
+    "x": 68,
+    "y": 253
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Brick",
+  "roof": "Red tile",
+  "file": "tower/tower_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 128
+   },
+   "large": {
+    "x": 68,
+    "y": 253
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Brick",
+  "roof": "Red tile",
+  "file": "tower/tower_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 128
+   },
+   "large": {
+    "x": 68,
+    "y": 253
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Brick",
+  "roof": "Red tile",
+  "file": "tower/tower_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 128
+   },
+   "large": {
+    "x": 68,
+    "y": 253
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Brick",
+  "roof": "Red tile",
+  "file": "tower/tower_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 128
+   },
+   "large": {
+    "x": 68,
+    "y": 253
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Whitewash",
+  "roof": "Blue",
+  "file": "tower/tower_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 129
+   },
+   "large": {
+    "x": 67,
+    "y": 255
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Whitewash",
+  "roof": "Blue",
+  "file": "tower/tower_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 129
+   },
+   "large": {
+    "x": 67,
+    "y": 255
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Whitewash",
+  "roof": "Blue",
+  "file": "tower/tower_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 129
+   },
+   "large": {
+    "x": 67,
+    "y": 255
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Whitewash",
+  "roof": "Blue",
+  "file": "tower/tower_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 129
+   },
+   "large": {
+    "x": 67,
+    "y": 255
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Whitewash",
+  "roof": "Blue",
+  "file": "tower/tower_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 129
+   },
+   "large": {
+    "x": 67,
+    "y": 255
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Whitewash",
+  "roof": "Blue",
+  "file": "tower/tower_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 129
+   },
+   "large": {
+    "x": 67,
+    "y": 255
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Sandstone",
+  "roof": "Copper",
+  "file": "tower/tower_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 130
+   },
+   "large": {
+    "x": 70,
+    "y": 257
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Sandstone",
+  "roof": "Copper",
+  "file": "tower/tower_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 130
+   },
+   "large": {
+    "x": 70,
+    "y": 257
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Sandstone",
+  "roof": "Copper",
+  "file": "tower/tower_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 130
+   },
+   "large": {
+    "x": 70,
+    "y": 257
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Sandstone",
+  "roof": "Copper",
+  "file": "tower/tower_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 130
+   },
+   "large": {
+    "x": 70,
+    "y": 257
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Sandstone",
+  "roof": "Copper",
+  "file": "tower/tower_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 130
+   },
+   "large": {
+    "x": 70,
+    "y": 257
+   }
+  }
+ },
+ {
+  "kind": "Tower",
+  "group": "Keep",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Sandstone",
+  "roof": "Copper",
+  "file": "tower/tower_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 36,
+    "y": 130
+   },
+   "large": {
+    "x": 70,
+    "y": 257
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "well/well_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 30
+   },
+   "large": {
+    "x": 44,
+    "y": 58
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "well/well_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 30
+   },
+   "large": {
+    "x": 44,
+    "y": 58
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "well/well_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 30
+   },
+   "large": {
+    "x": 44,
+    "y": 58
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "well/well_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 30
+   },
+   "large": {
+    "x": 44,
+    "y": 58
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "well/well_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 30
+   },
+   "large": {
+    "x": 44,
+    "y": 58
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Brick",
+  "roof": "Slate",
+  "file": "well/well_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 30
+   },
+   "large": {
+    "x": 44,
+    "y": 58
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "well/well_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 41,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "well/well_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 41,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "well/well_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 41,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "well/well_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 41,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "well/well_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 41,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Sandstone",
+  "roof": "Shingle",
+  "file": "well/well_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 41,
+    "y": 54
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "well/well_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 42,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "well/well_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 42,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "well/well_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 42,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "well/well_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 42,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "well/well_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 42,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Well",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Sandstone",
+  "roof": "Red tile",
+  "file": "well/well_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 22,
+    "y": 28
+   },
+   "large": {
+    "x": 42,
+    "y": 55
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "barn/barn_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 74
+   },
+   "large": {
+    "x": 99,
+    "y": 145
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "barn/barn_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 74
+   },
+   "large": {
+    "x": 99,
+    "y": 145
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "barn/barn_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 74
+   },
+   "large": {
+    "x": 99,
+    "y": 145
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "barn/barn_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 74
+   },
+   "large": {
+    "x": 99,
+    "y": 145
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "barn/barn_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 74
+   },
+   "large": {
+    "x": 99,
+    "y": 145
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Slate",
+  "file": "barn/barn_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 50,
+    "y": 74
+   },
+   "large": {
+    "x": 99,
+    "y": 145
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "barn/barn_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 63
+   },
+   "large": {
+    "x": 88,
+    "y": 123
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "barn/barn_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 63
+   },
+   "large": {
+    "x": 88,
+    "y": 123
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "barn/barn_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 63
+   },
+   "large": {
+    "x": 88,
+    "y": 123
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "barn/barn_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 63
+   },
+   "large": {
+    "x": 88,
+    "y": 123
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "barn/barn_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 63
+   },
+   "large": {
+    "x": 88,
+    "y": 123
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Wood",
+  "roof": "Shingle",
+  "file": "barn/barn_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 63
+   },
+   "large": {
+    "x": 88,
+    "y": 123
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "barn/barn_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 66
+   },
+   "large": {
+    "x": 88,
+    "y": 128
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "barn/barn_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 66
+   },
+   "large": {
+    "x": 88,
+    "y": 128
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "barn/barn_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 66
+   },
+   "large": {
+    "x": 88,
+    "y": 128
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "barn/barn_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 66
+   },
+   "large": {
+    "x": 88,
+    "y": 128
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "barn/barn_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 66
+   },
+   "large": {
+    "x": 88,
+    "y": 128
+   }
+  }
+ },
+ {
+  "kind": "Barn",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Wood",
+  "roof": "Red tile",
+  "file": "barn/barn_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 45,
+    "y": 66
+   },
+   "large": {
+    "x": 88,
+    "y": 128
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Red wood",
+  "roof": "Slate",
+  "file": "granary/granary_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 69,
+    "y": 89
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Red wood",
+  "roof": "Slate",
+  "file": "granary/granary_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 69,
+    "y": 89
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Red wood",
+  "roof": "Slate",
+  "file": "granary/granary_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 69,
+    "y": 89
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Red wood",
+  "roof": "Slate",
+  "file": "granary/granary_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 69,
+    "y": 89
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Red wood",
+  "roof": "Slate",
+  "file": "granary/granary_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 69,
+    "y": 89
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Red wood",
+  "roof": "Slate",
+  "file": "granary/granary_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 35,
+    "y": 46
+   },
+   "large": {
+    "x": 69,
+    "y": 89
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "granary/granary_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 43
+   },
+   "large": {
+    "x": 61,
+    "y": 83
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "granary/granary_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 43
+   },
+   "large": {
+    "x": 61,
+    "y": 83
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "granary/granary_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 43
+   },
+   "large": {
+    "x": 61,
+    "y": 83
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "granary/granary_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 43
+   },
+   "large": {
+    "x": 61,
+    "y": 83
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "granary/granary_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 43
+   },
+   "large": {
+    "x": 61,
+    "y": 83
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "granary/granary_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 32,
+    "y": 43
+   },
+   "large": {
+    "x": 61,
+    "y": 83
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "granary/granary_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 42
+   },
+   "large": {
+    "x": 57,
+    "y": 82
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "granary/granary_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 42
+   },
+   "large": {
+    "x": 57,
+    "y": 82
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "granary/granary_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 42
+   },
+   "large": {
+    "x": 57,
+    "y": 82
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "granary/granary_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 42
+   },
+   "large": {
+    "x": 57,
+    "y": 82
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "granary/granary_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 42
+   },
+   "large": {
+    "x": 57,
+    "y": 82
+   }
+  }
+ },
+ {
+  "kind": "Granary",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Timber",
+  "roof": "Slate",
+  "file": "granary/granary_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 30,
+    "y": 42
+   },
+   "large": {
+    "x": 57,
+    "y": 82
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 29
+   },
+   "large": {
+    "x": 49,
+    "y": 57
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 29
+   },
+   "large": {
+    "x": 49,
+    "y": 57
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 29
+   },
+   "large": {
+    "x": 49,
+    "y": 57
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 29
+   },
+   "large": {
+    "x": 49,
+    "y": 57
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 29
+   },
+   "large": {
+    "x": 49,
+    "y": 57
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Stone",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 26,
+    "y": 29
+   },
+   "large": {
+    "x": 49,
+    "y": 57
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "woodshed/woodshed_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 26
+   },
+   "large": {
+    "x": 45,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "woodshed/woodshed_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 26
+   },
+   "large": {
+    "x": 45,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "woodshed/woodshed_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 26
+   },
+   "large": {
+    "x": 45,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "woodshed/woodshed_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 26
+   },
+   "large": {
+    "x": 45,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "woodshed/woodshed_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 26
+   },
+   "large": {
+    "x": 45,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Logs",
+  "roof": "Shingle",
+  "file": "woodshed/woodshed_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 26
+   },
+   "large": {
+    "x": 45,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 27
+   },
+   "large": {
+    "x": 45,
+    "y": 52
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 27
+   },
+   "large": {
+    "x": 45,
+    "y": 52
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 27
+   },
+   "large": {
+    "x": 45,
+    "y": 52
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 27
+   },
+   "large": {
+    "x": 45,
+    "y": 52
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 27
+   },
+   "large": {
+    "x": 45,
+    "y": 52
+   }
+  }
+ },
+ {
+  "kind": "Woodshed",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Logs",
+  "roof": "Turf",
+  "file": "woodshed/woodshed_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 27
+   },
+   "large": {
+    "x": 45,
+    "y": 52
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Logs",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 25
+   },
+   "large": {
+    "x": 24,
+    "y": 49
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Logs",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 25
+   },
+   "large": {
+    "x": 24,
+    "y": 49
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Logs",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 25
+   },
+   "large": {
+    "x": 24,
+    "y": 49
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Logs",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 25
+   },
+   "large": {
+    "x": 24,
+    "y": 49
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Logs",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 25
+   },
+   "large": {
+    "x": 24,
+    "y": 49
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Logs",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 25
+   },
+   "large": {
+    "x": 24,
+    "y": 49
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "outhouse/outhouse_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "outhouse/outhouse_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "outhouse/outhouse_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "outhouse/outhouse_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "outhouse/outhouse_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "outhouse/outhouse_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 13,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 12,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 12,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 12,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 12,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 12,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Outhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "outhouse/outhouse_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 12,
+    "y": 23
+   },
+   "large": {
+    "x": 22,
+    "y": 45
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "dovecote/dovecote_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 25,
+    "y": 56
+   },
+   "large": {
+    "x": 47,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "dovecote/dovecote_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 25,
+    "y": 56
+   },
+   "large": {
+    "x": 47,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "dovecote/dovecote_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 25,
+    "y": 56
+   },
+   "large": {
+    "x": 47,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "dovecote/dovecote_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 25,
+    "y": 56
+   },
+   "large": {
+    "x": 47,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "dovecote/dovecote_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 25,
+    "y": 56
+   },
+   "large": {
+    "x": 47,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Plaster",
+  "roof": "Slate",
+  "file": "dovecote/dovecote_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 25,
+    "y": 56
+   },
+   "large": {
+    "x": 47,
+    "y": 108
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "dovecote/dovecote_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 50
+   },
+   "large": {
+    "x": 44,
+    "y": 98
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "dovecote/dovecote_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 50
+   },
+   "large": {
+    "x": 44,
+    "y": 98
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "dovecote/dovecote_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 50
+   },
+   "large": {
+    "x": 44,
+    "y": 98
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "dovecote/dovecote_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 50
+   },
+   "large": {
+    "x": 44,
+    "y": 98
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "dovecote/dovecote_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 50
+   },
+   "large": {
+    "x": 44,
+    "y": 98
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Whitewash",
+  "roof": "Red tile",
+  "file": "dovecote/dovecote_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 50
+   },
+   "large": {
+    "x": 44,
+    "y": 98
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "dovecote/dovecote_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 50
+   },
+   "large": {
+    "x": 45,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "dovecote/dovecote_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 50
+   },
+   "large": {
+    "x": 45,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "dovecote/dovecote_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 50
+   },
+   "large": {
+    "x": 45,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "dovecote/dovecote_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 50
+   },
+   "large": {
+    "x": 45,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "dovecote/dovecote_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 50
+   },
+   "large": {
+    "x": 45,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Dovecote",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Whitewash",
+  "roof": "Thatch",
+  "file": "dovecote/dovecote_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 50
+   },
+   "large": {
+    "x": 45,
+    "y": 97
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "New",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_1_new.png",
+  "pivot": {
+   "small": {
+    "x": 20,
+    "y": 27
+   },
+   "large": {
+    "x": 40,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Weathered",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_1_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 20,
+    "y": 27
+   },
+   "large": {
+    "x": 40,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Mossy",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_1_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 20,
+    "y": 27
+   },
+   "large": {
+    "x": 40,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Snowy",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_1_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 20,
+    "y": 27
+   },
+   "large": {
+    "x": 40,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Night",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_1_night.png",
+  "pivot": {
+   "small": {
+    "x": 20,
+    "y": 27
+   },
+   "large": {
+    "x": 40,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 1,
+  "condition": "Abandoned",
+  "walls": "Timber",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_1_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 20,
+    "y": 27
+   },
+   "large": {
+    "x": 40,
+    "y": 51
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "New",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "henhouse/henhouse_2_new.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 25
+   },
+   "large": {
+    "x": 45,
+    "y": 46
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Weathered",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "henhouse/henhouse_2_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 25
+   },
+   "large": {
+    "x": 45,
+    "y": 46
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Mossy",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "henhouse/henhouse_2_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 25
+   },
+   "large": {
+    "x": 45,
+    "y": 46
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Snowy",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "henhouse/henhouse_2_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 25
+   },
+   "large": {
+    "x": 45,
+    "y": 46
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Night",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "henhouse/henhouse_2_night.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 25
+   },
+   "large": {
+    "x": 45,
+    "y": 46
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 2,
+  "condition": "Abandoned",
+  "walls": "Red wood",
+  "roof": "Shingle",
+  "file": "henhouse/henhouse_2_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 24,
+    "y": 25
+   },
+   "large": {
+    "x": 45,
+    "y": 46
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "New",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_3_new.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 25
+   },
+   "large": {
+    "x": 44,
+    "y": 47
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Weathered",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_3_weathered.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 25
+   },
+   "large": {
+    "x": 44,
+    "y": 47
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Mossy",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_3_mossy.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 25
+   },
+   "large": {
+    "x": 44,
+    "y": 47
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Snowy",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_3_snowy.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 25
+   },
+   "large": {
+    "x": 44,
+    "y": 47
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Night",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_3_night.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 25
+   },
+   "large": {
+    "x": 44,
+    "y": 47
+   }
+  }
+ },
+ {
+  "kind": "Henhouse",
+  "group": "Yard",
+  "variant": 3,
+  "condition": "Abandoned",
+  "walls": "Red wood",
+  "roof": "Thatch",
+  "file": "henhouse/henhouse_3_abandoned.png",
+  "pivot": {
+   "small": {
+    "x": 23,
+    "y": 25
+   },
+   "large": {
+    "x": 44,
+    "y": 47
+   }
+  }
+ }
+]
