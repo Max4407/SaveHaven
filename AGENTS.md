@@ -16,11 +16,11 @@ Reference `docs/PLAN.md` for SaveHaven's product goals, agreed scope, architectu
 ## Project Structure & Module Organization
 
 - `frontend/`
-  - `public/assets/town/`: optimized runtime town assets and the building catalog.
+  - `Assets/`: canonical static asset root used by Vite and Phaser. Preserve the existing `fonts/`, `ForestVegetation/`, `free_grass/`, and `houses-pack/` vendor folders.
   - `src/api/`: typed HTTP client functions and API response types.
   - `src/components/`: reusable, domain-neutral React components.
   - `src/features/`: feature code grouped by `auth`, `onboarding`, `dashboard`, `goals`, `spending_plan`, and `town`.
-  - `src/features/town/catalog/`: catalog UI and catalog-specific helpers.
+  - `src/features/town/catalog/`: the SaveHaven building catalog, catalog UI, and catalog-specific helpers that map game metadata to files in `frontend/Assets/`.
   - `src/features/town/scenes/`: Phaser scenes.
   - `src/features/town/objects/`: Phaser game objects and placement helpers.
   - `src/hooks/`: reusable React hooks.
@@ -37,7 +37,6 @@ Reference `docs/PLAN.md` for SaveHaven's product goals, agreed scope, architectu
   - `database/`: engine, session, and database initialization.
   - `tests/`: mirrors the backend package structure.
   - `main.py`: application construction and router registration only.
-- `assets/source/`: locally supplied source art when its license permits repository storage. Do not serve these files directly.
 - `data/fixtures/`: sanitized, fictional Nessie-shaped or normalized demo fixtures.
 - `docs/PLAN.md`: product and implementation plan.
 - `scripts/`: one-off, documented repository utilities such as demo seeding or asset-manifest generation.
@@ -61,7 +60,7 @@ Use UTF-8 files, final newlines, and spaces rather than tabs. Keep modules small
 - Python: `snake_case` for modules, functions, variables, and test names; `PascalCase` for classes and Pydantic/SQLAlchemy types; uppercase names for constants.
 - TypeScript: `PascalCase` for React components, Phaser scenes, and types; `camelCase` for functions, hooks, variables, and object fields.
 - Hooks begin with `use`.
-- CSS class names and asset filenames use lowercase kebab-case. Documentation filenames use uppercase only for repository-standard files such as `README.md`, `AGENTS.md`, and `PLAN.md`.
+- CSS class names and new project-owned asset filenames use lowercase kebab-case. Preserve existing vendor asset paths and filenames because their manifests refer to them. Documentation filenames use uppercase only for repository-standard files such as `README.md`, `AGENTS.md`, and `PLAN.md`.
 - Prefer descriptive financial and game-domain names over abbreviations.
 - Keep React UI state in React. Keep rendered-world interaction in Phaser. Communicate through the typed town bridge rather than sharing mutable objects.
 
@@ -91,7 +90,7 @@ Pull requests should explain the problem and solution, list verification perform
 - Do not log authenticated Nessie URLs, cookies, secrets, or full financial payloads.
 - Do not request or accept real online-banking usernames, passwords, routing numbers, full account numbers, payment-card numbers, or Social Security numbers.
 - Use only fictional data in fixtures, screenshots, recordings, and presentations.
-- Verify the purchased asset pack's redistribution license before committing source art to a public repository.
+- Preserve license and attribution files distributed with fonts and asset packs. Confirm redistribution terms before adding another pack or making the repository public.
 - Authentication and authorization are enforced on the server. Do not treat hidden UI controls as access control.
 
 ## Conventions
@@ -105,6 +104,8 @@ Pull requests should explain the problem and solution, list verification perform
 - Reward processing must be idempotent for a user, plan period, and reward type.
 - Wallet balances, purchases, placement validity, and ownership are server-authoritative.
 - The building catalog is data-driven. Adding a decorative building should require an asset and catalog record, not a new code path.
+- `frontend/Assets/` is the only game and font asset root. Configure Vite to use it as `publicDir`; do not duplicate the same files under `frontend/public/`.
+- Preserve the existing house-pack manifest and folder names. SaveHaven catalog entries may reference them but must not rewrite vendor paths.
 - Keep the catalog, fixture, and API schemas stable once frontend and backend integration begins; coordinate intentional changes with both owners.
 - Do not introduce a new frontend framework, state library, database, authentication system, or service boundary without asking first.
 - Do not modify `docs/PLAN.md` without explicit user approval.

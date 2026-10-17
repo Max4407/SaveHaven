@@ -11,15 +11,19 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
+*.egg-info/
 
 # Frontend
 frontend/node_modules/
 frontend/dist/
+*.tsbuildinfo
 
 # Local configuration
 .env
 backend/.env
 frontend/.env.local
+data/fixtures/nessie_seed_state.local.json
+data/fixtures/nessie_demo_state.local.json
 
 # Database
 *.db

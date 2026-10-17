@@ -40,10 +40,10 @@ export class EmptyTownScene extends Phaser.Scene {
         const shade = (row + column) % 3 === 0 ? 0x9fd47f : 0xaada89;
         terrain.fillStyle(shade, 1);
         terrain.fillPoints([
-          new Phaser.Geom.Point(x, y - TILE_HEIGHT / 2),
-          new Phaser.Geom.Point(x + TILE_WIDTH / 2, y),
-          new Phaser.Geom.Point(x, y + TILE_HEIGHT / 2),
-          new Phaser.Geom.Point(x - TILE_WIDTH / 2, y),
+          new Phaser.Math.Vector2(x, y - TILE_HEIGHT / 2),
+          new Phaser.Math.Vector2(x + TILE_WIDTH / 2, y),
+          new Phaser.Math.Vector2(x, y + TILE_HEIGHT / 2),
+          new Phaser.Math.Vector2(x - TILE_WIDTH / 2, y),
         ], true);
 
         if ((row * 5 + column * 3) % 17 === 0) {
