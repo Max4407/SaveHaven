@@ -22,11 +22,6 @@ import {
 } from "../../api/finance";
 import type { Dashboard, Transaction } from "../../api/types";
 
-const demoSavingsGoals = [
-  { id: "car-fund", name: "Car fund", targetCents: 2_000_000, mark: "C" },
-  { id: "emergency-cushion", name: "Emergency cushion", targetCents: 1_000_000, mark: "E" },
-] as const;
-
 function formatDollars(cents: number, options?: Intl.NumberFormatOptions) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -294,6 +289,12 @@ function TransactionRow({ transaction }: { transaction: Transaction }) {
 function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
   const queryClient = useQueryClient();
   const balanceHistory = useMemo(() => buildBalanceHistory(dashboard), [dashboard]);
+  const activeGoal = dashboard.active_goal;
+  const activeGoalProgress = activeGoal
+    ? Math.min(100, Math.round(
+      activeGoal.amount_already_saved_cents / activeGoal.target_amount_cents * 100,
+    ))
+    : 0;
   const syncMutation = useMutation({
     mutationFn: syncBank,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["dashboard"] }),
@@ -341,17 +342,6 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
         <span><small>Resources represented</small><strong>{dashboard.import_summary.transaction_types.map(titleCase).join(", ") || "None"}</strong></span>
       </section>
 
-      {dashboard.connection.data_source !== "live" ? (
-        <p className="fallback-warning" role="status"><strong>Fixture fallback:</strong> Nessie was unavailable or live mode is not enabled. This data is fictional local fallback data, not a live sandbox sync.</p>
-      ) : null}
-
-      <section className="import-strip" aria-label="Nessie import provenance">
-        <span><small>Last sync</small><strong>{formatDateTime(dashboard.connection.last_synced_at)}</strong></span>
-        <span><small>Accounts imported</small><strong>{dashboard.import_summary.account_count}</strong></span>
-        <span><small>Transactions imported</small><strong>{dashboard.import_summary.transaction_count}</strong></span>
-        <span><small>Resources represented</small><strong>{dashboard.import_summary.transaction_types.map(titleCase).join(", ") || "None"}</strong></span>
-      </section>
-
       <section className="stat-grid bank-summary-grid" aria-label="Financial summary">
         <article className="stat-card">
           <p>Total balance</p>
@@ -371,38 +361,34 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
             <p className="eyebrow">Milestones</p>
             <h2 id="savings-goals-heading">Savings goals</h2>
           </div>
-          <span>{demoSavingsGoals.length} demo goals</span>
+          <span>{activeGoal ? "1 active goal" : "No active goal"}</span>
         </div>
         <div className="bank-goal-grid">
-          {demoSavingsGoals.map((goal) => {
-            const progress = Math.min(
-              100,
-              Math.round(dashboard.summary.savings_balance_cents / goal.targetCents * 100),
-            );
-            return (
-              <article className="bank-goal-card" key={goal.id}>
-                <div className="bank-goal-title">
-                  <span aria-hidden="true">{goal.mark}</span>
-                  <h3>{goal.name}</h3>
-                </div>
-                <p>
-                  <strong>{formatDollars(dashboard.summary.savings_balance_cents)}</strong>
-                  <span> of {formatDollars(goal.targetCents)}</span>
-                </p>
-                <div
-                  className="bank-goal-progress"
-                  role="progressbar"
-                  aria-label={`${goal.name} progress`}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={progress}
-                >
-                  <span style={{ width: `${progress}%` }} />
-                </div>
-                <small>{progress}% complete · Based on current savings</small>
-              </article>
-            );
-          })}
+          {activeGoal ? (
+            <article className="bank-goal-card" key={activeGoal.id}>
+              <div className="bank-goal-title">
+                <span aria-hidden="true">{activeGoal.name.slice(0, 1).toUpperCase()}</span>
+                <h3>{activeGoal.name}</h3>
+              </div>
+              <p>
+                <strong>{formatDollars(activeGoal.amount_already_saved_cents)}</strong>
+                <span> of {formatDollars(activeGoal.target_amount_cents)}</span>
+              </p>
+              <div
+                className="bank-goal-progress"
+                role="progressbar"
+                aria-label={`${activeGoal.name} progress`}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={activeGoalProgress}
+              >
+                <span style={{ width: `${activeGoalProgress}%` }} />
+              </div>
+              <small>{activeGoalProgress}% complete · Target {formatDate(activeGoal.target_date)}</small>
+            </article>
+          ) : (
+            <p className="empty-state">Create a savings goal below to track a real milestone here.</p>
+          )}
         </div>
       </section>
 

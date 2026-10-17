@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import { getHealth } from "../../api/finance";
 import {
@@ -14,7 +15,6 @@ import {
 } from "../../api/game";
 import type { GameState, SimulatedWeek, TownCatalogItem } from "../../api/types";
 import { TownCanvas } from "./TownCanvas";
-import { BUILDING_DRAG_TYPE, buildingCatalog, type BuildingId } from "./catalog/buildingCatalog";
 import { createTownBridge } from "./townBridge";
 
 type PlacementStatus = { active: boolean; valid: boolean; reason: string | null };
@@ -79,6 +79,7 @@ function TownPage() {
       applyConfirmedState(result.game_state);
       setCelebration(result);
       void queryClient.invalidateQueries({ queryKey: ["game-rewards"] });
+      void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => setActionError(mutationMessage(error)),
   });
@@ -91,6 +92,7 @@ function TownPage() {
       }
       setCelebration(null);
       void queryClient.invalidateQueries({ queryKey: ["game-rewards"] });
+      void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => setActionError(mutationMessage(error)),
   });

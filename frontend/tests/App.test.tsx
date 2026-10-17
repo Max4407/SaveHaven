@@ -3,12 +3,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../src/api/client";
 import type { Dashboard } from "../src/api/types";
 import App from "../src/App";
-import { AppShell } from "../src/components/AppShell";
 
 const mocks = vi.hoisted(() => ({
   acceptGoalPlan: vi.fn(),
@@ -123,24 +122,6 @@ function renderApp() {
   );
 }
 
-function renderShell(pathname: "/town" | "/dashboard") {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  });
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[pathname]}>
-        <Routes>
-          <Route element={<AppShell user={{ id: "demo-player", display_name: "Demo Player" }} />}>
-            <Route path="town" element={<div>Town screen</div>} />
-            <Route path="dashboard" element={<div>Financial screen</div>} />
-          </Route>
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>,
-  );
-}
-
 afterEach(cleanup);
 
 describe("application API integration", () => {
@@ -164,15 +145,15 @@ describe("application API integration", () => {
     expect(screen.getByText("$9,677")).toBeInTheDocument();
     expect(screen.getByText("$1,548")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Savings goals" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Car fund" })).toBeInTheDocument();
-    expect(screen.getByRole("progressbar", { name: "Car fund progress" })).toHaveAttribute("aria-valuenow", "31");
+    expect(screen.getByText("No active goal")).toBeInTheDocument();
+    expect(screen.getByText(/Create a savings goal below/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Money over time" })).toBeInTheDocument();
     expect(screen.getByTestId("balance-line")).toHaveAttribute("data-line-type", "linear");
     expect(screen.queryByText("Everyday Checking")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Transactions" })).toBeInTheDocument();
     expect(screen.getByText("Paycheck")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Town" })).toHaveAttribute("href", "/town");
-    expect(screen.getByRole("link", { name: "Bank & goals" })).toHaveAttribute("href", "/dashboard");
+    expect(screen.getByRole("link", { name: "Back to town" })).toHaveAttribute("href", "/town");
+    expect(screen.getAllByLabelText("Nessie import provenance")).toHaveLength(1);
     expect(screen.getByText(/Fixture fallback:/)).toBeInTheDocument();
   });
 
@@ -207,7 +188,7 @@ describe("application API integration", () => {
 
     expect(mocks.connectBank).toHaveBeenCalled();
     expect(mocks.connectBank.mock.calls[0][0]).toBe("steady-paycheck");
-    expect(await screen.findByRole("heading", { name: "Your money, at a glance." })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Bank" })).toBeInTheDocument();
   });
 
   it("submits a savings goal in integer cents for a data-driven recommendation", async () => {
@@ -265,6 +246,11 @@ describe("application API integration", () => {
 
     expect(await screen.findByText("Live Nessie Sandbox")).toBeInTheDocument();
     expect(screen.getByText("Accepted")).toBeInTheDocument();
+    expect(screen.getByText("1 active goal")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "Emergency fund progress" })).toHaveAttribute(
+      "aria-valuenow",
+      "17",
+    );
     expect(screen.queryByText(/Fixture fallback:/)).not.toBeInTheDocument();
     expect(screen.getByText(/stay fixed/)).toBeInTheDocument();
   });

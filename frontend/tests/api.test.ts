@@ -12,6 +12,16 @@ import {
   runNessieEvent,
   syncBank,
 } from "../src/api/finance";
+import {
+  buyBuilding,
+  getGameRewards,
+  getGameState,
+  getTownCatalog,
+  moveBuilding,
+  resetDemo,
+  sellBuilding,
+  simulateWeek,
+} from "../src/api/game";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -22,7 +32,12 @@ describe("backend endpoint contracts", () => {
       if (path === "/api/auth/logout") return Promise.resolve(new Response(null, { status: 204 }));
       if (path === "/api/demo/nessie-profiles") return Promise.resolve(Response.json([]));
       if (path === "/health") {
-        return Promise.resolve(Response.json({ status: "ok", data_mode: "fixture", nessie_configured: false }));
+        return Promise.resolve(Response.json({
+          status: "ok",
+          data_mode: "fixture",
+          nessie_configured: false,
+          demo_controls_enabled: true,
+        }));
       }
       return Promise.resolve(Response.json({
         id: "demo-player",
@@ -54,6 +69,14 @@ describe("backend endpoint contracts", () => {
       amount_cents: 185000,
       idempotency_key: "event-demo-001",
     });
+    await getTownCatalog();
+    await getGameState();
+    await getGameRewards();
+    await buyBuilding({ catalog_item_id: "woodshed_01", grid_x: 4, grid_y: 4 });
+    await moveBuilding(7, { grid_x: 5, grid_y: 4 });
+    await sellBuilding(7);
+    await simulateWeek("successful", "successful-demo-001");
+    await resetDemo();
 
     expect(fetchMock.mock.calls.map(([path]) => path)).toEqual([
       "/health",
@@ -68,6 +91,14 @@ describe("backend endpoint contracts", () => {
       "/api/goals/12/plan",
       "/api/goals/12/accept-plan",
       "/api/demo/nessie-events",
+      "/api/game/catalog",
+      "/api/game/state",
+      "/api/game/rewards",
+      "/api/game/buildings",
+      "/api/game/buildings/7",
+      "/api/game/buildings/7",
+      "/api/demo/simulate-successful-week",
+      "/api/demo/reset",
     ]);
     expect(fetchMock.mock.calls.every(([, init]) => init.credentials === "include")).toBe(true);
     expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: "POST" });
@@ -92,15 +123,34 @@ describe("backend endpoint contracts", () => {
         idempotency_key: "event-demo-001",
       }),
     });
+    expect(fetchMock.mock.calls[15][1]).toMatchObject({
+      method: "POST",
+      body: JSON.stringify({ catalog_item_id: "woodshed_01", grid_x: 4, grid_y: 4 }),
+    });
+    expect(fetchMock.mock.calls[16][1]).toMatchObject({
+      method: "PATCH",
+      body: JSON.stringify({ grid_x: 5, grid_y: 4 }),
+    });
+    expect(fetchMock.mock.calls[17][1]).toMatchObject({ method: "DELETE" });
+    expect(fetchMock.mock.calls[18][1]).toMatchObject({
+      method: "POST",
+      body: JSON.stringify({ idempotency_key: "successful-demo-001" }),
+    });
+    expect(fetchMock.mock.calls[19][1]).toMatchObject({ method: "POST" });
   });
 
   it("maps backend detail responses to actionable API errors", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
-      Response.json({ detail: "Connect a demo bank before opening the dashboard" }, { status: 409 }),
+      Response.json({
+        detail: {
+          message: "Another building already occupies that space.",
+          code: "occupied",
+        },
+      }, { status: 409 }),
     ));
 
     await expect(getDashboard()).rejects.toEqual(
-      new ApiError(409, "Connect a demo bank before opening the dashboard"),
+      new ApiError(409, "Another building already occupies that space.", "occupied"),
     );
   });
 });

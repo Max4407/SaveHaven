@@ -118,6 +118,10 @@ export type NessieEventResult = {
   idempotency_key: string;
   created_records: string[];
   reused_records: string[];
+  remote_records: Array<{
+    resource: "deposits" | "withdrawals";
+    record_id: string;
+  }>;
   dashboard: Dashboard;
 };
 
@@ -207,9 +211,18 @@ export type SimulatedWeek = {
   replayed: boolean;
   evaluation: {
     id: number;
+    period_start: string;
+    period_end: string;
+    planned_savings_cents: number;
+    actual_net_savings_cents: number;
+    planned_discretionary_spending_cents: number;
+    actual_discretionary_spending_cents: number;
     savings_ratio_basis_points: number;
     adherence_tier: "within" | "moderate" | "substantial";
+    exceptional_expense_flag: boolean;
+    source: string;
     explanation: string;
+    evaluated_at: string;
   };
   reward: GameReward;
   unlocks: {

@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 
 import "@testing-library/jest-dom/vitest";
-import { cleanup, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, MemoryRouter } from "react-router-dom";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { MemoryRouter } from "react-router-dom";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../src/api/client";
 import { getHealth } from "../src/api/finance";
 import {
@@ -17,9 +17,9 @@ import {
   sellBuilding,
   simulateWeek,
 } from "../src/api/game";
-import type { GameState, TownCatalog } from "../src/api/types";
+import type { GameState, SimulatedWeek, TownCatalog } from "../src/api/types";
 import TownPage from "../src/features/town/TownPage";
-import { BUILDING_DRAG_TYPE, buildingCatalog } from "../src/features/town/catalog/buildingCatalog";
+import type { TownBridge } from "../src/features/town/townBridge";
 
 vi.mock("../src/api/finance", () => ({ getHealth: vi.fn() }));
 vi.mock("../src/api/game", () => ({
@@ -35,33 +35,36 @@ vi.mock("../src/api/game", () => ({
 vi.mock("../src/features/town/TownCanvas", async () => {
   const React = await import("react");
   return {
-    TownCanvas: ({ bridge, state }: { bridge: {
-      emit: (event: string, detail: object) => void;
-      subscribe: (event: string, listener: (detail: { catalogItemId: string; buildingId?: number }) => void) => () => void;
-    }; state: GameState }) => {
-      const [request, setRequest] = React.useState<{ catalogItemId: string; buildingId?: number } | null>(null);
+    TownCanvas: ({ bridge, state }: { bridge: TownBridge; state: GameState }) => {
+      const [request, setRequest] = React.useState<{
+        catalogItemId: string;
+        buildingId?: number;
+      } | null>(null);
       React.useEffect(() => {
         const stopStart = bridge.subscribe("startPlacement", (detail) => {
           setRequest(detail);
           bridge.emit("placementChanged", { active: true, valid: true, reason: null });
         });
-        const stopCancel = bridge.subscribe("cancelPlacement", () => setRequest(null));
+        const stopCancel = bridge.subscribe("cancelPlacement", () => {
+          setRequest(null);
+          bridge.emit("placementChanged", { active: false, valid: false, reason: null });
+        });
         return () => { stopStart(); stopCancel(); };
       }, [bridge]);
       return (
         <div data-testid="town-canvas">
-          {state.buildings[0] && (
+          {state.buildings[0] ? (
             <button type="button" onClick={() => bridge.emit("buildingSelected", {
               buildingId: state.buildings[0].id,
             })}>Select building</button>
-          )}
-          {request && (
+          ) : null}
+          {request ? (
             <button type="button" onClick={() => bridge.emit("placementConfirmed", {
               ...request,
               gridX: 4,
               gridY: 4,
             })}>Confirm placement</button>
-          )}
+          ) : null}
         </div>
       );
     },
@@ -112,15 +115,57 @@ const initialState: GameState = {
   buildings: [],
 };
 
+const simulatedWeek = (gameState: GameState): SimulatedWeek => ({
+  source: "fixture_fallback",
+  replayed: false,
+  evaluation: {
+    id: 1,
+    period_start: "2026-10-12",
+    period_end: "2026-10-18",
+    planned_savings_cents: 10000,
+    actual_net_savings_cents: 10000,
+    planned_discretionary_spending_cents: 40000,
+    actual_discretionary_spending_cents: 30000,
+    savings_ratio_basis_points: 10_000,
+    adherence_tier: "within",
+    exceptional_expense_flag: false,
+    source: "fixture",
+    explanation: "Saved the full weekly target.",
+    evaluated_at: "2026-10-18T12:00:00Z",
+  },
+  reward: {
+    id: 1,
+    plan_period_id: 1,
+    reward_type: "weekly_plan",
+    coins_awarded: 420,
+    xp_awarded: 100,
+    previous_level: 1,
+    new_level: 2,
+    streak_weeks: 1,
+    explanation: "Saved 100% of the weekly target; within spending awarded 420 Coins and 100 XP.",
+    created_at: "2026-10-18T12:00:00Z",
+  },
+  unlocks: {
+    catalog_items: [catalog.items[1]],
+    district: gameState.district,
+    infrastructure: gameState.infrastructure,
+  },
+  game_state: gameState,
+});
+
 function renderTown() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
-  return render(
+  const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
+  const rendered = render(
     <QueryClientProvider client={queryClient}>
-      <TownPage />
+      <MemoryRouter>
+        <TownPage />
+      </MemoryRouter>
     </QueryClientProvider>,
   );
+  return { ...rendered, invalidateQueries };
 }
 
 beforeEach(() => {
@@ -150,58 +195,17 @@ describe("town economy", () => {
     expect(within(sidebar).getByText("300")).toBeInTheDocument();
     expect(within(sidebar).getByText("Homestead")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Corner Bakery locked until level 2" })).toBeDisabled();
-
-    fireEvent.click(screen.getByRole("button", { name: "Collapse town sidebar" }));
-    expect(screen.getByRole("button", { name: "Open town sidebar" })).toHaveAttribute("aria-expanded", "false");
-    expect(sidebar).not.toHaveClass("open");
-vi.mock("../src/features/town/TownCanvas", () => ({
-  TownCanvas: () => <div data-testid="town-canvas" />,
-}));
-
-afterEach(cleanup);
-
-describe("town layout", () => {
-  const renderTown = () => render(<MemoryRouter><TownPage /></MemoryRouter>);
-
-  it("keeps town information in a permanent sidebar beside the map", () => {
-    renderTown();
-
-    expect(screen.getByTestId("town-canvas")).toBeInTheDocument();
-
-    const sidebar = screen.getByLabelText("Building catalog");
-    expect(within(sidebar).getByText("Buildings")).toBeInTheDocument();
-    expect(within(sidebar).getByText("Coins")).toBeInTheDocument();
-    expect(within(sidebar).getByText("Preview mode")).toBeInTheDocument();
     expect(within(sidebar).getByRole("link", { name: "Open bank and goals" })).toHaveAttribute(
       "href",
       "/dashboard",
     );
-    expect(screen.queryByRole("button", { name: /town sidebar/i })).not.toBeInTheDocument();
-  });
 
-  it("makes catalog buildings available to drag onto the map", () => {
-    const setData = vi.fn();
-    renderTown();
-
-    const bakery = screen.getByLabelText("Mossy bakery building");
-    expect(bakery).toHaveAttribute("draggable", "true");
-
-    fireEvent.dragStart(bakery, {
-      dataTransfer: { effectAllowed: "none", setData },
-    });
-
-    expect(setData).toHaveBeenCalledWith(BUILDING_DRAG_TYPE, "mossy-bakery");
-    expect(setData).toHaveBeenCalledWith("text/plain", "mossy-bakery");
-  });
-
-  it("uses readable, data-driven map sizes for each building", () => {
-    const bakery = buildingCatalog.find((building) => building.id === "mossy-bakery");
-    const townhouse = buildingCatalog.find((building) => building.id === "townhouse");
-    const well = buildingCatalog.find((building) => building.id === "village-well");
-
-    expect(bakery?.worldWidth).toBeGreaterThan(townhouse?.worldWidth ?? 0);
-    expect(townhouse?.worldWidth).toBeGreaterThan(well?.worldWidth ?? 0);
-    expect(well?.worldWidth).toBeGreaterThan(96);
+    fireEvent.click(screen.getByRole("button", { name: "Collapse town sidebar" }));
+    expect(screen.getByRole("button", { name: "Open town sidebar" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    expect(sidebar).not.toHaveClass("open");
   });
 
   it("charges only after Phaser confirms a valid placement", async () => {
@@ -225,15 +229,15 @@ describe("town layout", () => {
     expect(buyBuilding).not.toHaveBeenCalled();
     fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
 
-    await waitFor(() => expect(vi.mocked(buyBuilding).mock.calls[0]?.[0]).toEqual({
-        catalog_item_id: "woodshed_01",
-        grid_x: 4,
-        grid_y: 4,
-      }));
+    await waitFor(() => expect(buyBuilding).toHaveBeenCalledWith({
+      catalog_item_id: "woodshed_01",
+      grid_x: 4,
+      grid_y: 4,
+    }, expect.anything()));
     expect(await screen.findByText("200")).toBeInTheDocument();
   });
 
-  it("cancels placement without charging and preserves state on server rejection", async () => {
+  it("cancels without charging and preserves confirmed state on server rejection", async () => {
     vi.mocked(buyBuilding).mockRejectedValue(
       new ApiError(409, "Another building already occupies that space.", "occupied"),
     );
@@ -249,7 +253,7 @@ describe("town layout", () => {
     expect(screen.getByText("300")).toBeInTheDocument();
   });
 
-  it("explains level-up rewards and their newly unlocked catalog", async () => {
+  it("explains level-up rewards and refreshes finance and reward state", async () => {
     const villageState: GameState = {
       ...initialState,
       wallet: {
@@ -270,42 +274,16 @@ describe("town layout", () => {
       nessie_configured: false,
       demo_controls_enabled: true,
     });
-    vi.mocked(simulateWeek).mockResolvedValue({
-      source: "fixture_fallback",
-      replayed: false,
-      evaluation: {
-        id: 1,
-        savings_ratio_basis_points: 10_000,
-        adherence_tier: "within",
-        explanation: "Saved the full weekly target.",
-      },
-      reward: {
-        id: 1,
-        plan_period_id: 1,
-        reward_type: "weekly_plan",
-        coins_awarded: 420,
-        xp_awarded: 100,
-        previous_level: 1,
-        new_level: 2,
-        streak_weeks: 1,
-        explanation: "Saved 100% of the weekly target; within spending awarded 420 Coins and 100 XP.",
-        created_at: "2026-10-17T12:00:00Z",
-      },
-      unlocks: {
-        catalog_items: [catalog.items[1]],
-        district: villageState.district,
-        infrastructure: villageState.infrastructure,
-      },
-      game_state: villageState,
-    });
-    renderTown();
+    vi.mocked(simulateWeek).mockResolvedValue(simulatedWeek(villageState));
+    const { invalidateQueries } = renderTown();
 
     fireEvent.click(await screen.findByRole("button", { name: "Simulate success" }));
 
     expect(await screen.findByRole("dialog")).toHaveTextContent("Welcome to Village");
     expect(screen.getByRole("dialog")).toHaveTextContent("+420 Coins");
     expect(screen.getByRole("dialog")).toHaveTextContent("Unlocked: Corner Bakery");
-    expect(screen.getByRole("dialog")).toHaveTextContent("Fixture fallback");
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["game-rewards"] });
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["dashboard"] });
   });
 
   it("moves for free and shows the original-price sale refund", async () => {
@@ -338,7 +316,23 @@ describe("town layout", () => {
 
     fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
     fireEvent.click(screen.getByRole("button", { name: "Sell" }));
-    await waitFor(() => expect(vi.mocked(sellBuilding).mock.calls[0]?.[0]).toBe(7));
+    await waitFor(() => expect(sellBuilding).toHaveBeenCalledWith(7, expect.anything()));
     expect(await screen.findByText("260")).toBeInTheDocument();
+  });
+
+  it("resets server state and refreshes dependent queries", async () => {
+    vi.mocked(getHealth).mockResolvedValue({
+      status: "ok",
+      data_mode: "fixture",
+      nessie_configured: false,
+      demo_controls_enabled: true,
+    });
+    const { invalidateQueries } = renderTown();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Reset town demo" }));
+
+    await waitFor(() => expect(resetDemo).toHaveBeenCalled());
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["game-rewards"] });
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["dashboard"] });
   });
 });
