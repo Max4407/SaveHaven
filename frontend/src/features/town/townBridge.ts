@@ -1,8 +1,13 @@
 import type { GameState } from "../../api/types";
 
+export const CATALOG_DRAG_TYPE = "application/x-savehaven-catalog-item";
+
 export type TownBridgeEvents = {
   cameraChanged: { zoom: number };
   buildingSelected: { buildingId: number };
+  catalogDragStarted: { catalogItemId: string };
+  catalogDragMoved: { catalogItemId: string; canvasX: number; canvasY: number };
+  catalogDropped: { catalogItemId: string; canvasX: number; canvasY: number };
   placementChanged: { active: boolean; valid: boolean; reason: string | null };
   placementConfirmed: {
     catalogItemId: string;

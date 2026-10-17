@@ -1,11 +1,15 @@
 // @vitest-environment jsdom
 
 import "@testing-library/jest-dom/vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { GameState, TownCatalog } from "../src/api/types";
 import { TownCanvas } from "../src/features/town/TownCanvas";
-import type { TownBridge } from "../src/features/town/townBridge";
+import {
+  CATALOG_DRAG_TYPE,
+  createTownBridge,
+  type TownBridge,
+} from "../src/features/town/townBridge";
 
 const mocks = vi.hoisted(() => ({
   destroy: vi.fn(),
@@ -69,10 +73,15 @@ const state: GameState = {
 
 describe("town canvas", () => {
   it("creates the active Phaser scene and destroys the game on unmount", () => {
-    const bridge = { emit: vi.fn(), subscribe: vi.fn() } as unknown as TownBridge;
-    const { unmount } = render(<TownCanvas bridge={bridge} catalog={catalog} state={state} />);
+    const bridge = {
+      emit: vi.fn(),
+      subscribe: vi.fn(() => vi.fn()),
+    } as unknown as TownBridge;
+    const { rerender, unmount } = render(
+      <TownCanvas bridge={bridge} catalog={catalog} state={state} />,
+    );
 
-    expect(screen.getByLabelText("Interactive town map")).toBeInTheDocument();
+    expect(screen.getByLabelText("Interactive town map and building drop area")).toBeInTheDocument();
     expect(mocks.sceneConstructor).toHaveBeenCalledWith(bridge, catalog.items, state);
     expect(mocks.gameConstructor).toHaveBeenCalledWith(expect.objectContaining({
       transparent: true,
@@ -80,7 +89,61 @@ describe("town canvas", () => {
       scale: expect.objectContaining({ mode: "RESIZE" }),
     }));
 
+    const updatedState = {
+      ...state,
+      wallet: { ...state.wallet, coin_balance: 200 },
+    };
+    rerender(<TownCanvas bridge={bridge} catalog={catalog} state={updatedState} />);
+    expect(mocks.gameConstructor).toHaveBeenCalledTimes(1);
+    expect(bridge.emit).toHaveBeenCalledWith("stateChanged", { state: updatedState });
+
     unmount();
     expect(mocks.destroy).toHaveBeenCalledWith(true);
+  });
+
+  it("translates catalog drag coordinates into typed scene events", () => {
+    const bridge = createTownBridge();
+    const moved = vi.fn();
+    const dropped = vi.fn();
+    bridge.subscribe("catalogDragMoved", moved);
+    bridge.subscribe("catalogDropped", dropped);
+    render(<TownCanvas bridge={bridge} catalog={catalog} state={state} />);
+    const canvas = screen.getByLabelText("Interactive town map and building drop area");
+    const data = new Map([[CATALOG_DRAG_TYPE, "woodshed_01"]]);
+    const dataTransfer = {
+      dropEffect: "none",
+      effectAllowed: "copy",
+      getData: (type: string) => data.get(type) ?? "",
+      setData: (type: string, value: string) => data.set(type, value),
+    } as unknown as DataTransfer;
+
+    bridge.emit("catalogDragStarted", { catalogItemId: "woodshed_01" });
+    const dragOver = new MouseEvent("dragover", {
+      bubbles: true,
+      cancelable: true,
+      clientX: 24,
+      clientY: 31,
+    });
+    Object.defineProperty(dragOver, "dataTransfer", { value: dataTransfer });
+    fireEvent(canvas, dragOver);
+    const drop = new MouseEvent("drop", {
+      bubbles: true,
+      cancelable: true,
+      clientX: 44,
+      clientY: 51,
+    });
+    Object.defineProperty(drop, "dataTransfer", { value: dataTransfer });
+    fireEvent(canvas, drop);
+
+    expect(moved).toHaveBeenCalledWith({
+      catalogItemId: "woodshed_01",
+      canvasX: 24,
+      canvasY: 31,
+    });
+    expect(dropped).toHaveBeenCalledWith({
+      catalogItemId: "woodshed_01",
+      canvasX: 44,
+      canvasY: 51,
+    });
   });
 });

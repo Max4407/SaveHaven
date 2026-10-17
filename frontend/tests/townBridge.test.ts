@@ -26,4 +26,22 @@ describe("town bridge", () => {
       gridY: 5,
     });
   });
+
+  it("carries server catalog ids and canvas coordinates through drag events", () => {
+    const bridge = createTownBridge();
+    const listener = vi.fn();
+    bridge.subscribe("catalogDropped", listener);
+
+    bridge.emit("catalogDropped", {
+      catalogItemId: "bakery_01",
+      canvasX: 320,
+      canvasY: 180,
+    });
+
+    expect(listener).toHaveBeenCalledWith({
+      catalogItemId: "bakery_01",
+      canvasX: 320,
+      canvasY: 180,
+    });
+  });
 });

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { DragEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
@@ -15,7 +16,7 @@ import {
 } from "../../api/game";
 import type { GameState, SimulatedWeek, TownCatalogItem } from "../../api/types";
 import { TownCanvas } from "./TownCanvas";
-import { createTownBridge } from "./townBridge";
+import { CATALOG_DRAG_TYPE, createTownBridge } from "./townBridge";
 
 type PlacementStatus = { active: boolean; valid: boolean; reason: string | null };
 
@@ -48,7 +49,6 @@ function TownPage() {
 
   const applyConfirmedState = (state: GameState) => {
     queryClient.setQueryData(["game-state"], state);
-    bridge.emit("stateChanged", { state });
     setActionError(null);
     setSelectedBuildingId(null);
   };
@@ -149,6 +149,15 @@ function TownPage() {
     bridge.emit("startPlacement", { catalogItemId: item.id });
   };
 
+  const beginCatalogDrag = (event: DragEvent<HTMLElement>, item: TownCatalogItem) => {
+    setSelectedBuildingId(null);
+    setActionError(null);
+    event.dataTransfer.effectAllowed = "copy";
+    event.dataTransfer.setData(CATALOG_DRAG_TYPE, item.id);
+    event.dataTransfer.setData("text/plain", item.id);
+    bridge.emit("catalogDragStarted", { catalogItemId: item.id });
+  };
+
   if (catalogQuery.isLoading || stateQuery.isLoading) {
     return <main className="status-page"><div className="status-card"><p>Preparing your town…</p></div></main>;
   }
@@ -169,13 +178,13 @@ function TownPage() {
   }
 
   return (
-    <main className="town-page">
+    <main className={`town-page${isSidebarOpen ? " sidebar-open" : ""}`}>
       <TownCanvas bridge={bridge} catalog={catalog} state={state} />
 
       {placement.active && (
         <div className={`placement-banner ${placement.valid ? "valid" : "invalid"}`} role="status">
           <strong>{placement.valid ? "Ready to place" : placement.reason}</strong>
-          <span>Click a highlighted tile to confirm.</span>
+          <span>Drop or click a highlighted cell to confirm.</span>
           <button type="button" onClick={() => bridge.emit("cancelPlacement", {})}>Cancel</button>
         </div>
       )}
@@ -209,6 +218,7 @@ function TownPage() {
           <span><i aria-hidden="true">↗</i><strong>{state.wallet.streak_weeks}</strong><small>Streak</small></span>
         </div>
 
+        <div className="town-catalog-body">
         <div className="sidebar-map-meta">
           <span className="map-status"><i /> {state.district.max_x - state.district.min_x + 1}×{state.district.max_y - state.district.min_y + 1} district</span>
           <span><strong>Drag</strong> to explore</span>
@@ -243,7 +253,7 @@ function TownPage() {
               <div><p className="eyebrow">Building catalog</p><h2>Build your haven</h2></div>
               <span className="preview-pill">Server verified</span>
             </div>
-            <p className="catalog-intro">Choose an unlocked building, then place its footprint on a green tile. Roads stay clear automatically.</p>
+            <p className="catalog-intro">Drag an unlocked building onto the grid, or use its place button. Roads stay clear automatically.</p>
 
             <div className="catalog-filters" aria-label="Catalog categories">
               {categories.map((itemCategory) => (
@@ -259,7 +269,17 @@ function TownPage() {
                 const unaffordable = item.cost_coins > state.wallet.coin_balance;
                 const disabled = levelLocked || unaffordable || isMutating;
                 return (
-                  <article className={`catalog-card${levelLocked ? " locked" : ""}`} key={item.id}>
+                  <article
+                    className={`catalog-card${levelLocked ? " locked" : ""}`}
+                    key={item.id}
+                    draggable={!disabled}
+                    onDragStart={(event) => beginCatalogDrag(event, item)}
+                    onDragEnd={(event) => {
+                      if (event.dataTransfer.dropEffect === "none") {
+                        bridge.emit("cancelPlacement", {});
+                      }
+                    }}
+                  >
                     <div className="catalog-art"><img src={item.asset} alt="" /></div>
                     <div className="catalog-card-copy">
                       <span className="level-pill">{levelLocked ? `Unlocks Level ${item.level_required}` : `${item.footprint.width}×${item.footprint.height}${item.landmark ? " landmark" : ""}`}</span>
@@ -293,6 +313,7 @@ function TownPage() {
             <button className="text-button" type="button" disabled={resetMutation.isPending} onClick={() => resetMutation.mutate()}>Reset town demo</button>
           </section>
         )}
+        </div>
       </aside>
 
       {celebration && (

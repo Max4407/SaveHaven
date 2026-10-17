@@ -41,18 +41,25 @@ vi.mock("../src/features/town/TownCanvas", async () => {
         buildingId?: number;
       } | null>(null);
       React.useEffect(() => {
-        const stopStart = bridge.subscribe("startPlacement", (detail) => {
+        const beginPlacement = (detail: { catalogItemId: string; buildingId?: number }) => {
           setRequest(detail);
           bridge.emit("placementChanged", { active: true, valid: true, reason: null });
-        });
+        };
+        const stopStart = bridge.subscribe("startPlacement", beginPlacement);
+        const stopCatalogDrag = bridge.subscribe("catalogDragStarted", beginPlacement);
         const stopCancel = bridge.subscribe("cancelPlacement", () => {
           setRequest(null);
           bridge.emit("placementChanged", { active: false, valid: false, reason: null });
         });
-        return () => { stopStart(); stopCancel(); };
+        return () => { stopStart(); stopCatalogDrag(); stopCancel(); };
       }, [bridge]);
       return (
         <div data-testid="town-canvas">
+          {state.buildings[0] ? (
+            <output data-testid="persisted-position">
+              {state.buildings[0].grid_x},{state.buildings[0].grid_y}
+            </output>
+          ) : null}
           {state.buildings[0] ? (
             <button type="button" onClick={() => bridge.emit("buildingSelected", {
               buildingId: state.buildings[0].id,
@@ -195,6 +202,8 @@ describe("town economy", () => {
     expect(within(sidebar).getByText("300")).toBeInTheDocument();
     expect(within(sidebar).getByText("Homestead")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Corner Bakery locked until level 2" })).toBeDisabled();
+    expect(screen.getByText("Village Woodshed").closest("article")).toHaveAttribute("draggable", "true");
+    expect(screen.getByText("Corner Bakery").closest("article")).toHaveAttribute("draggable", "false");
     expect(within(sidebar).getByRole("link", { name: "Open bank and goals" })).toHaveAttribute(
       "href",
       "/dashboard",
@@ -235,6 +244,37 @@ describe("town economy", () => {
       grid_y: 4,
     }, expect.anything()));
     expect(await screen.findByText("200")).toBeInTheDocument();
+  });
+
+  it("starts catalog drag placement without charging before the snapped drop is confirmed", async () => {
+    vi.mocked(buyBuilding).mockResolvedValue({
+      ...initialState,
+      wallet: { ...initialState.wallet, coin_balance: 200 },
+    });
+    renderTown();
+    const card = (await screen.findByText("Village Woodshed")).closest("article");
+    expect(card).not.toBeNull();
+    const setData = vi.fn();
+    const dataTransfer = {
+      effectAllowed: "none",
+      dropEffect: "none",
+      setData,
+      getData: vi.fn(),
+    } as unknown as DataTransfer;
+
+    fireEvent.dragStart(card!, { dataTransfer });
+
+    expect(setData).toHaveBeenCalledWith(
+      "application/x-savehaven-catalog-item",
+      "woodshed_01",
+    );
+    expect(buyBuilding).not.toHaveBeenCalled();
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
+    await waitFor(() => expect(buyBuilding).toHaveBeenCalledWith({
+      catalog_item_id: "woodshed_01",
+      grid_x: 4,
+      grid_y: 4,
+    }, expect.anything()));
   });
 
   it("cancels without charging and preserves confirmed state on server rejection", async () => {
@@ -318,6 +358,33 @@ describe("town economy", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sell" }));
     await waitFor(() => expect(sellBuilding).toHaveBeenCalledWith(7, expect.anything()));
     expect(await screen.findByText("260")).toBeInTheDocument();
+  });
+
+  it("keeps the last server-confirmed position when a snapped move is rejected", async () => {
+    const placedState: GameState = {
+      ...initialState,
+      buildings: [{
+        id: 7,
+        catalog_item_id: "woodshed_01",
+        grid_x: 5,
+        grid_y: 4,
+        purchase_price_coins: 100,
+        purchased_at: "2026-10-17T12:00:00Z",
+        updated_at: "2026-10-17T12:00:00Z",
+      }],
+    };
+    vi.mocked(getGameState).mockResolvedValue(placedState);
+    vi.mocked(moveBuilding).mockRejectedValue(
+      new ApiError(409, "Town roads must remain clear.", "infrastructure_reserved"),
+    );
+    renderTown();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
+    fireEvent.click(screen.getByRole("button", { name: "Move free" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Town roads must remain clear");
+    expect(screen.getByTestId("persisted-position")).toHaveTextContent("5,4");
   });
 
   it("resets server state and refreshes dependent queries", async () => {

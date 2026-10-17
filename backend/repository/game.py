@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from models import GameWallet, PlacedBuilding, PlanPeriodEvaluation, RewardEvent
@@ -24,23 +25,30 @@ def ensure_wallet(session: Session, user_id: str) -> GameWallet:
         created_at=now,
         updated_at=now,
     )
-    session.add(wallet)
-    session.add(
-        RewardEvent(
-            user_id=user_id,
-            plan_period_id=None,
-            source_key="starter",
-            reward_type="starter_grant",
-            coins_awarded=STARTER_COINS,
-            xp_awarded=0,
-            previous_level=1,
-            new_level=1,
-            streak_weeks=0,
-            explanation="A starter grant lets every new haven place its first building.",
-            created_at=now,
-        )
-    )
-    session.flush()
+    try:
+        with session.begin_nested():
+            session.add(wallet)
+            session.add(
+                RewardEvent(
+                    user_id=user_id,
+                    plan_period_id=None,
+                    source_key="starter",
+                    reward_type="starter_grant",
+                    coins_awarded=STARTER_COINS,
+                    xp_awarded=0,
+                    previous_level=1,
+                    new_level=1,
+                    streak_weeks=0,
+                    explanation="A starter grant lets every new haven place its first building.",
+                    created_at=now,
+                )
+            )
+            session.flush()
+    except IntegrityError:
+        concurrent_wallet = session.get(GameWallet, user_id)
+        if concurrent_wallet is None:
+            raise
+        return concurrent_wallet
     return wallet
 
 
