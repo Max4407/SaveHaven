@@ -44,6 +44,19 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+      - name: Verify Linux native dependency locks
+        run: |
+          node -e '
+            const packages = require("./package-lock.json").packages;
+            const required = [
+              "node_modules/@rolldown/binding-linux-x64-gnu",
+              "node_modules/@tailwindcss/oxide-linux-x64-gnu",
+            ];
+            const missing = required.filter((name) => !packages[name]);
+            if (missing.length > 0) {
+              throw new Error(`Missing Linux optional dependencies: ${missing.join(", ")}`);
+            }
+          '
       - run: npm ci
       - run: npm run lint
       - run: npm test
