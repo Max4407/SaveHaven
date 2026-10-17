@@ -319,7 +319,7 @@ A decorative item is defined by asset and metadata rather than a unique code pat
   "id": "bakery_01",
   "name": "Corner Bakery",
   "category": "shops",
-  "asset": "/assets/town/buildings/bakery-01.png",
+  "asset": "/houses-pack/small/bakery/bakery_1_new.png",
   "cost": 450,
   "levelRequired": 2,
   "footprint": { "width": 2, "height": 2 },
@@ -329,6 +329,29 @@ A decorative item is defined by asset and metadata rather than a unique code pat
 ```
 
 Suggested categories are houses, shops, civic buildings, parks and trees, roads and paths, small decorations, and landmarks.
+
+### Asset organization
+
+`frontend/Assets/` is the canonical location for game and font assets. The existing pack structure remains intact:
+
+```text
+frontend/Assets/
+├── fonts/
+│   └── gothic_pixel/
+├── ForestVegetation/
+├── free_grass/
+└── houses-pack/
+    ├── manifest.json
+    ├── README.txt
+    ├── small/
+    └── large/
+```
+
+Vite should be configured with `publicDir: "Assets"`. Phaser can then load assets using root-relative URLs such as `/houses-pack/small/cottage/cottage_1_new.png`. Do not maintain a second copy under `frontend/public/` or in a repository-level asset directory.
+
+The vendor `houses-pack/manifest.json` remains unchanged and supplies kind, group, variant, condition, file, and pivot information. SaveHaven-specific data such as price, footprint, unlock level, and Town XP belongs in the application catalog under `frontend/src/features/town/catalog/`.
+
+Existing vendor folder and file names are preserved even when they do not match project naming conventions. New project-owned assets should use lowercase kebab-case names.
 
 ### Placement
 
@@ -347,12 +370,12 @@ React owns page layout, catalog panels, wallet display, and messages. Phaser own
 
 ### Asset workflow
 
-1. Confirm asset-pack license and projection style.
-2. Select the first 12–20 buildings before bulk import.
-3. Normalize filenames, scale, transparent padding, anchors, and footprints.
+1. Confirm each asset pack's license and projection style, and retain its license or README file.
+2. Select the first 12–20 buildings for the SaveHaven catalog without moving or renaming the underlying vendor files.
+3. Record scale, transparent padding, anchor, footprint, price, unlock level, and Town XP in SaveHaven catalog metadata.
 4. Test five representative items: small, large, tall, wide, and transparent decoration.
 5. Expand the catalog only after purchasing, placement, and persistence work end to end.
-6. Compress runtime assets if page load becomes slow.
+6. Preload only catalog-selected assets. Optimize files later only if measured page-load or rendering performance requires it.
 
 Initial unlocks:
 

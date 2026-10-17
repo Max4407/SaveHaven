@@ -1,23 +1,11 @@
 {
-  "name": "savehaven-frontend",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "test": "vitest run"
-  },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-query": "^5.104.3",
     "phaser": "^4.2.1",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.4",
     "recharts": "^3.10.1",
-    "tailwindcss": "^4.3.3",
-    "vite": "^8.3.4"
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.1",
