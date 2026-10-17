@@ -1,5 +1,11 @@
+import type { BuildingId } from "./catalog/buildingCatalog";
+
 export type TownBridgeEvents = {
   cameraChanged: { zoom: number };
+  buildingDragStarted: { buildingId: BuildingId };
+  buildingDragMoved: { screenX: number; screenY: number };
+  buildingDragEnded: Record<string, never>;
+  buildingDropped: { buildingId: BuildingId; screenX: number; screenY: number };
 };
 
 export type TownBridge = {
