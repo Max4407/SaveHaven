@@ -43,16 +43,16 @@ function TownPage() {
         <header className="town-sidebar-header">
           <span className="page-mark" aria-hidden="true">S</span>
           <div>
-            <p className="eyebrow">Town level 2</p>
-            <h1>Riverside Valley</h1>
-            <p>Your savings are building something beautiful.</p>
+            <p className="eyebrow">Town preview</p>
+            <h1>Your future haven</h1>
+            <p>Explore the canvas while server-owned game state is being built.</p>
           </div>
         </header>
 
         <div className="town-resources" aria-label="Town resources">
-          <span><i aria-hidden="true">◆</i><strong>640</strong><small>Coins</small></span>
-          <span><i aria-hidden="true">✦</i><strong>740</strong><small>XP</small></span>
-          <span><i aria-hidden="true">↗</i><strong>3</strong><small>Weeks</small></span>
+          <span><i aria-hidden="true">◆</i><strong>—</strong><small>Coins</small></span>
+          <span><i aria-hidden="true">✦</i><strong>—</strong><small>XP</small></span>
+          <span><i aria-hidden="true">↗</i><strong>—</strong><small>Weeks</small></span>
         </div>
 
         <div className="sidebar-map-meta">
@@ -64,9 +64,9 @@ function TownPage() {
 
         <div className="catalog-heading">
           <div><p className="eyebrow">Building catalog</p><h2>Build your haven</h2></div>
-          <span className="coin-balance"><i aria-hidden="true">◆</i> 640</span>
+          <span className="preview-pill">Preview</span>
         </div>
-        <p className="catalog-intro">Choose a building to preview it on the map. Your wallet is always verified by the server before purchase.</p>
+        <p className="catalog-intro">Catalog art is available for review. Purchases stay disabled until the game APIs provide an authoritative wallet and inventory.</p>
 
         <div className="catalog-filters" aria-label="Catalog categories">
           <button className="active" type="button">All</button>
@@ -89,9 +89,8 @@ function TownPage() {
         </div>
 
         <div className="catalog-status">
-          <div className="catalog-status-heading"><span>Next unlock</span><strong>260 XP to go</strong></div>
-          <div className="level-track" aria-label="740 of 1000 experience points"><span style={{ width: "74%" }} /></div>
-          <p>Reach level 3 to unlock parks and civic buildings.</p>
+          <div className="catalog-status-heading"><span>Game API status</span><strong>Not implemented</strong></div>
+          <p>The current backend supports authentication, demo bank connection, synchronization, and the finance dashboard.</p>
         </div>
       </aside>
     </main>

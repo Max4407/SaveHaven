@@ -33,17 +33,17 @@ def build_dashboard(session: Session, *, user_id: str) -> DashboardResponse:
     income_cents = sum(
         transaction.signed_amount_cents
         for transaction in recent_period
-        if transaction.signed_amount_cents > 0
+        if transaction.signed_amount_cents > 0 and transaction.kind != "transfer"
     )
     spending_cents = -sum(
         transaction.signed_amount_cents
         for transaction in recent_period
-        if transaction.signed_amount_cents < 0
+        if transaction.signed_amount_cents < 0 and transaction.kind != "transfer"
     )
 
     category_totals: defaultdict[str, int] = defaultdict(int)
     for transaction in recent_period:
-        if transaction.signed_amount_cents < 0:
+        if transaction.signed_amount_cents < 0 and transaction.kind != "transfer":
             category_totals[transaction.category] += -transaction.signed_amount_cents
 
     checking_balance = sum(

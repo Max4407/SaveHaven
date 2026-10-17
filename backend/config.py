@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     nessie_allow_fixture_fallback: bool = True
     nessie_timeout_seconds: float = 10.0
     nessie_fixture_path: Path = REPOSITORY_ROOT / "data" / "fixtures" / "nessie_profiles.json"
+    frontend_dist_path: Path = REPOSITORY_ROOT / "frontend" / "dist"
 
     @model_validator(mode="after")
     def validate_production_security(self) -> "Settings":

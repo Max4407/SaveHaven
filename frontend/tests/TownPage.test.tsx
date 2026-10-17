@@ -17,8 +17,9 @@ describe("town layout", () => {
 
     const sidebar = screen.getByLabelText("Building catalog");
     expect(sidebar).toHaveClass("open");
-    expect(within(sidebar).getByText("Riverside Valley")).toBeInTheDocument();
+    expect(within(sidebar).getByText("Your future haven")).toBeInTheDocument();
     expect(within(sidebar).getByText("Coins")).toBeInTheDocument();
+    expect(within(sidebar).getByText("Not implemented")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Collapse town sidebar" }));
 

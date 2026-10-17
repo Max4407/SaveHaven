@@ -9,6 +9,7 @@ from api.auth import router as auth_router
 from api.bank_connections import router as bank_connections_router
 from api.dashboard import router as dashboard_router
 from api.demo import router as demo_router
+from api.frontend import create_frontend_router
 from api.health import router as health_router
 from auth import SessionManager
 from config import Settings, get_settings
@@ -64,6 +65,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(demo_router)
     app.include_router(bank_connections_router)
     app.include_router(dashboard_router)
+    app.include_router(create_frontend_router(resolved_settings.frontend_dist_path))
     return app
 
 

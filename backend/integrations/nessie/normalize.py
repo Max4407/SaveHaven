@@ -2,6 +2,7 @@ from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
+from integrations.nessie.description_metadata import parse_description
 from schemas import FinancialSnapshot, SnapshotAccount, SnapshotTransaction
 
 
@@ -66,6 +67,11 @@ def normalize_nessie_snapshot(
                     record.get("amount", record.get("payment_amount", 0))
                 )
                 signed_amount_cents = amount_cents if direction == "inflow" else -amount_cents
+                description_metadata = parse_description(
+                    str(record.get("description") or record.get("medium") or kind),
+                    default_kind=kind,
+                    default_category=_default_category(kind, direction),
+                )
                 source_id = str(record.get("_id") or record.get("id") or "")
                 if not source_id:
                     source_id = f"{kind}-{account_id}-{occurred_at.isoformat()}-{amount_cents}"
@@ -77,10 +83,10 @@ def normalize_nessie_snapshot(
                         occurred_at=occurred_at,
                         signed_amount_cents=signed_amount_cents,
                         direction=direction,
-                        kind=kind,
-                        merchant_name=None,
-                        category=_default_category(kind, direction),
-                        description=str(record.get("description") or record.get("medium") or kind),
+                        kind=description_metadata.kind,
+                        merchant_name=description_metadata.merchant_name,
+                        category=description_metadata.category,
+                        description=description_metadata.description,
                     )
                 )
 
