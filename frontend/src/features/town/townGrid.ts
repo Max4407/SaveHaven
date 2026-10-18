@@ -1,7 +1,7 @@
 import type { GameState, TownCatalogItem } from "../../api/types";
 
-export const TOWN_WORLD_WIDTH = 2400;
-export const TOWN_WORLD_HEIGHT = 1510;
+export const TOWN_WORLD_WIDTH = 3650;
+export const TOWN_WORLD_HEIGHT = 2296;
 export const TOWN_WORLD_LEFT = -TOWN_WORLD_WIDTH / 2;
 export const TOWN_WORLD_TOP = -TOWN_WORLD_HEIGHT / 2;
 export const TOWN_GRID_SIZE = 16;
@@ -17,6 +17,11 @@ const TOWN_GRID_TOP = -GRID_CENTER_SPAN_Y / 2;
 
 export type GridPosition = { x: number; y: number };
 export type PlacementValidation = { valid: boolean; reason: string | null };
+export type TownPlacementMode = "click" | "catalog-drag" | "building-drag";
+
+export function shouldShowPlacementGrid(mode: TownPlacementMode): boolean {
+  return mode === "catalog-drag" || mode === "building-drag";
+}
 
 function isOffsetRow(row: number) {
   return Math.abs(row % 2) === 1;
@@ -104,21 +109,6 @@ export function validateTownPlacement(
     return x < 0 || x >= TOWN_GRID_SIZE || y < 0 || y >= TOWN_GRID_SIZE;
   })) {
     return { valid: false, reason: "That footprint extends beyond the town map" };
-  }
-
-  const district = state.district;
-  if ([...cells].some((key) => {
-    const [x, y] = key.split(":").map(Number);
-    return x < district.min_x || x > district.max_x || y < district.min_y || y > district.max_y;
-  })) {
-    return { valid: false, reason: "Outside the unlocked district" };
-  }
-
-  const reserved = new Set(
-    state.infrastructure.reserved_cells.map((cell) => `${cell.x}:${cell.y}`),
-  );
-  if ([...cells].some((cell) => reserved.has(cell))) {
-    return { valid: false, reason: "The town route must remain clear" };
   }
 
   const occupied = new Set<string>();

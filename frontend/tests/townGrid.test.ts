@@ -6,6 +6,7 @@ import {
   buildingWorldPosition,
   clampGridPosition,
   gridToWorld,
+  shouldShowPlacementGrid,
   TOWN_GRID_SIZE,
   validateTownPlacement,
   worldToGrid,
@@ -92,7 +93,13 @@ describe("town grid", () => {
     expect(buildingDisplayWidth(threeCellItem)).toBe(510);
   });
 
-  it("mirrors backend bounds, district, road, collision, and move rules", () => {
+  it("shows the placement grid only during drag-and-drop", () => {
+    expect(shouldShowPlacementGrid("catalog-drag")).toBe(true);
+    expect(shouldShowPlacementGrid("building-drag")).toBe(true);
+    expect(shouldShowPlacementGrid("click")).toBe(false);
+  });
+
+  it("keeps map bounds and collision rules without district or road restrictions", () => {
     const catalog = [oneCellItem];
 
     expect(validateTownPlacement(initialState, catalog, oneCellItem, -1, 4)).toEqual({
@@ -100,12 +107,12 @@ describe("town grid", () => {
       reason: "That footprint extends beyond the town map",
     });
     expect(validateTownPlacement(initialState, catalog, oneCellItem, 3, 4)).toEqual({
-      valid: false,
-      reason: "Outside the unlocked district",
+      valid: true,
+      reason: null,
     });
     expect(validateTownPlacement(initialState, catalog, oneCellItem, 7, 7)).toEqual({
-      valid: false,
-      reason: "The town route must remain clear",
+      valid: true,
+      reason: null,
     });
     expect(validateTownPlacement(initialState, catalog, oneCellItem, 5, 5)).toEqual({
       valid: false,

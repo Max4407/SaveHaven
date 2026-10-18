@@ -64,9 +64,26 @@ def test_failed_mutations_return_structured_conflicts_without_charging(
 
     assert locked.status_code == 409
     assert locked.json()["detail"]["code"] == "level_locked"
-    assert outside.json()["detail"]["code"] == "outside_unlocked_district"
+    assert outside.json()["detail"]["code"] == "outside_town_map"
     assert state.json()["wallet"]["coin_balance"] == 300
     assert state.json()["buildings"] == []
+
+
+def test_purchase_accepts_former_district_and_road_cells(
+    logged_in_client: TestClient,
+) -> None:
+    outside_former_district = logged_in_client.post(
+        "/api/game/buildings",
+        json={"catalog_item_id": "woodshed_01", "grid_x": 3, "grid_y": 4},
+    )
+    on_former_road = logged_in_client.post(
+        "/api/game/buildings",
+        json={"catalog_item_id": "woodshed_01", "grid_x": 7, "grid_y": 5},
+    )
+
+    assert outside_former_district.status_code == 201
+    assert on_former_road.status_code == 201
+    assert len(on_former_road.json()["buildings"]) == 2
 
 
 def test_buildings_are_not_accessible_across_users(logged_in_client: TestClient) -> None:

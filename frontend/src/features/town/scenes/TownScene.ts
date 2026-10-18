@@ -5,6 +5,7 @@ import {
   buildingGridPosition,
   buildingWorldPosition,
   gridToWorld,
+  shouldShowPlacementGrid,
   TOWN_GRID_CELL_HEIGHT,
   TOWN_GRID_CELL_WIDTH,
   TOWN_GRID_SIZE,
@@ -14,15 +15,16 @@ import {
   TOWN_WORLD_WIDTH,
   validateTownPlacement,
   worldToGrid,
+  type TownPlacementMode,
 } from "../townGrid";
 import type { TownBridge } from "../townBridge";
+import { generatePerimeterTrees } from "../perimeterTrees";
 
-const MIN_CAMERA_ZOOM = 0.55;
+const MIN_CAMERA_ZOOM = 0.4;
 const DEFAULT_CAMERA_ZOOM = 1.1;
 const MAX_CAMERA_ZOOM = 1.45;
-const GRASS_BACKGROUND_URL = "/smaller_grass_bg.png";
-
-type PlacementMode = "click" | "catalog-drag" | "building-drag";
+const GRASS_BACKGROUND_URL = "/patches_bg.png";
+const TREE_VARIANTS = [1, 2, 3, 4] as const;
 
 type Placement = {
   catalogItemId: string;
@@ -31,7 +33,7 @@ type Placement = {
   gridY: number;
   valid: boolean;
   reason: string | null;
-  mode: PlacementMode;
+  mode: TownPlacementMode;
 };
 
 type BuildingDisplay = {
@@ -65,6 +67,9 @@ export class TownScene extends Phaser.Scene {
 
   preload() {
     this.load.image("grass-background", GRASS_BACKGROUND_URL);
+    TREE_VARIANTS.forEach((variant) => {
+      this.load.image(`tree-${variant}`, `/tree${variant}.png`);
+    });
     this.catalog.forEach((item) => {
       this.load.image(`building-${item.id}`, item.asset);
       this.load.image(`shadow-${item.id}`, item.shadow_asset);
@@ -160,6 +165,14 @@ export class TownScene extends Phaser.Scene {
       }
     }
     this.mapLayer?.add([background, terrain]);
+    const trees = generatePerimeterTrees(TOWN_WORLD_WIDTH, TOWN_WORLD_HEIGHT).map((tree) => (
+      this.add.image(tree.x, tree.y, `tree-${tree.variant}`)
+        .setScale(tree.scale)
+        .setFlipX(tree.flipX)
+        .setDepth(tree.y)
+    ));
+    this.mapLayer?.add([background, ...trees]);
+    this.mapLayer?.sort("depth");
   }
 
   private drawBuilding(building: PlacedBuilding) {
@@ -188,7 +201,7 @@ export class TownScene extends Phaser.Scene {
 
   private startPlacement(
     detail: { catalogItemId: string; buildingId?: number },
-    mode: PlacementMode,
+    mode: TownPlacementMode,
   ) {
     if (this.interactionLocked) return;
     const item = this.catalog.find((candidate) => candidate.id === detail.catalogItemId);
@@ -201,8 +214,8 @@ export class TownScene extends Phaser.Scene {
     this.placement = {
       catalogItemId: detail.catalogItemId,
       buildingId: detail.buildingId,
-      gridX: existing?.grid_x ?? this.state.district.min_x,
-      gridY: existing?.grid_y ?? this.state.district.min_y,
+      gridX: existing?.grid_x ?? Math.floor((TOWN_GRID_SIZE - item.footprint.width) / 2),
+      gridY: existing?.grid_y ?? Math.floor((TOWN_GRID_SIZE - item.footprint.height) / 2),
       valid: false,
       reason: null,
       mode,
@@ -267,6 +280,18 @@ export class TownScene extends Phaser.Scene {
     this.placement.reason = result.reason;
     this.previewLayer?.destroy(true);
     this.previewLayer = this.add.container(0, 0).setDepth(100_000);
+
+    if (shouldShowPlacementGrid(this.placement.mode)) {
+      const grid = this.add.graphics();
+      grid.lineStyle(2, 0x143f26, 0.72);
+      for (let row = 0; row < TOWN_GRID_SIZE; row += 1) {
+        for (let column = 0; column < TOWN_GRID_SIZE; column += 1) {
+          const position = gridToWorld(column, row);
+          grid.strokePoints(this.diamond(position.x, position.y), true);
+        }
+      }
+      this.previewLayer.add(grid);
+    }
 
     const footprint = this.add.graphics();
     for (let x = this.placement.gridX; x < this.placement.gridX + item.footprint.width; x += 1) {

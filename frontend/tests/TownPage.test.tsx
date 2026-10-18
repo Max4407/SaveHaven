@@ -423,7 +423,7 @@ describe("town economy", () => {
     expect(await screen.findByText("260")).toBeInTheDocument();
   });
 
-  it("keeps the last server-confirmed position when a snapped move is rejected", async () => {
+  it("keeps the last server-confirmed position when an occupied move is rejected", async () => {
     const placedState: GameState = {
       ...initialState,
       buildings: [{
@@ -438,7 +438,7 @@ describe("town economy", () => {
     };
     vi.mocked(getGameState).mockResolvedValue(placedState);
     vi.mocked(moveBuilding).mockRejectedValue(
-      new ApiError(409, "Town roads must remain clear.", "infrastructure_reserved"),
+      new ApiError(409, "Another building already occupies that space.", "occupied"),
     );
     renderTown();
 
@@ -446,7 +446,7 @@ describe("town economy", () => {
     fireEvent.click(screen.getByRole("button", { name: "Move" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Town roads must remain clear");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Another building already occupies");
     expect(screen.getByTestId("persisted-position")).toHaveTextContent("5,4");
   });
 

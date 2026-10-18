@@ -251,7 +251,7 @@ function TownPage() {
 
         <div className="town-catalog-body">
         <div className="sidebar-map-meta">
-          <span className="map-status"><i /> {state.district.max_x - state.district.min_x + 1}×{state.district.max_y - state.district.min_y + 1} district</span>
+          <span className="map-status"><i /> Town map ready</span>
           <span><strong>Drag</strong> to explore</span>
           <span><strong>Scroll</strong> to zoom</span>
           <span className="zoom-value">{zoom}%</span>
@@ -284,7 +284,7 @@ function TownPage() {
               <div><p className="eyebrow">Building catalog</p><h2>Build your haven</h2></div>
               <span className="preview-pill">Server verified</span>
             </div>
-            <p className="catalog-intro">Drag an unlocked building onto the grid, or use its place button.</p>
+            <p className="catalog-intro">Drag an unlocked building onto the grass, or use its place button.</p>
 
             <div className="catalog-filters" aria-label="Catalog categories">
               {categories.map((itemCategory) => (
