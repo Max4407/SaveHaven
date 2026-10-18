@@ -51,6 +51,9 @@ def test_create_schema_adds_building_presentation_to_an_existing_sqlite_town(
     assert columns["facing"][3] == 1
     assert columns["visual_variant"][3] == 1
     assert facing == "left"
+    assert visual_variant == 0
+
+
 def test_schema_upgrade_preserves_existing_goal_and_records_its_savings_baseline(
     tmp_path: Path,
 ) -> None:

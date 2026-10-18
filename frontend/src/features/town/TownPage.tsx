@@ -21,6 +21,7 @@ import type {
   SimulatedWeek,
   TownCatalogItem,
 } from "../../api/types";
+import { foodFramePosition, randomFoodFrame } from "./objects/food";
 import { usePlacementSound } from "./usePlacementSound";
 import { TownMusic } from "./TownMusic";
 import { TownCanvas } from "./TownCanvas";
@@ -210,6 +211,19 @@ function TownPage() {
       setSelectedCharacter(null);
       setIsSidebarOpen(true);
     });
+    const unsubscribeCharacter = bridge.subscribe(
+      "characterSelectionChanged",
+      ({ character }) => {
+        setSelectedCharacter(character);
+        if (character) {
+          setSelectedBuildingId(null);
+          setIsSidebarOpen(true);
+        }
+      },
+    );
+    const unsubscribeFood = bridge.subscribe("foodConsumed", ({ buildingId }) => {
+      consumeFoodMutation.mutate(buildingId);
+    });
     const unsubscribeDeselection = bridge.subscribe("buildingDeselected", () => {
       setSelectedBuildingId(null);
     });
@@ -240,6 +254,8 @@ function TownPage() {
     });
     return () => {
       unsubscribeSelection();
+      unsubscribeCharacter();
+      unsubscribeFood();
       unsubscribeDeselection();
       unsubscribePlacement();
       unsubscribeConfirmation();
