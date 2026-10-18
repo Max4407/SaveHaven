@@ -9,6 +9,7 @@ import { ApiError } from "../src/api/client";
 import { getHealth } from "../src/api/finance";
 import {
   buyBuilding,
+  buyRoads,
   consumeFood,
   getGameRewards,
   getGameState,
@@ -40,6 +41,7 @@ vi.mock("../src/features/town/TownMusic", () => ({ TownMusic: () => null }));
 vi.mock("../src/api/finance", () => ({ getHealth: vi.fn() }));
 vi.mock("../src/api/game", () => ({
   buyBuilding: vi.fn(),
+  buyRoads: vi.fn(),
   consumeFood: vi.fn(),
   getGameRewards: vi.fn(),
   getGameState: vi.fn(),
@@ -287,6 +289,7 @@ beforeEach(() => {
     demo_controls_enabled: false,
   });
   vi.mocked(moveBuilding).mockResolvedValue(initialState);
+  vi.mocked(buyRoads).mockResolvedValue(initialState);
   vi.mocked(consumeFood).mockResolvedValue(initialState);
   vi.mocked(sellBuilding).mockResolvedValue(initialState);
   vi.mocked(simulateWeek).mockRejectedValue(new Error("not used"));
@@ -299,6 +302,48 @@ afterEach(() => {
 });
 
 describe("town economy", () => {
+  it("reviews and submits one atomic multi-road purchase", async () => {
+    let resolve!: (state: GameState) => void;
+    vi.mocked(buyRoads).mockImplementationOnce(() => new Promise((yes) => { resolve = yes; }));
+    renderTown();
+    await screen.findByRole("button", { name: "Place Village Woodshed" });
+    const bridge = canvasBridge.current!;
+    const confirm = bridge.subscribe("confirmRoadPlacement", () => {
+      bridge.emit("roadPlacementConfirmed", {
+        catalogItemId: "dirt_road_01",
+        startX: 4,
+        startY: 4,
+        endX: 7,
+        endY: 10,
+        shape: "line",
+      });
+    });
+    act(() => bridge.emit("placementChanged", {
+      active: true,
+      valid: true,
+      reason: null,
+      roads: { width: 4, height: 7, count: 7, cost: 7, ready: true, shape: "line" },
+    }));
+    expect(screen.getByRole("status")).toHaveTextContent("Line · 7 new tiles · 7 Coins");
+    expect(screen.getByRole("button", { name: "Line" })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByRole("button", { name: "Place roads" }));
+    await waitFor(() => expect(buyRoads).toHaveBeenCalledWith({
+      catalog_item_id: "dirt_road_01",
+      start_x: 4,
+      start_y: 4,
+      end_x: 7,
+      end_y: 10,
+      shape: "line",
+    }, expect.anything()));
+    expect(buyBuilding).not.toHaveBeenCalled();
+    await act(async () => resolve({
+      ...initialState,
+      wallet: { ...initialState.wallet, coin_balance: 293 },
+    }));
+    expect(await screen.findByText("293")).toBeInTheDocument();
+    confirm();
+  });
+
   it("returns to the catalog when a move is canceled without submitting or changing the saved position", async () => {
     vi.mocked(getGameState).mockResolvedValue({ ...initialState, buildings: [{
       id: 7, catalog_item_id: "woodshed_01", grid_x: 5, grid_y: 4,

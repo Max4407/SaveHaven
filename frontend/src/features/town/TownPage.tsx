@@ -6,6 +6,7 @@ import { ApiError } from "../../api/client";
 import { getHealth } from "../../api/finance";
 import {
   buyBuilding,
+  buyRoads,
   consumeFood,
   getGameRewards,
   getGameState,
@@ -34,7 +35,19 @@ import {
   type CharacterDetails,
 } from "./townBridge";
 
-type PlacementStatus = { active: boolean; valid: boolean; reason: string | null };
+type PlacementStatus = {
+  active: boolean;
+  valid: boolean;
+  reason: string | null;
+  roads?: {
+    width: number;
+    height: number;
+    count: number;
+    cost: number;
+    ready: boolean;
+    shape: "line" | "rectangle";
+  };
+};
 
 const DAILY_FEEDING_MESSAGE_KEY = "savehaven-daily-feeding-message";
 
@@ -165,6 +178,15 @@ function TownPage() {
     onError: (error) => setActionError(mutationMessage(error)),
     onSettled: finishAction,
   });
+  const roadMutation = useMutation({
+    mutationFn: buyRoads,
+    onSuccess: (state) => {
+      applyConfirmedState(state);
+      placementSoundPending.current = true;
+    },
+    onError: (error) => setActionError(mutationMessage(error)),
+    onSettled: finishAction,
+  });
   const moveMutation = useMutation({
     mutationFn: ({ buildingId, gridX, gridY, facing }: {
       buildingId: number;
@@ -275,6 +297,19 @@ function TownPage() {
         }
       });
     });
+    const unsubscribeRoadPlacement = bridge.subscribe("roadPlacementConfirmed", (detail) => {
+      startAction(() => {
+        setActionError(null);
+        roadMutation.mutate({
+          catalog_item_id: detail.catalogItemId,
+          start_x: detail.startX,
+          start_y: detail.startY,
+          end_x: detail.endX,
+          end_y: detail.endY,
+          shape: detail.shape,
+        });
+      });
+    });
     return () => {
       unsubscribeSelection();
       unsubscribeCharacter();
@@ -282,12 +317,14 @@ function TownPage() {
       unsubscribeDeselection();
       unsubscribePlacement();
       unsubscribeConfirmation();
+      unsubscribeRoadPlacement();
     };
   }, [
     bridge,
     consumeFoodMutation,
     purchaseMutation,
     moveMutation,
+    roadMutation,
     startAction,
   ]);
 
@@ -301,7 +338,7 @@ function TownPage() {
   ) ?? [];
   const latestReward = rewardsQuery.data?.rewards.find((reward) => reward.reward_type === "weekly_plan");
   const isMutating = purchaseMutation.isPending || moveMutation.isPending || sellMutation.isPending
-    || simulateMutation.isPending || resetMutation.isPending;
+    || roadMutation.isPending || simulateMutation.isPending || resetMutation.isPending;
   const loadError = catalogQuery.error ?? stateQuery.error;
 
   const beginPurchase = (item: TownCatalogItem) => {
@@ -372,9 +409,23 @@ function TownPage() {
       <TownMusic />
 
       {placement.active && (
-        <div className={`placement-banner ${placement.valid ? "valid" : "invalid"}`} role="status">
+        <div className={`placement-banner ${placement.valid ? "valid" : "invalid"}${placement.roads ? " road-placement" : ""}`} role="status">
           <span className="pixel-placement-icon" aria-hidden="true">{placement.valid ? "OK" : "!"}</span>
-          <strong>{placement.valid ? "Ready to place" : placement.reason === "That footprint extends beyond the town map" ? "Too Far!" : placement.reason}</strong>
+          <div className="placement-copy">
+            <strong>{placement.valid ? "Ready to place" : placement.reason === "That footprint extends beyond the town map" ? "Too Far!" : placement.reason}</strong>
+            {placement.roads && <span>{placement.roads.ready
+              ? `${placement.roads.shape === "line" ? "Line" : `${placement.roads.width}×${placement.roads.height}`} · ${placement.roads.count} new tiles · ${placement.roads.cost} Coins`
+              : placement.roads.shape === "line"
+                ? "Drag a straight road line and release to review."
+                : "Drag across the grid to fill an area."}</span>}
+          </div>
+          {placement.roads && (
+            <div className="road-shape-options" role="group" aria-label="Road shape">
+              <button type="button" aria-pressed={placement.roads.shape === "line"} onClick={() => bridge.emit("setRoadShape", { shape: "line" })}>Line</button>
+              <button type="button" aria-pressed={placement.roads.shape === "rectangle"} onClick={() => bridge.emit("setRoadShape", { shape: "rectangle" })}>Area</button>
+            </div>
+          )}
+          {placement.roads && <button className="road-confirm-button" type="button" disabled={!placement.valid || !placement.roads.ready || isMutating} onClick={() => bridge.emit("confirmRoadPlacement", {})}>Place roads</button>}
           <button type="button" onClick={() => bridge.emit("cancelPlacement", {})}>Cancel</button>
         </div>
       )}
@@ -494,7 +545,7 @@ function TownPage() {
               <h2>Building catalog</h2>
               <span className="preview-pill">Server verified</span>
             </div>
-            <p className="catalog-intro">Drag a building onto the grid, or click + and then click a green highlighted cell to place it.</p>
+            <p className="catalog-intro">Drag a building onto the grid, or click + and then click a green highlighted cell to place it. For roads, click + and drag a line; choose Area to fill a rectangle.</p>
 
             <div className="building-facing-picker" aria-label="New building facing">
               <span>Facing</span>

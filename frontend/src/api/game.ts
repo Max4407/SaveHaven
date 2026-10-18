@@ -32,6 +32,20 @@ export function buyBuilding(input: {
   });
 }
 
+export function buyRoads(input: {
+  catalog_item_id: string;
+  start_x: number;
+  start_y: number;
+  end_x: number;
+  end_y: number;
+  shape: "line" | "rectangle";
+}): Promise<GameState> {
+  return apiRequest<GameState>("/api/game/roads/batch", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
 export function moveBuilding(
   buildingId: number,
   input: { grid_x: number; grid_y: number; facing?: BuildingFacing },

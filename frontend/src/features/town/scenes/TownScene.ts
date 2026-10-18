@@ -39,6 +39,7 @@ import {
   type AmbientCharacterVariant,
 } from "../objects/ambientCharacters";
 import { FOOD_FRAME_SIZE, randomFoodFrame } from "../objects/food";
+import { roadPlacementPreview, type RoadShape } from "../roadPlacement";
 
 const MIN_CAMERA_ZOOM = 0.4;
 const MAX_CAMERA_ZOOM = 1.45;
@@ -67,6 +68,10 @@ type Placement = {
   mode: TownPlacementMode;
   facing: BuildingFacing;
   visualVariant?: number;
+  road?: boolean;
+  roadStart?: { x: number; y: number };
+  roadReady?: boolean;
+  roadShape?: RoadShape;
 };
 
 type BuildingDisplay = {
@@ -169,6 +174,10 @@ export class TownScene extends Phaser.Scene {
         this.placement.visualVariant = detail.visualVariant;
         this.updatePlacementAtScreen(detail.canvasX, detail.canvasY);
         this.confirmPlacement();
+      }),
+      this.bridge.subscribe("setRoadShape", ({ shape }) => this.setRoadShape(shape)),
+      this.bridge.subscribe("confirmRoadPlacement", () => {
+        if (this.placement?.road && this.placement.roadReady) this.confirmPlacement();
       }),
       this.bridge.subscribe("clearCharacterSelection", () => {
         this.selectedCharacterKey = undefined;
@@ -530,6 +539,10 @@ export class TownScene extends Phaser.Scene {
       visualVariant: item.render_kind === "food"
         ? detail.visualVariant ?? randomFoodFrame()
         : undefined,
+      road: mode === "click" && detail.buildingId == null
+        && item.category === "roads" && item.render_kind === "ground"
+        && item.footprint.width === 1 && item.footprint.height === 1,
+      roadShape: "line",
     };
     if (detail.buildingId != null) this.setBuildingDimmed(detail.buildingId, true);
     this.refreshPreview();
@@ -579,16 +592,6 @@ export class TownScene extends Phaser.Scene {
     if (!this.placement) return;
     const item = this.catalog.find((candidate) => candidate.id === this.placement?.catalogItemId);
     if (!item) return;
-    const result = validateTownPlacement(
-      this.state,
-      this.catalog,
-      item,
-      this.placement.gridX,
-      this.placement.gridY,
-      this.placement.buildingId,
-    );
-    this.placement.valid = result.valid;
-    this.placement.reason = result.reason;
     if (shouldShowPlacementGrid(this.placement.mode) && !this.placementGrid) {
       const grid = this.add.graphics();
       grid.lineStyle(2, 0x143f26, 0.72);
@@ -600,7 +603,21 @@ export class TownScene extends Phaser.Scene {
       }
       this.placementGrid = grid.setDepth(99_999);
     }
+    if (this.placement.road) {
+      this.refreshRoadPreview(item);
+      return;
+    }
 
+    const result = validateTownPlacement(
+      this.state,
+      this.catalog,
+      item,
+      this.placement.gridX,
+      this.placement.gridY,
+      this.placement.buildingId,
+    );
+    this.placement.valid = result.valid;
+    this.placement.reason = result.reason;
     this.previewLayer?.destroy(true);
     this.previewLayer = this.add.container(0, 0).setDepth(100_000);
 
@@ -636,8 +653,73 @@ export class TownScene extends Phaser.Scene {
     });
   }
 
+  private setRoadShape(shape: RoadShape) {
+    if (this.interactionLocked || !this.placement?.road) return;
+    this.placement.roadShape = shape;
+    this.refreshPreview();
+  }
+
+  private refreshRoadPreview(item: TownCatalogItem) {
+    const placement = this.placement!;
+    const end = { x: placement.gridX, y: placement.gridY };
+    const result = roadPlacementPreview(
+      this.state,
+      this.catalog,
+      item,
+      placement.roadStart ?? end,
+      end,
+      placement.roadShape ?? "line",
+    );
+    placement.valid = result.valid;
+    placement.reason = result.reason;
+    this.previewLayer?.destroy(true);
+    this.previewLayer = this.add.container(0, 0).setDepth(100_000);
+
+    const footprint = this.add.graphics();
+    for (const cell of result.cells) {
+      const position = gridToWorld(cell.x, cell.y);
+      footprint.fillStyle(result.valid ? 0x4fa55d : 0xc4483d, 0.58);
+      footprint.fillPoints(this.diamond(position.x, position.y), true);
+      footprint.lineStyle(2, result.valid ? 0xe9ffd5 : 0xffd3cb, 0.96);
+      footprint.strokePoints(this.diamond(position.x, position.y), true);
+    }
+    this.previewLayer.add(footprint);
+    for (const cell of result.newCells) {
+      const position = gridToWorld(cell.x, cell.y);
+      const ghost = this.add.image(position.x, position.y, `building-${item.id}`);
+      this.applyPresentation(ghost, item);
+      ghost.setAlpha(0.65).setTint(result.valid ? 0xd8ffe0 : 0xffb4aa);
+      this.previewLayer.add(ghost);
+    }
+    this.bridge.emit("placementChanged", {
+      active: true,
+      valid: result.valid,
+      reason: result.reason,
+      roads: {
+        width: result.width,
+        height: result.height,
+        count: result.newCells.length,
+        cost: result.cost,
+        ready: Boolean(placement.roadReady),
+        shape: placement.roadShape ?? "line",
+      },
+    });
+  }
+
   private confirmPlacement() {
     if (this.interactionLocked || !this.placement || !this.placement.valid) return;
+    if (this.placement.road) {
+      if (!this.placement.roadStart || !this.placement.roadReady) return;
+      this.bridge.emit("roadPlacementConfirmed", {
+        catalogItemId: this.placement.catalogItemId,
+        startX: this.placement.roadStart.x,
+        startY: this.placement.roadStart.y,
+        endX: this.placement.gridX,
+        endY: this.placement.gridY,
+        shape: this.placement.roadShape ?? "line",
+      });
+      return;
+    }
     this.bridge.emit("placementConfirmed", {
       catalogItemId: this.placement.catalogItemId,
       buildingId: this.placement.buildingId,
@@ -686,6 +768,11 @@ export class TownScene extends Phaser.Scene {
         this.emptyPointerDown = false;
         if (this.placement.mode === "click") {
           this.placementPointerDown = true;
+          if (this.placement.road) {
+            const world = pointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2;
+            this.placement.roadStart = worldToGrid(world.x, world.y);
+            this.placement.roadReady = false;
+          }
           this.updatePlacementAtPointer(pointer);
         }
         return;
@@ -701,6 +788,7 @@ export class TownScene extends Phaser.Scene {
     });
     this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
       if (this.placement?.mode === "click") {
+        if (this.placement.road && !this.placementPointerDown) return;
         this.updatePlacementAtPointer(pointer);
         return;
       }
@@ -715,6 +803,20 @@ export class TownScene extends Phaser.Scene {
     });
     this.input.on("pointerup", (pointer: Phaser.Input.Pointer) => {
       this.isDraggingCamera = false;
+      if (this.placement?.road && this.placementPointerDown) {
+        const inside = pointer.x >= 0 && pointer.y >= 0
+          && pointer.x < this.scale.width && pointer.y < this.scale.height
+          && pointer.event.target === this.game.canvas;
+        this.placementPointerDown = false;
+        if (!inside) {
+          this.cancelPlacement();
+          return;
+        }
+        this.updatePlacementAtPointer(pointer);
+        this.placement.roadReady = true;
+        this.refreshPreview();
+        return;
+      }
       const shouldDeselect = this.emptyPointerDown && pointer.getDistance() < 7;
       const shouldConfirm = this.placement?.mode === "click"
         && this.placementPointerDown
@@ -731,7 +833,9 @@ export class TownScene extends Phaser.Scene {
     this.input.on("pointerupoutside", () => {
       this.isDraggingCamera = false;
       this.emptyPointerDown = false;
+      const cancelRoadDrag = Boolean(this.placement?.road && this.placementPointerDown);
       this.placementPointerDown = false;
+      if (cancelRoadDrag) this.cancelPlacement();
       if (this.placement?.mode === "building-drag") this.cancelPlacement();
     });
     this.input.on("dragstart", (

@@ -431,6 +431,14 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .pixel-placement-icon { display: grid; place-items: center; width: 26px; height: 26px; color: #17341f; background: #e6c766; border: 3px solid #152b1b; box-shadow: 2px 2px 0 #2b2118; font-size: 9px; font-weight: 900; }
 .placement-banner.invalid .pixel-placement-icon { color: #fff0cc; background: #b94435; }
 .placement-banner button { min-height: 34px; padding: 6px 9px; color: #fff0cc; background: #9e382f; border: 2px solid #681818; border-radius: 0; box-shadow: 2px 2px 0 #2b2118; font-size: 9px; font-weight: 900; text-transform: uppercase; }
+.placement-copy { display: grid; gap: 3px; }
+.placement-copy > span { font-size: 9px; line-height: 1.4; }
+.placement-banner.road-placement { width: min(760px, calc(100% - 32px)); grid-template-columns: 30px minmax(150px, 1fr) auto auto auto; }
+.road-shape-options { display: flex; gap: 4px; }
+.placement-banner .road-shape-options button { color: #fff3c0; background: #5a452e; border-color: #a48b54; }
+.placement-banner .road-shape-options button[aria-pressed="true"] { background: #175c32; border-color: #fff3c0; }
+.placement-banner .road-confirm-button { color: #fff3c0; background: #175c32; border-color: #152b1b; }
+.placement-banner .road-confirm-button:disabled { opacity: .5; cursor: default; }
 .town-modal-backdrop { position: absolute; z-index: 80; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(21,44,32,.58); backdrop-filter: blur(5px); }
 .town-celebration { width: min(430px, 100%); padding: 34px; text-align: center; background: #fbfcf8; border: 1px solid rgba(255,255,255,.8); border-radius: 19px; box-shadow: 0 28px 80px rgba(13,38,25,.32); }
 .celebration-mark { display: grid; place-items: center; width: 54px; height: 54px; margin: 0 auto 18px; color: #7d5b19; background: #f3e5bc; border-radius: 16px; font-size: 25px; }

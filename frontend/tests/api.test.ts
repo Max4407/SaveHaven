@@ -14,6 +14,7 @@ import {
 } from "../src/api/finance";
 import {
   buyBuilding,
+  buyRoads,
   consumeFood,
   getGameRewards,
   getGameState,
@@ -27,6 +28,25 @@ import {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("backend endpoint contracts", () => {
+  it("sends a multi-road selection in one authenticated request", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(Response.json({}));
+    vi.stubGlobal("fetch", fetchMock);
+    const selection = {
+      catalog_item_id: "dirt_road_01",
+      start_x: 4,
+      start_y: 4,
+      end_x: 7,
+      end_y: 10,
+      shape: "line" as const,
+    };
+    await buyRoads(selection);
+    expect(fetchMock).toHaveBeenCalledWith("/api/game/roads/batch", expect.objectContaining({
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(selection),
+    }));
+  });
+
   it("calls every implemented endpoint with credentialed requests", async () => {
     const fetchMock = vi.fn().mockImplementation((input: string | URL | Request) => {
       const path = String(input);

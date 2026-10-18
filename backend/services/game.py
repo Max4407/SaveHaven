@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from math import ceil, floor
 
 from sqlalchemy.orm import Session
 
@@ -8,6 +9,7 @@ from schemas import (
     GameStateResponse,
     PlaceBuildingRequest,
     PlacedBuildingResponse,
+    PlaceRoadsRequest,
     WalletResponse,
 )
 from services.catalog import TownCatalog
@@ -20,6 +22,22 @@ from services.progression import (
 
 TOWN_GRID_COLUMNS = 32
 TOWN_GRID_ROWS = 70
+
+
+def road_line_cells(start_x: int, start_y: int, end_x: int, end_y: int) -> list[tuple[int, int]]:
+    start_u = start_x + ceil(start_y / 2)
+    start_v = floor(start_y / 2) - start_x
+    delta_u = end_x + ceil(end_y / 2) - start_u
+    delta_v = floor(end_y / 2) - end_x - start_v
+    steps = max(abs(delta_u), abs(delta_v))
+    cells: list[tuple[int, int]] = []
+    for index in range(steps + 1):
+        fraction = index / steps if steps else 0
+        next_u = floor(start_u + delta_u * fraction + 0.5)
+        next_v = floor(start_v + delta_v * fraction + 0.5)
+        y = next_u + next_v
+        cells.append((next_u - ceil(y / 2), y))
+    return cells
 
 
 class GameRuleError(RuntimeError):
@@ -83,6 +101,82 @@ class GameService:
                 purchased_at=now,
                 updated_at=now,
             )
+        )
+        session.commit()
+        return self._state(session, user_id=user_id, wallet=wallet)
+
+    def buy_roads(
+        self,
+        session: Session,
+        *,
+        user_id: str,
+        request: PlaceRoadsRequest,
+    ) -> GameStateResponse:
+        wallet = ensure_wallet(session, user_id)
+        item = self.catalog.get(request.catalog_item_id)
+        if (
+            item is None
+            or item.category != "roads"
+            or item.render_kind != "ground"
+            or item.footprint.width != 1
+            or item.footprint.height != 1
+        ):
+            raise GameRuleError("invalid_road", "Choose a single-cell road tile.")
+        if item.level_required > wallet.level:
+            raise GameRuleError("level_locked", f"Reach level {item.level_required} first.")
+
+        buildings = list_placed_buildings(session, user_id)
+        existing_roads = {
+            (building.grid_x, building.grid_y)
+            for building in buildings
+            if building.catalog_item_id == item.id
+        }
+        if request.shape == "line":
+            selected_cells = road_line_cells(
+                request.start_x,
+                request.start_y,
+                request.end_x,
+                request.end_y,
+            )
+        else:
+            selected_cells = [
+                (x, y)
+                for x in range(
+                    min(request.start_x, request.end_x), max(request.start_x, request.end_x) + 1
+                )
+                for y in range(
+                    min(request.start_y, request.end_y), max(request.start_y, request.end_y) + 1
+                )
+            ]
+        cells = [cell for cell in selected_cells if cell not in existing_roads]
+        if not cells:
+            raise GameRuleError("roads_already_placed", "Those roads are already placed.")
+        for x, y in cells:
+            self._validate_placement(item.id, x, y, buildings)
+
+        total_cost = len(cells) * item.cost_coins
+        if wallet.coin_balance < total_cost:
+            raise GameRuleError("insufficient_coins", "Not enough Coins for these roads.")
+
+        # Validate the full selection before charging or creating any road tile.
+        now = datetime.now(UTC)
+        wallet.coin_balance -= total_cost
+        wallet.updated_at = now
+        session.add_all(
+            [
+                PlacedBuilding(
+                    user_id=user_id,
+                    catalog_item_id=item.id,
+                    grid_x=x,
+                    grid_y=y,
+                    facing="left",
+                    visual_variant=0,
+                    purchase_price_coins=item.cost_coins,
+                    purchased_at=now,
+                    updated_at=now,
+                )
+                for x, y in cells
+            ]
         )
         session.commit()
         return self._state(session, user_id=user_id, wallet=wallet)

@@ -32,7 +32,29 @@ export type TownBridgeEvents = {
     canvasX: number;
     canvasY: number;
   };
-  placementChanged: { active: boolean; valid: boolean; reason: string | null };
+  placementChanged: {
+    active: boolean;
+    valid: boolean;
+    reason: string | null;
+    roads?: {
+      width: number;
+      height: number;
+      count: number;
+      cost: number;
+      ready: boolean;
+      shape: "line" | "rectangle";
+    };
+  };
+  setRoadShape: { shape: "line" | "rectangle" };
+  confirmRoadPlacement: Record<string, never>;
+  roadPlacementConfirmed: {
+    catalogItemId: string;
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    shape: "line" | "rectangle";
+  };
   placementConfirmed: {
     catalogItemId: string;
     buildingId?: number;

@@ -101,6 +101,15 @@ class MoveBuildingRequest(BaseModel):
     facing: Literal["left", "right"] | None = None
 
 
+class PlaceRoadsRequest(BaseModel):
+    catalog_item_id: str = Field(min_length=1, max_length=80)
+    start_x: int = Field(ge=0, le=31)
+    start_y: int = Field(ge=0, le=69)
+    end_x: int = Field(ge=0, le=31)
+    end_y: int = Field(ge=0, le=69)
+    shape: Literal["line", "rectangle"] = "line"
+
+
 class EvaluationResponse(BaseModel):
     id: int
     period_start: date

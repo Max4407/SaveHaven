@@ -8,6 +8,7 @@ from schemas import (
     GameStateResponse,
     MoveBuildingRequest,
     PlaceBuildingRequest,
+    PlaceRoadsRequest,
     RewardsResponse,
 )
 from services import GameRuleError, PlacedBuildingNotFoundError, reward_response
@@ -65,6 +66,21 @@ def buy_building(
     except GameRuleError as error:
         session.rollback()
         raise _rule_conflict(error) from error
+
+
+@router.post("/roads/batch", response_model=GameStateResponse, status_code=status.HTTP_201_CREATED)
+def buy_roads(
+    payload: PlaceRoadsRequest,
+    request: Request,
+    user: CurrentDemoUser,
+    session: DatabaseSession,
+) -> GameStateResponse:
+    try:
+        return _game_service(request).buy_roads(session, user_id=user.id, request=payload)
+    except GameRuleError as error:
+        session.rollback()
+        raise _rule_conflict(error) from error
+
 
 @router.patch("/buildings/{building_id}", response_model=GameStateResponse)
 def move_building(

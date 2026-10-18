@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { GameState, TownCatalogItem } from "../src/api/types";
 import { TownScene } from "../src/features/town/scenes/TownScene";
 import { createTownBridge } from "../src/features/town/townBridge";
-import { buildingWorldPosition } from "../src/features/town/townGrid";
+import { buildingWorldPosition, gridToWorld } from "../src/features/town/townGrid";
 
 vi.mock("phaser", () => ({
   default: {
@@ -32,13 +32,27 @@ function inputHarness(catalog: TownCatalogItem[] = []) {
   const internals = scene as unknown as {
     input: typeof input;
     configureInput(): void;
-    placement?: { mode: string; buildingId?: number; valid?: boolean; catalogItemId?: string; facing?: "left" | "right"; visualVariant?: number; gridX?: number; gridY?: number };
+    placement?: {
+      mode: string;
+      buildingId?: number;
+      valid?: boolean;
+      catalogItemId?: string;
+      facing?: "left" | "right";
+      visualVariant?: number;
+      gridX?: number;
+      gridY?: number;
+      road?: boolean;
+      roadStart?: { x: number; y: number };
+      roadReady?: boolean;
+      roadShape?: "line" | "rectangle";
+    };
     placementPointerDown: boolean;
     interactionLocked: boolean;
     cameras: { main: { scrollX: number; scrollY: number } };
     scale: { width: number; height: number };
     game: { canvas: unknown };
     refreshPreview(): void;
+    confirmPlacement(): void;
   };
   internals.input = input;
   internals.configureInput();
@@ -46,6 +60,59 @@ function inputHarness(catalog: TownCatalogItem[] = []) {
 }
 
 describe("town scene input", () => {
+  it("drags a road line, freezes it for review, and submits only after confirmation", () => {
+    const { bridge, handlers, internals } = inputHarness();
+    const confirmed = vi.fn();
+    bridge.subscribe("roadPlacementConfirmed", confirmed);
+    internals.placement = {
+      mode: "click",
+      road: true,
+      roadShape: "line",
+      valid: true,
+      catalogItemId: "dirt_road_01",
+    };
+    internals.cameras = { main: { scrollX: 0, scrollY: 0 } };
+    internals.refreshPreview = vi.fn();
+    internals.scale = { width: 800, height: 600 };
+    const canvas = {};
+    internals.game = { canvas };
+    const pointer = (x: number, y: number) => ({
+      x: 100,
+      y: 100,
+      event: { target: canvas },
+      positionToCamera: () => gridToWorld(x, y),
+    });
+    handlers.get("pointerdown")!(pointer(4, 4), []);
+    handlers.get("pointermove")!(pointer(7, 10));
+    handlers.get("pointerup")!(pointer(7, 10));
+    expect(internals.placement).toMatchObject({
+      roadStart: { x: 4, y: 4 },
+      gridX: 7,
+      gridY: 10,
+      roadReady: true,
+    });
+    expect(confirmed).not.toHaveBeenCalled();
+    handlers.get("pointermove")!(pointer(12, 12));
+    expect(internals.placement).toMatchObject({ gridX: 7, gridY: 10 });
+    internals.confirmPlacement();
+    expect(confirmed).toHaveBeenCalledWith({
+      catalogItemId: "dirt_road_01",
+      startX: 4,
+      startY: 4,
+      endX: 7,
+      endY: 10,
+      shape: "line",
+    });
+  });
+
+  it("cancels an active road drag released outside the map", () => {
+    const { handlers, internals } = inputHarness();
+    internals.placement = { mode: "click", road: true, valid: true };
+    internals.placementPointerDown = true;
+    handlers.get("pointerupoutside")!();
+    expect(internals.placement).toBeUndefined();
+  });
+
   it("mirrors right-facing buildings but never mirrors ground tiles", () => {
     const scene = new TownScene(createTownBridge(), [], { buildings: [] } as unknown as GameState);
     const setFlipX = vi.fn();
