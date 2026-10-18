@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
@@ -44,7 +44,10 @@ vi.mock("../src/api/finance", () => ({
 
 vi.mock("recharts", () => ({
   CartesianGrid: () => null,
+  Sector: () => null,
   Line: ({ type }: { type: string }) => <div data-testid="balance-line" data-line-type={type} />,
+  PieChart: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  Pie: ({ data, onClick }: { data: Array<{ category: string }>; onClick: (entry: unknown, index: number) => void }) => <div>{data.map((entry, index) => <button key={entry.category} onClick={() => onClick(entry, index)}>{`Slice ${entry.category}`}</button>)}</div>,
   LineChart: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   ResponsiveContainer: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   Tooltip: () => null,
@@ -178,6 +181,65 @@ describe("application API integration", () => {
     expect(showLess).toHaveAttribute("aria-expanded", "true");
     await user.click(showLess);
     expect(screen.queryByText("Merchant 6")).not.toBeInTheDocument();
+  });
+
+  it("opens spending and income details without counting internal transfers or older activity", async () => {
+    const user = userEvent.setup();
+    const base = dashboard.recent_transactions[0];
+    mocks.getDashboard.mockResolvedValue({
+      ...dashboard,
+      recent_transactions: [
+        base,
+        { ...base, source_id: "purchase", merchant_name: "Groceries", signed_amount_cents: -2500, kind: "purchase" },
+        { ...base, source_id: "transfer", merchant_name: "Internal transfer", signed_amount_cents: -1000, kind: "transfer" },
+        { ...base, source_id: "old", merchant_name: "Old purchase", signed_amount_cents: -500, kind: "purchase", occurred_at: "2026-08-01" },
+      ],
+    });
+    renderApp();
+    await user.click(await screen.findByRole("button", { name: /Spending · 30 days/ }));
+    expect(screen.getByRole("heading", { name: "Spending transactions" })).toHaveFocus();
+    expect(within(document.getElementById("bank-transactions")!).getByText("Groceries")).toBeInTheDocument();
+    expect(screen.queryByText("Paycheck")).not.toBeInTheDocument();
+    expect(screen.queryByText("Internal transfer")).not.toBeInTheDocument();
+    expect(screen.queryByText("Old purchase")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /Income · 30 days/ }));
+    expect(screen.getByText("Paycheck")).toBeInTheDocument();
+    expect(within(document.getElementById("bank-transactions")!).queryByText("Groceries")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "All" }));
+    expect(screen.getByText("Internal transfer")).toBeInTheDocument();
+    expect(screen.getByText("Old purchase")).toBeInTheDocument();
+  });
+
+  it("filters spending transactions when a pie slice or category is selected", async () => {
+    const user = userEvent.setup();
+    const base = dashboard.recent_transactions[0];
+    mocks.getDashboard.mockResolvedValue({
+      ...dashboard,
+      spending_by_category: [{ category: "groceries", amount_cents: 2500 }, { category: "dining", amount_cents: 1500 }],
+      recent_transactions: [base,
+        { ...base, source_id: "food", merchant_name: "Market", category: "groceries", kind: "purchase", signed_amount_cents: -2500 },
+        { ...base, source_id: "dining", merchant_name: "Cafe", category: "dining", kind: "purchase", signed_amount_cents: -1500 },
+      ],
+    });
+    renderApp();
+    await user.click(await screen.findByRole("button", { name: "Slice groceries" }));
+    expect(screen.getByRole("heading", { name: "Groceries transactions" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Groceries.*of spending/ })).toHaveAttribute("aria-pressed", "true");
+    const viewCategory = screen.getByRole("button", { name: "View Groceries transactions →" });
+    await user.click(viewCategory);
+    expect(screen.getByRole("heading", { name: "Groceries transactions" })).toHaveFocus();
+    expect(screen.getByText("Market")).toBeInTheDocument();
+    expect(screen.queryByText("Cafe")).not.toBeInTheDocument();
+    expect(screen.queryByText("Paycheck")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /Dining.*of spending/ }));
+    expect(screen.getByText("Cafe")).toBeInTheDocument();
+    expect(screen.queryByText("Market")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Show total" }));
+    expect(screen.queryByRole("button", { name: "Show total" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Spending transactions" })).toBeInTheDocument();
+    expect(screen.getByText("Cafe")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /^Spending$/ }));
+    expect(screen.getByText("Market")).toBeInTheDocument();
   });
 
   it("shows demo login when there is no signed session", async () => {

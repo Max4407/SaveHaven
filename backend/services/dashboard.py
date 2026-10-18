@@ -113,7 +113,7 @@ def build_dashboard(session: Session, *, user_id: str) -> DashboardResponse:
                 category=transaction.category,
                 description=transaction.description,
             )
-            for transaction in transactions[:50]
+            for transaction in transactions
         ],
         spending_by_category=[
             SpendingCategoryResponse(category=category, amount_cents=amount_cents)

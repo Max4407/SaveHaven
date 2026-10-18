@@ -1,14 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   CartesianGrid,
   Line,
   LineChart,
+  Pie,
+  PieChart,
+  Sector,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import type { CSSProperties } from "react";
+import type { PieSectorShapeProps } from "recharts";
 import { isApiError } from "../../api/client";
 import {
   acceptGoalPlan,
@@ -19,6 +24,7 @@ import {
   regenerateGoalPlan,
   syncBank,
 } from "../../api/finance";
+import { LastRefreshed } from "../../components/LastRefreshed";
 import type { Dashboard, Transaction } from "../../api/types";
 
 function formatDollars(cents: number, options?: Intl.NumberFormatOptions) {
@@ -284,9 +290,31 @@ function TransactionRow({ transaction }: { transaction: Transaction }) {
 
 function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
   const [showAllTransactions, setShowAllTransactions] = useState(false);
-  const visibleTransactions = showAllTransactions
-    ? dashboard.recent_transactions
-    : dashboard.recent_transactions.slice(0, 5);
+  const [transactionFilter, setTransactionFilter] = useState<"all" | "spending" | "income">("all");
+  const [spendingCategory, setSpendingCategory] = useState<string | null>(null);
+  const categoryColors = ["#357955", "#c49439", "#668fb0", "#b76f61", "#8b78a8", "#5e9d99", "#b883a0", "#839447"];
+  const spendingSlices = dashboard.spending_by_category.filter((item) => item.amount_cents > 0).map((item, index) => ({ ...item, name: titleCase(item.category), fill: categoryColors[index % categoryColors.length] }));
+  const highlightedCategory = transactionFilter === "spending" ? spendingCategory : null;
+  const selectedSlice = spendingSlices.find((item) => item.category === highlightedCategory);
+  const spendingTotal = spendingSlices.reduce((total, item) => total + item.amount_cents, 0);
+  const transactionHeading = useRef<HTMLHeadingElement>(null);
+  const filteredTransactions = dashboard.recent_transactions.filter((transaction) => {
+    if (transactionFilter === "all") return true;
+    const daysAgo = (Date.parse(dashboard.summary.as_of) - Date.parse(transaction.occurred_at)) / 86400000;
+    return daysAgo >= 0 && daysAgo < 30 && transaction.kind !== "transfer"
+      && (transactionFilter === "income" ? transaction.signed_amount_cents > 0 : transaction.signed_amount_cents < 0 && (!spendingCategory || transaction.category === spendingCategory));
+  });
+  const visibleTransactions = showAllTransactions ? filteredTransactions : filteredTransactions.slice(0, 5);
+  const openTransactions = (filter: "spending" | "income", category: string | null = null, jumpToList = category === null) => {
+    const nextCategory = category && category === spendingCategory && filter === transactionFilter && !jumpToList ? null : category;
+    setSpendingCategory(nextCategory);
+    setTransactionFilter(filter);
+    setShowAllTransactions(true);
+    if (jumpToList) {
+      transactionHeading.current?.focus({ preventScroll: true });
+      transactionHeading.current?.scrollIntoView?.({ block: "start", behavior: "smooth" });
+    }
+  };
   const queryClient = useQueryClient();
   const balanceHistory = useMemo(() => buildBalanceHistory(dashboard), [dashboard]);
   const activeGoal = dashboard.active_goal;
@@ -297,7 +325,12 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
     : 0;
   const syncMutation = useMutation({
     mutationFn: syncBank,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["dashboard"] }),
+    onSuccess: async (connection) => {
+      queryClient.setQueryData<Dashboard>(["dashboard"], (current) =>
+        current ? { ...current, connection } : current,
+      );
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    },
   });
   return (
     <main className="dashboard-page bank-page">
@@ -311,20 +344,26 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
         </div>
         <div className="topbar-actions">
           <span className={`sandbox-pill ${dashboard.connection.data_source}`}><span /> {dashboard.connection.data_source === "live" ? "Live Nessie Sandbox" : "Fixture fallback"}</span>
-          <button
-            className="secondary-button"
-            type="button"
-            disabled={syncMutation.isPending}
-            onClick={() => syncMutation.mutate()}
-          >
-            {syncMutation.isPending ? "Syncing…" : "Sync data"}
-          </button>
+          <div className="bank-refresh-controls">
+            <LastRefreshed timestamp={dashboard.connection.last_synced_at} />
+            <button
+              className="secondary-button bank-refresh-button"
+              type="button"
+              disabled={syncMutation.isPending}
+              aria-label={syncMutation.isPending ? "Refreshing data" : "Refresh data"}
+              title={syncMutation.isPending ? "Refreshing…" : "Refresh data"}
+              aria-busy={syncMutation.isPending}
+              onClick={() => syncMutation.mutate()}
+            >
+              <span aria-hidden="true">↻</span>
+            </button>
+          </div>
         </div>
       </header>
 
       {syncMutation.error ? (
         <p className="error-banner dashboard-error" role="alert">
-          {isApiError(syncMutation.error) ? syncMutation.error.message : "The bank sync failed."}
+          {isApiError(syncMutation.error) ? syncMutation.error.message : "The bank refresh failed. Please try again."}
         </p>
       ) : null}
 
@@ -345,11 +384,69 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
           <h2>{formatDollars(dashboard.summary.total_balance_cents)}</h2>
           <small>Across connected accounts</small>
         </article>
-        <article className="stat-card">
+        <button className="stat-card finance-summary-button" type="button" onClick={() => openTransactions("income")} aria-controls="bank-transactions">
+          <p>Income · 30 days</p>
+          <h2>{formatDollars(dashboard.summary.income_last_30_days_cents)}</h2>
+          <small>View income <span aria-hidden="true">→</span></small>
+        </button>
+        <button className="stat-card finance-summary-button" type="button" onClick={() => openTransactions("spending")} aria-controls="bank-transactions">
           <p>Spending · 30 days</p>
           <h2>{formatDollars(dashboard.summary.spending_last_30_days_cents)}</h2>
-          <small>Recent outflow</small>
-        </article>
+          <small>View spending <span aria-hidden="true">→</span></small>
+        </button>
+      </section>
+
+      <section className="panel spending-pie-panel" aria-labelledby="spending-pie-heading">
+        <div className="panel-heading">
+          <div><p className="eyebrow">Last 30 days</p><h2 id="spending-pie-heading">Where your money goes</h2></div>
+          {transactionFilter === "spending" && spendingCategory ? (
+            <button className="secondary-button" type="button" onClick={() => openTransactions("spending", null, false)}>Show total</button>
+          ) : null}
+        </div>
+        <p className="spending-pie-hint">Choose a slice or category to see its transactions.</p>
+        {spendingSlices.length > 0 ? (
+          <div className="spending-pie-layout">
+            <div className="spending-pie-chart" role="img" aria-label="Spending by category. Use the category buttons to explore transactions.">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={spendingSlices} dataKey="amount_cents" nameKey="name" cx="50%" cy="50%" innerRadius="53%" outerRadius="78%" paddingAngle={3} cornerRadius={5} stroke="#fff4d1" strokeWidth={2} isAnimationActive={false}
+                    onClick={(_entry, index) => openTransactions("spending", spendingSlices[index].category)}
+                    shape={(props: PieSectorShapeProps) => {
+                      const category = spendingSlices[props.index]?.category;
+                      const selected = transactionFilter === "spending" && category === spendingCategory;
+                      const angle = -(props.midAngle ?? 0) * Math.PI / 180;
+                      const distance = 6;
+                      return (
+                        <g className={`spending-pie-slice${selected ? " selected" : ""}`} style={{ "--slice-x": `${Math.cos(angle) * distance}px`, "--slice-y": `${Math.sin(angle) * distance}px` } as CSSProperties}>
+                          <Sector {...props} stroke={selected ? "#fffbea" : "#fff4d1"} strokeWidth={selected ? 3 : 2} />
+                        </g>
+                      );
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="donut-center" aria-hidden="true"><small>{selectedSlice ? selectedSlice.name : "Total spent"}</small><strong>{formatDollars(selectedSlice?.amount_cents ?? spendingTotal)}</strong><span>{selectedSlice ? `${Math.round(selectedSlice.amount_cents / spendingTotal * 100)}% of total` : "Last 30 days"}</span></div>
+            </div>
+            <div className="spending-category-list" role="group" aria-label="Spending categories">
+              {spendingSlices.map((item) => (
+                <button key={item.category} type="button" aria-pressed={transactionFilter === "spending" && spendingCategory === item.category} onClick={() => openTransactions("spending", item.category)} aria-controls="bank-transactions">
+                  <span className="category-color" style={{ background: item.fill }} aria-hidden="true" />
+                  <span>{item.name}<small>{Math.round(item.amount_cents / spendingTotal * 100)}% of spending</small></span>
+                  <strong>{formatDollars(item.amount_cents, { maximumFractionDigits: 2 })}</strong>
+                  <span aria-hidden="true">→</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : <p className="empty-state">No spending recorded in the last 30 days.</p>}
+        {spendingSlices.length > 0 ? (
+          <div className="pie-selection-summary">
+            <div><small>{selectedSlice ? selectedSlice.name : "Total spending"}</small><strong>{formatDollars(selectedSlice?.amount_cents ?? spendingTotal, { maximumFractionDigits: 2 })}</strong><span>{selectedSlice ? `${Math.round(selectedSlice.amount_cents / spendingTotal * 100)}% of your spending` : "Explore a category above"}</span></div>
+            {transactionFilter === "spending" && spendingCategory ? (
+              <button className="secondary-button" type="button" onClick={() => openTransactions("spending", spendingCategory, true)}>View {titleCase(spendingCategory)} transactions →</button>
+            ) : null}
+          </div>
+        ) : null}
       </section>
 
       <section className="bank-goals-section" aria-labelledby="savings-goals-heading">
@@ -439,30 +536,38 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
 
       <GoalPlanner dashboard={dashboard} />
 
-      <section className="panel transactions-panel bank-transactions-panel" aria-labelledby="transactions-heading">
+      <section id="bank-transactions" className="panel transactions-panel bank-transactions-panel" aria-labelledby="transactions-heading">
         <div className="panel-heading">
           <div>
             <p className="eyebrow">Past activity</p>
-            <h2 id="transactions-heading">Transactions</h2>
+            <h2 id="transactions-heading" ref={transactionHeading} tabIndex={-1}>{transactionFilter === "all" ? "Transactions" : transactionFilter === "income" ? "Income transactions" : spendingCategory ? `${titleCase(spendingCategory)} transactions` : "Spending transactions"}</h2>
           </div>
           <div className="transaction-actions">
-            <span className="record-count">{dashboard.recent_transactions.length} records</span>
-            {dashboard.recent_transactions.length > 5 ? (
+            <span className="record-count">{filteredTransactions.length} records</span>
+            {filteredTransactions.length > 5 ? (
               <button className="secondary-button transaction-toggle" type="button" aria-expanded={showAllTransactions} aria-controls="bank-transaction-list" onClick={() => setShowAllTransactions((current) => !current)}>
-                {showAllTransactions ? "Show less" : `View all (${dashboard.recent_transactions.length})`}
+                {showAllTransactions ? "Show less" : `View all (${filteredTransactions.length})`}
               </button>
             ) : null}
           </div>
         </div>
-        {dashboard.recent_transactions.length > 0 ? (
+        <div className="transaction-filters" role="group" aria-label="Filter transactions">
+          {(["all", "spending", "income"] as const).map((filter) => (
+            <button key={filter} type="button" aria-pressed={transactionFilter === filter} onClick={() => { setSpendingCategory(null); setTransactionFilter(filter); setShowAllTransactions(filter !== "all"); }}>
+              {titleCase(filter)}
+            </button>
+          ))}
+        </div>
+        {transactionFilter !== "all" ? <p className="transaction-count-note">Last 30 days · Transfers between accounts excluded</p> : null}
+        {filteredTransactions.length > 0 ? (
           <ul id="bank-transaction-list" className={`transaction-list${showAllTransactions ? " transaction-list-expanded" : ""}`}>
             {visibleTransactions.map((transaction) => (
               <TransactionRow transaction={transaction} key={transaction.source_id} />
             ))}
           </ul>
-        ) : <p className="empty-state">No transactions have been imported.</p>}
-        {dashboard.recent_transactions.length > 5 ? (
-          <p className="transaction-count-note">Showing {visibleTransactions.length} of {dashboard.recent_transactions.length} recent transactions</p>
+        ) : <p className="empty-state">No {transactionFilter === "all" ? "transactions have been imported" : `${spendingCategory ? titleCase(spendingCategory) + " " : ""}${transactionFilter} transactions in this period`}.</p>}
+        {filteredTransactions.length > 5 ? (
+          <p className="transaction-count-note">Showing {visibleTransactions.length} of {filteredTransactions.length} recent transactions</p>
         ) : null}
       </section>
 

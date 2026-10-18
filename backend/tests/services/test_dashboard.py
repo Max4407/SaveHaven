@@ -59,3 +59,26 @@ def test_internal_savings_transfer_is_not_income_or_spending(monkeypatch) -> Non
         ("groceries", 10_000)
     ]
     assert dashboard.import_summary.transaction_types == ["deposit", "purchase", "transfer"]
+
+
+def test_dashboard_keeps_all_imported_transactions_for_detail_lists(monkeypatch) -> None:
+    connection = SimpleNamespace(
+        profile_id="steady-paycheck", nessie_customer_id="customer-1",
+        display_name="Jordan Lee", data_source="fixture",
+        last_synced_at=datetime(2026, 10, 24),
+    )
+    transactions = [
+        transaction(amount_cents=-(index + 1), kind="purchase", category="groceries")
+        for index in range(60)
+    ]
+    monkeypatch.setattr(dashboard_service, "get_bank_connection", lambda *_: connection)
+    monkeypatch.setattr(dashboard_service, "list_accounts", lambda *_: [])
+    monkeypatch.setattr(dashboard_service, "list_transactions", lambda *_: transactions)
+    monkeypatch.setattr(dashboard_service, "get_active_goal", lambda *_: None)
+
+    dashboard = dashboard_service.build_dashboard(None, user_id="demo-player")
+
+    assert len(dashboard.recent_transactions) == 60
+    assert sum(-item.signed_amount_cents for item in dashboard.recent_transactions) == (
+        dashboard.summary.spending_last_30_days_cents
+    )

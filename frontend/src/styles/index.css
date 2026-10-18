@@ -497,3 +497,63 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .bank-page .transaction-toggle { min-height: 44px; padding: 8px 12px; font-size: 11px; }
 .bank-page .transaction-list-expanded { max-height: 480px; overflow-y: auto; scrollbar-color: #9d7e43 #eadca6; }
 .transaction-count-note { margin: 13px 0 0; color: #776a49; font-size: 10px; }
+
+.bank-refresh-controls { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; }
+.last-refreshed { color: #d9ddaa; font-size: 10px; line-height: 1.5; }
+.bank-page .bank-refresh-button { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 36px; min-height: 36px; padding: 0; }
+.bank-refresh-button > span { font-size: 23px; line-height: 1; }
+.bank-refresh-button:disabled { cursor: wait; opacity: .6; }
+@media (max-width: 600px) {
+  .bank-refresh-controls { justify-content: flex-start; }
+}
+
+.bank-summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.finance-summary-button { text-align: left; color: inherit; font: inherit; }
+.bank-summary-grid .finance-summary-button:hover { background: #f9edba; border-color: #175c32; }
+.finance-summary-button:focus-visible, .transaction-filters button:focus-visible { outline: 3px solid #175c32; outline-offset: 4px; }
+.finance-summary-button small { display: flex; justify-content: space-between; gap: 8px; }
+.transaction-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.transaction-filters button { min-height: 40px; padding: 8px 15px; color: #58432f; background: #eadca6; border: 2px solid #9d7e43; font-size: 11px; font-weight: 700; }
+.transaction-filters button[aria-pressed="true"] { color: #fff8d8; background: #175c32; border-color: #243d27; }
+#transactions-heading { scroll-margin-top: 80px; }
+@media (max-width: 600px) { .bank-summary-grid { grid-template-columns: 1fr; } }
+
+.bank-page .spending-pie-panel { margin-top: 22px; background: #f2e7b5; border: 3px solid #9d7e43; border-radius: 0; box-shadow: 5px 5px 0 rgba(94,72,34,.28); }
+.spending-pie-panel h2 { font-size: 23px; }
+.spending-pie-hint { color: #776a49; font-size: 11px; line-height: 1.6; }
+.spending-pie-layout { display: grid; grid-template-columns: minmax(220px, .9fr) minmax(0, 1.1fr); align-items: center; gap: 24px; }
+.spending-pie-chart { height: 280px; min-width: 0; }
+.spending-category-list { display: grid; gap: 8px; }
+.spending-category-list button { display: grid; grid-template-columns: 13px minmax(0, 1fr) auto 12px; align-items: center; gap: 10px; min-height: 50px; padding: 10px 12px; text-align: left; color: #352f24; background: #f9efca; border: 2px solid #c4af6d; font-size: 12px; }
+.spending-category-list button:hover, .spending-category-list button[aria-pressed="true"] { background: #e2e8bf; border-color: #175c32; }
+.spending-category-list button:focus-visible { outline: 3px solid #175c32; outline-offset: 3px; }
+.spending-category-list small { display: block; margin-top: 4px; color: #776a49; font-size: 10px; }
+.category-color { width: 13px; height: 13px; border-radius: 3px; }
+@media (max-width: 600px) { .spending-pie-layout { grid-template-columns: 1fr; gap: 8px; } .spending-pie-chart { height: 240px; } }
+
+.spending-pie-chart { height: 300px; border-radius: 18px; background: radial-gradient(ellipse at center, rgba(255,251,231,.85), rgba(255,251,231,0) 70%); }
+.spending-pie-slice { cursor: pointer; transition: transform .12s ease-out; }
+.spending-pie-slice:hover, .spending-pie-slice.selected { transform: translate(var(--slice-x), var(--slice-y)); }
+
+.spending-category-list button { border-radius: 8px; transition: transform .15s ease, background .15s ease, box-shadow .15s ease; }
+.spending-category-list button:hover, .spending-category-list button[aria-pressed="true"] { transform: translateX(3px); box-shadow: 0 3px 8px rgba(49,67,57,.1); }
+.pie-selection-summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; padding: 16px 18px; background: #faf0cb; border: 1px solid #c4af6d; border-radius: 10px; }
+.pie-selection-summary small, .pie-selection-summary strong, .pie-selection-summary span { display: block; }
+.pie-selection-summary small { color: #776a49; font-size: 11px; }
+.pie-selection-summary strong { margin: 5px 0; color: #175c32; font-size: 24px; }
+.pie-selection-summary span { color: #776a49; font-size: 10px; }
+.pie-selection-summary button { min-height: 44px; }
+@media (prefers-reduced-motion: reduce) { .spending-pie-slice { transition: none; } }
+
+.bank-page .spending-pie-panel { background: #f8efcf; border: 2px solid #c4af6d; border-radius: 16px; box-shadow: 0 5px 16px rgba(75,59,28,.07); }
+.spending-pie-chart { position: relative; height: 300px; background: transparent; }
+.donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; text-align: center; pointer-events: none; }
+.donut-center small, .donut-center strong, .donut-center span { display: block; }
+.donut-center small { color: #776a49; font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.donut-center strong { margin: 7px 0; color: #244c35; font-size: 25px; letter-spacing: -.04em; }
+.donut-center span { color: #8a7e5b; font-size: 9px; }
+.spending-category-list button { background: transparent; border: 1px solid transparent; border-bottom-color: #e0d4ab; border-radius: 7px; transition: background .12s ease; }
+.spending-category-list button:hover, .spending-category-list button[aria-pressed="true"] { transform: none; box-shadow: none; background: #e8edcf; }
+.category-color { border-radius: 50%; }
+.pie-selection-summary { background: transparent; border: 0; border-top: 1px solid #dfd2a6; border-radius: 0; }
+@media (max-width: 600px) { .spending-pie-chart { height: 260px; } .donut-center strong { font-size: 22px; } }
