@@ -68,6 +68,17 @@ a { color: inherit; }
 .auth-card h1, .status-card h1, .onboarding-heading h1 { margin: 0; font-size: clamp(27px, 4vw, 40px); line-height: 1.08; letter-spacing: -.045em; }
 .auth-card > p:not(.eyebrow, .error-banner), .status-card > p:not(.eyebrow), .onboarding-heading p:last-child { color: var(--muted); font-size: 13px; line-height: 1.65; }
 .auth-card .primary-button, .status-card .primary-button { width: 100%; margin-top: 8px; }
+.auth-user-list { display: grid; gap: 10px; margin-top: 22px; }
+.auth-user-option { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; padding: 13px; color: var(--ink); background: #f8faf4; border: 1px solid var(--line); border-radius: 12px; text-align: left; transition: background .15s ease, border-color .15s ease, transform .15s ease; }
+.auth-user-option:hover { background: #eef4e3; border-color: #8cab78; transform: translateY(-1px); }
+.auth-user-option:focus-visible { outline: 3px solid rgba(65,123,90,.28); outline-offset: 2px; }
+.auth-user-option:disabled { cursor: wait; opacity: .62; transform: none; }
+.auth-user-avatar { display: grid; place-items: center; width: 40px; height: 40px; color: #304c3d; background: #dce7cd; border-radius: 11px; font-size: 11px; font-weight: 800; }
+.auth-user-option strong, .auth-user-option small { display: block; }
+.auth-user-option strong { font-size: 13px; }
+.auth-user-option small { margin-top: 4px; color: var(--muted); font-size: 10px; }
+.auth-user-arrow { color: var(--forest); font-size: 20px; line-height: 1; }
+.auth-login-status { margin: 12px 0 0; text-align: center; }
 
 .onboarding-page { width: min(1080px, 100%); margin: 0 auto; padding: 84px clamp(24px, 5vw, 72px); }
 .onboarding-heading { display: flex; align-items: flex-start; gap: 17px; max-width: 730px; }
@@ -237,6 +248,10 @@ a { color: inherit; }
 .bank-session-controls .avatar { color: #352f24; background: #e6c766; border: 2px solid #6f5427; border-radius: 0; }
 .bank-session-controls .text-button { color: #fff3c0; text-transform: uppercase; }
 .bank-session-controls .text-button:hover { color: #e6c766; }
+.town-session-controls { right: auto; left: 12px; color: #fff3c0; background: #243d27; border: 3px solid #152b1b; border-radius: 0; box-shadow: 4px 4px 0 rgba(70,50,25,.3); backdrop-filter: none; font-family: "Courier New", ui-monospace, monospace; }
+.town-session-controls .avatar { color: #352f24; background: #e6c766; border: 2px solid #6f5427; border-radius: 0; }
+.town-session-controls .text-button { color: #fff3c0; text-transform: uppercase; }
+.town-session-controls .text-button:hover { color: #e6c766; }
 
 .dashboard-error { margin-top: 20px; }
 .fallback-warning { margin: 18px 0 0; padding: 12px 14px; color: #74551f; background: #fbf1d8; border: 1px solid #ead59e; border-radius: 10px; font-size: 11px; line-height: 1.5; }
@@ -342,7 +357,8 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .town-sidebar-header > div { flex: 1; min-width: 0; }
 .town-sidebar-header h1 { margin: 0; font-size: 25px; line-height: 1; letter-spacing: .045em; text-transform: uppercase; text-shadow: 2px 2px 0 #2d3b24; }
 .town-sidebar-header p:last-child { margin: 8px 0 0; color: #d9ddaa; font-size: 10px; font-weight: 700; letter-spacing: .03em; }
-.town-sidebar .route-arrow { width: 40px; height: 40px; color: #fff4bf; background: #755b38; border: 3px solid #e0bd66; border-radius: 0; box-shadow: 3px 3px 0 #263a25; transition: color .1s linear, background .1s linear, transform .1s steps(2); }
+.town-sidebar .route-arrow { flex: 0 0 auto; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; color: #fff4bf; background: #755b38; border: 3px solid #e0bd66; border-radius: 0; box-shadow: 3px 3px 0 #263a25; text-decoration: none; transition: color .1s linear, background .1s linear, transform .1s steps(2); }
+.town-sidebar .route-arrow span { display: block; font-size: 20px; line-height: 1; }
 .town-sidebar .route-arrow:hover { color: white; background: #8b6b3d; box-shadow: 2px 2px 0 #263a25; transform: translate(1px, 1px); }
 .town-sidebar .route-arrow:focus-visible { outline: 3px solid #fff0a4; outline-offset: 3px; }
 .town-resources { flex: 0 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; color: #fff0b4; background: var(--pixel-brown); border-bottom: 4px solid #392e22; }
@@ -352,11 +368,6 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .town-resources strong { color: #fff6d2; font-size: 12px; }
 .town-resources small { color: #cdbf94; font-size: 8px; text-transform: uppercase; }
 .town-catalog-body { flex: 1 1 auto; min-height: 0; padding: 14px 14px 18px; overflow-y: auto; background-color: var(--pixel-cream); background-image: linear-gradient(rgba(112,91,49,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(112,91,49,.035) 1px, transparent 1px); background-size: 4px 4px; scrollbar-color: var(--pixel-line) #e8daaa; scrollbar-width: thin; }
-.sidebar-map-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 11px; margin-bottom: 13px; padding: 9px 10px; color: #675938; background: #eadca6; border: 2px solid var(--pixel-line); border-radius: 0; box-shadow: 3px 3px 0 rgba(103,78,35,.2); font-size: 9px; }
-.sidebar-map-meta strong { color: #2e502e; }
-.map-status { display: inline-flex; align-items: center; gap: 6px; margin-right: auto; color: #3f5433; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
-.map-status i { width: 8px; height: 8px; background: #3e7b3f; border: 2px solid #254a28; border-radius: 0; }
-.zoom-value { min-width: 45px; padding: 5px 7px; color: #fff3c0; background: var(--pixel-forest); border: 2px solid var(--pixel-forest-dark); border-radius: 0; text-align: center; font-weight: 800; }
 .catalog-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .catalog-heading h2 { margin: 0; font-size: 15px; letter-spacing: .01em; text-transform: uppercase; }
 .catalog-heading > span { color: #77653e; font-size: 9px; font-weight: 800; text-transform: uppercase; }
