@@ -54,8 +54,7 @@ def test_starter_grant_purchase_move_and_original_price_refund() -> None:
     ("item_id", "grid_x", "grid_y", "code"),
     [
         ("bakery_01", 4, 4, "level_locked"),
-        ("woodshed_01", 3, 4, "outside_unlocked_district"),
-        ("woodshed_01", 7, 5, "infrastructure_reserved"),
+        ("hut_01", 15, 4, "outside_town_map"),
     ],
 )
 def test_failed_purchase_is_atomic(item_id: str, grid_x: int, grid_y: int, code: str) -> None:
@@ -77,6 +76,32 @@ def test_failed_purchase_is_atomic(item_id: str, grid_x: int, grid_y: int, code:
         assert error.value.code == code
         assert state.wallet.coin_balance == 300
         assert state.buildings == []
+
+
+def test_placements_ignore_district_and_road_cells() -> None:
+    session, game = game_session()
+    with session:
+        outside_former_district = game.buy_building(
+            session,
+            user_id="demo-player",
+            request=PlaceBuildingRequest(
+                catalog_item_id="woodshed_01",
+                grid_x=3,
+                grid_y=4,
+            ),
+        )
+        on_former_road = game.buy_building(
+            session,
+            user_id="demo-player",
+            request=PlaceBuildingRequest(
+                catalog_item_id="woodshed_01",
+                grid_x=7,
+                grid_y=5,
+            ),
+        )
+
+        assert len(outside_former_district.buildings) == 1
+        assert len(on_former_road.buildings) == 2
 
 
 def test_collision_and_cross_user_ownership_are_server_authoritative() -> None:

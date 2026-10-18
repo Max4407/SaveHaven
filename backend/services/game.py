@@ -18,6 +18,8 @@ from services.progression import (
     progression_for_xp,
 )
 
+TOWN_GRID_SIZE = 16
+
 
 class GameRuleError(RuntimeError):
     def __init__(self, code: str, message: str) -> None:
@@ -60,7 +62,6 @@ class GameService:
 
         buildings = list_placed_buildings(session, user_id)
         self._validate_placement(
-            wallet.level,
             item.id,
             request.grid_x,
             request.grid_y,
@@ -98,7 +99,6 @@ class GameService:
             raise PlacedBuildingNotFoundError(building_id)
         buildings = list_placed_buildings(session, user_id)
         self._validate_placement(
-            wallet.level,
             building.catalog_item_id,
             grid_x,
             grid_y,
@@ -158,7 +158,6 @@ class GameService:
 
     def _validate_placement(
         self,
-        level: int,
         catalog_item_id: str,
         grid_x: int,
         grid_y: int,
@@ -174,23 +173,17 @@ class GameService:
             for x in range(grid_x, grid_x + item.footprint.width)
             for y in range(grid_y, grid_y + item.footprint.height)
         }
-        district = district_for_level(level)
         if any(
-            x < district.min_x
-            or x > district.max_x
-            or y < district.min_y
-            or y > district.max_y
+            x < 0
+            or x >= TOWN_GRID_SIZE
+            or y < 0
+            or y >= TOWN_GRID_SIZE
             for x, y in cells
         ):
             raise GameRuleError(
-                "outside_unlocked_district",
-                "That footprint extends beyond the currently unlocked district.",
+                "outside_town_map",
+                "That footprint extends beyond the town map.",
             )
-        reserved = {
-            (cell.x, cell.y) for cell in infrastructure_for_level(level).reserved_cells
-        }
-        if cells & reserved:
-            raise GameRuleError("infrastructure_reserved", "Town roads must remain clear.")
 
         occupied: set[tuple[int, int]] = set()
         for building in buildings:
