@@ -73,6 +73,9 @@ vi.mock("../src/features/town/TownCanvas", async () => {
               buildingId: state.buildings[0].id,
             })}>Select building</button>
           ) : null}
+          <button type="button" onClick={() => bridge.emit("buildingDeselected", {})}>
+            Click empty map
+          </button>
           {request ? (
             <button type="button" onClick={() => bridge.emit("placementConfirmed", {
               ...request,
@@ -431,6 +434,29 @@ describe("town economy", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sell" }));
     await waitFor(() => expect(sellBuilding).toHaveBeenCalledWith(7, expect.anything()));
     expect(await screen.findByText("260")).toBeInTheDocument();
+  });
+
+  it("hides building actions after clicking empty map space", async () => {
+    vi.mocked(getGameState).mockResolvedValue({
+      ...initialState,
+      buildings: [{
+        id: 7,
+        catalog_item_id: "woodshed_01",
+        grid_x: 5,
+        grid_y: 4,
+        purchase_price_coins: 100,
+        purchased_at: "2026-10-17T12:00:00Z",
+        updated_at: "2026-10-17T12:00:00Z",
+      }],
+    });
+    renderTown();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
+    expect(screen.getByLabelText("Selected building")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Click empty map" }));
+
+    expect(screen.queryByLabelText("Selected building")).not.toBeInTheDocument();
   });
 
   it("keeps the last server-confirmed position when an occupied move is rejected", async () => {

@@ -145,6 +145,9 @@ function TownPage() {
       setSelectedBuildingId(buildingId);
       setIsSidebarOpen(true);
     });
+    const unsubscribeDeselection = bridge.subscribe("buildingDeselected", () => {
+      setSelectedBuildingId(null);
+    });
     const unsubscribePlacement = bridge.subscribe("placementChanged", setPlacement);
     const unsubscribeConfirmation = bridge.subscribe("placementConfirmed", (detail) => {
       startAction(() => {
@@ -166,6 +169,7 @@ function TownPage() {
     });
     return () => {
       unsubscribeSelection();
+      unsubscribeDeselection();
       unsubscribePlacement();
       unsubscribeConfirmation();
     };

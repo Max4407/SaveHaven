@@ -6,6 +6,7 @@ export type TownBridgeEvents = {
   interactionLocked: { locked: boolean };
   cameraChanged: { zoom: number };
   buildingSelected: { buildingId: number };
+  buildingDeselected: Record<string, never>;
   catalogDragStarted: { catalogItemId: string };
   catalogDragMoved: { catalogItemId: string; canvasX: number; canvasY: number };
   catalogDropped: { catalogItemId: string; canvasX: number; canvasY: number };
