@@ -14,7 +14,7 @@ export type ResidentAssignment = {
 };
 
 export const MAX_CHARACTER_HAPPINESS = 100;
-export const CHARACTER_HAPPINESS_DECAY_PER_SECOND = 0.25;
+export const CHARACTER_HAPPINESS_DECAY_PER_SECOND = 1 / (20 * 60);
 export const FOOD_HAPPINESS_RESTORE = 30;
 
 const CHARACTER_NAMES = [

@@ -36,6 +36,27 @@ import {
 
 type PlacementStatus = { active: boolean; valid: boolean; reason: string | null };
 
+const DAILY_FEEDING_MESSAGE_KEY = "savehaven-daily-feeding-message";
+
+function localCalendarDay(date: Date = new Date()): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function recordFirstFeedingToday(userId: string): boolean {
+  const storageKey = `${DAILY_FEEDING_MESSAGE_KEY}:${userId}`;
+  const today = localCalendarDay();
+  try {
+    if (localStorage.getItem(storageKey) === today) return false;
+    localStorage.setItem(storageKey, today);
+  } catch {
+    // A blocked storage API should not prevent the success message from appearing.
+  }
+  return true;
+}
+
 function formatDollars(cents: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -101,6 +122,7 @@ function TownPage() {
   const [placement, setPlacement] = useState<PlacementStatus>({ active: false, valid: false, reason: null });
   const [actionError, setActionError] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<SimulatedWeek | null>(null);
+  const [showFeedingEncouragement, setShowFeedingEncouragement] = useState(false);
 
   const catalogQuery = useQuery({ queryKey: ["town-catalog"], queryFn: getTownCatalog });
   const stateQuery = useQuery({ queryKey: ["game-state"], queryFn: getGameState });
@@ -170,6 +192,7 @@ function TownPage() {
     onSuccess: (nextState) => {
       queryClient.setQueryData(["game-state"], nextState);
       setActionError(null);
+      if (recordFirstFeedingToday(userId)) setShowFeedingEncouragement(true);
     },
     onError: (error, buildingId) => {
       setActionError(mutationMessage(error));
@@ -576,6 +599,29 @@ function TownPage() {
               <p>Unlocked: {celebration.unlocks.catalog_items.map((item) => item.name).join(", ")}.</p>
             )}
             <button className="primary-button" type="button" onClick={() => setCelebration(null)}>Continue building</button>
+          </section>
+        </div>
+      )}
+
+      {showFeedingEncouragement && (
+        <div className="town-modal-backdrop" role="presentation">
+          <section
+            className="town-celebration feeding-encouragement"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="feeding-encouragement-title"
+          >
+            <span className="celebration-mark" aria-hidden="true">♥</span>
+            <p className="eyebrow">Villagers fed for today</p>
+            <h2 id="feeding-encouragement-title">Good job working toward your savings goals today!</h2>
+            <p>Come back and feed the villagers tomorrow to keep their happiness up.</p>
+            <button
+              className="primary-button"
+              type="button"
+              onClick={() => setShowFeedingEncouragement(false)}
+            >
+              Back to town
+            </button>
           </section>
         </div>
       )}

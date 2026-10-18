@@ -437,6 +437,7 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .celebration-finance small { min-height: 24px; color: #7b7057; font-size: 8px; line-height: 1.4; }
 .celebration-finance strong { margin-top: 5px; color: #2f5f42; font-size: 13px; }
 .town-celebration .primary-button { margin-top: 10px; }
+.feeding-encouragement .celebration-mark { color: #8a3732; background: #f5ded4; }
 
 @media (max-width: 1050px) {
   .content-grid, .lower-grid, .dashboard-detail-grid { grid-template-columns: 1fr; }

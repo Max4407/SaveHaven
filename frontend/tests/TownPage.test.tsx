@@ -276,6 +276,7 @@ function renderTown() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  localStorage.clear();
   vi.mocked(getTownCatalog).mockResolvedValue(catalog);
   vi.mocked(getGameState).mockResolvedValue(initialState);
   vi.mocked(getGameRewards).mockResolvedValue({ rewards: [] });
@@ -292,7 +293,10 @@ beforeEach(() => {
   vi.mocked(resetDemo).mockResolvedValue({ game_state: initialState, cleanup_warnings: [] });
 });
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+});
 
 describe("town economy", () => {
   it("returns to the catalog when a move is canceled without submitting or changing the saved position", async () => {
@@ -498,6 +502,21 @@ describe("town economy", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Simulate food collision" }));
 
     await waitFor(() => expect(consumeFood).toHaveBeenCalledWith(9, expect.anything()));
+  });
+
+  it("encourages the player only after their first confirmed feeding each day", async () => {
+    renderTown();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Simulate food collision" }));
+
+    expect(await screen.findByRole("dialog", {
+      name: "Good job working toward your savings goals today!",
+    })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Back to town" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Simulate food collision" }));
+    await waitFor(() => expect(consumeFood).toHaveBeenCalledTimes(2));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("starts catalog drag placement without charging before the snapped drop is confirmed", async () => {

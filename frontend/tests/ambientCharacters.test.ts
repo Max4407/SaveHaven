@@ -76,8 +76,9 @@ describe("ambient character sprites", () => {
   it("assigns stable names and clamps happiness changes", () => {
     expect(residentName(8, 0)).toBe(residentName(8, 0));
     expect(residentName(8, 0)).not.toBe(residentName(8, 1));
-    expect(decayCharacterHappiness(100, 4)).toBe(99);
-    expect(decayCharacterHappiness(0.5, 4)).toBe(0);
+    expect(decayCharacterHappiness(100, 20 * 60)).toBe(99);
+    expect(decayCharacterHappiness(100, 10 * 60)).toBe(99.5);
+    expect(decayCharacterHappiness(0.5, 10 * 60)).toBe(0);
     expect(feedCharacter(55)).toBe(85);
     expect(feedCharacter(90)).toBe(100);
   });
