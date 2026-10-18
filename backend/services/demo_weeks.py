@@ -22,7 +22,6 @@ from repository import (
     get_reward_by_source,
     list_accounts,
     list_transactions,
-    set_active_goal_saved_amount,
 )
 from schemas import (
     GameStateResponse,
@@ -125,6 +124,10 @@ class DemoWeekService:
         if connection is None:
             raise DemoWeekError("Connect a demo bank before simulating a week.")
         if connection.data_source == "live":
+            starting_live_balances = {
+                account.source_account_id: account.balance_cents
+                for account in list_accounts(session, user_id)
+            }
             try:
                 live_events = [
                     (
@@ -161,6 +164,15 @@ class DemoWeekService:
                         ),
                     )
                     remote_records.extend(result.remote_records)
+                self._apply_live_balance_changes(
+                    session,
+                    user_id=user_id,
+                    starting_balances=starting_live_balances,
+                    income_amount=_live_event_amount(plan.weekly_income_cents),
+                    bills_amount=_live_event_amount(plan.weekly_recurring_bills_cents),
+                    savings_amount=_live_event_amount(savings_amount),
+                    spending_amount=_live_event_amount(spending_amount),
+                )
                 source = "live"
             except (NessieEventError, BankSyncError):
                 if not self.allow_fixture_fallback:
@@ -307,15 +319,6 @@ class DemoWeekService:
             )
         for account in list_accounts(session, user_id):
             account.balance_cents -= local_balance_changes.get(account.source_account_id, 0)
-        set_active_goal_saved_amount(
-            session,
-            user_id=user_id,
-            amount_saved_cents=sum(
-                account.balance_cents
-                for account in list_accounts(session, user_id)
-                if account.account_type == "savings"
-            ),
-        )
         session.execute(delete(RewardEvent).where(RewardEvent.user_id == user_id))
         session.execute(
             delete(PlanPeriodEvaluation).where(PlanPeriodEvaluation.user_id == user_id)
@@ -526,15 +529,41 @@ class DemoWeekService:
         for account in accounts:
             account.balance_cents += balance_changes.get(account.source_account_id, 0)
             account.synced_at = now
-        set_active_goal_saved_amount(
-            session,
-            user_id=user_id,
-            amount_saved_cents=sum(
-                account.balance_cents
-                for account in accounts
-                if account.account_type == "savings"
-            ),
+        connection = get_bank_connection(session, user_id)
+        if connection is not None:
+            connection.last_synced_at = now
+        session.flush()
+
+    def _apply_live_balance_changes(
+        self,
+        session: Session,
+        *,
+        user_id: str,
+        starting_balances: dict[str, int],
+        income_amount: int,
+        bills_amount: int,
+        savings_amount: int,
+        spending_amount: int,
+    ) -> None:
+        accounts = list_accounts(session, user_id)
+        by_type = {account.account_type: account for account in accounts}
+        if "checking" not in by_type or "savings" not in by_type:
+            raise DemoWeekError("The connected profile needs checking and savings accounts.")
+        checking = by_type["checking"]
+        savings = by_type["savings"]
+        checking.balance_cents = (
+            starting_balances[checking.source_account_id]
+            + income_amount
+            - bills_amount
+            - spending_amount
+            - savings_amount
         )
+        savings.balance_cents = (
+            starting_balances[savings.source_account_id] + savings_amount
+        )
+        now = datetime.now(UTC)
+        checking.synced_at = now
+        savings.synced_at = now
         connection = get_bank_connection(session, user_id)
         if connection is not None:
             connection.last_synced_at = now
@@ -543,6 +572,10 @@ class DemoWeekService:
 
 def _whole_dollars(amount_cents: int) -> int:
     return max(100, _round_half_up(amount_cents, 100) * 100)
+
+
+def _live_event_amount(amount_cents: int) -> int:
+    return _whole_dollars(amount_cents) if amount_cents > 0 else 0
 
 
 def _demo_week_key(source_id: str) -> str:

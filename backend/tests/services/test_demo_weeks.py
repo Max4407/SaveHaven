@@ -221,7 +221,7 @@ def test_fixture_fallback_success_is_explained_and_idempotent() -> None:
         assert first.dashboard.summary.checking_balance_cents == 362_650
         assert first.dashboard.summary.savings_balance_cents == 645_000
         assert first.dashboard.active_goal is not None
-        assert first.dashboard.active_goal.amount_already_saved_cents == 645_000
+        assert first.dashboard.active_goal.amount_already_saved_cents == 20_000
         generated = [
             transaction
             for transaction in first.dashboard.recent_transactions
@@ -269,6 +269,10 @@ def test_live_week_uses_the_resynced_nessie_amount_for_rewards() -> None:
     assert nessie_events.events[0].occurred_at == result.evaluation.period_start
     assert nessie_events.events[-1].occurred_at == result.evaluation.period_end
     assert result.evaluation.actual_net_savings_cents == 20_000
+    assert result.dashboard.summary.checking_balance_cents == 362_650
+    assert result.dashboard.summary.savings_balance_cents == 645_000
+    assert result.dashboard.active_goal is not None
+    assert result.dashboard.active_goal.amount_already_saved_cents == 20_000
     assert len(remote_records) == 5
 
 
@@ -294,6 +298,16 @@ def test_three_successful_periods_unlock_haven_without_rewriting_history() -> No
         assert results[-1].game_state.infrastructure.tier == "stone"
         assert [result.evaluation.period_end for result in results] == [
             date.today() + timedelta(weeks=week) for week in range(1, 4)
+        ]
+        assert [result.dashboard.summary.savings_balance_cents for result in results] == [
+            645_000,
+            665_000,
+            685_000,
+        ]
+        assert [result.dashboard.summary.total_balance_cents for result in results] == [
+            1_007_650,
+            1_047_650,
+            1_087_650,
         ]
 
 
@@ -405,7 +419,7 @@ def test_reset_removes_demo_transactions_rewards_and_town_state() -> None:
         assert reset_balances == starting_balances
         reset_goal = get_active_goal(session, "demo-player")
         assert reset_goal is not None
-        assert reset_goal.amount_already_saved_cents == starting_balances["jordan-savings"]
+        assert reset_goal.amount_already_saved_cents == 0
 
 
 def test_reset_retains_unavailable_remote_cleanup_for_a_later_retry() -> None:

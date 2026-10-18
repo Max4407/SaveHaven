@@ -1,6 +1,6 @@
 from collections.abc import Iterator
 
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -33,6 +33,39 @@ class Database:
         import models  # noqa: F401
 
         Base.metadata.create_all(self.engine)
+        self._migrate_sqlite_schema()
+
+    def _migrate_sqlite_schema(self) -> None:
+        if self.engine.dialect.name != "sqlite":
+            return
+        columns = {
+            column["name"] for column in inspect(self.engine).get_columns("savings_goals")
+        }
+        if "starting_savings_balance_cents" in columns:
+            return
+        with self.engine.begin() as connection:
+            connection.execute(
+                text(
+                    "ALTER TABLE savings_goals ADD COLUMN "
+                    "starting_savings_balance_cents INTEGER NOT NULL DEFAULT 0"
+                )
+            )
+            connection.execute(
+                text(
+                    """
+                    UPDATE savings_goals
+                    SET starting_savings_balance_cents = COALESCE(
+                        (
+                            SELECT SUM(financial_accounts.balance_cents)
+                            FROM financial_accounts
+                            WHERE financial_accounts.user_id = savings_goals.user_id
+                              AND financial_accounts.account_type = 'savings'
+                        ),
+                        amount_already_saved_cents
+                    )
+                    """
+                )
+            )
 
     def session(self) -> Iterator[Session]:
         with self.session_factory() as session:

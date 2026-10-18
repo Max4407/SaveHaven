@@ -15,7 +15,6 @@ from repository.goals import (
     get_goal,
     replace_active_goal,
     save_accepted_plan,
-    set_active_goal_saved_amount,
 )
 from repository.users import DEMO_USERS, authenticate_demo_user, get_user, seed_demo_users
 
@@ -39,7 +38,6 @@ __all__ = [
     "replace_financial_snapshot",
     "replace_active_goal",
     "save_accepted_plan",
-    "set_active_goal_saved_amount",
     "seed_demo_users",
     "upsert_bank_connection",
 ]

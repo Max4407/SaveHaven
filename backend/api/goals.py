@@ -34,17 +34,29 @@ def create_goal(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Target date must be in the future",
         )
+    starting_savings_balance = sum(
+        account.balance_cents
+        for account in list_accounts(session, user.id)
+        if account.account_type == "savings"
+    )
+    if payload.amount_already_saved_cents > payload.target_amount_cents:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Already-saved amount cannot exceed the goal amount",
+        )
+    if payload.amount_already_saved_cents > starting_savings_balance:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Already-saved amount cannot exceed the current savings balance",
+        )
     goal = replace_active_goal(
         session,
         user_id=user.id,
         name=payload.name,
         target_amount_cents=payload.target_amount_cents,
-        amount_already_saved_cents=sum(
-            account.balance_cents
-            for account in list_accounts(session, user.id)
-            if account.account_type == "savings"
-        ),
+        amount_already_saved_cents=payload.amount_already_saved_cents,
         target_date=payload.target_date,
+        starting_savings_balance_cents=starting_savings_balance,
     )
     session.commit()
     return build_goal_plan(session, user_id=user.id, goal=goal)
