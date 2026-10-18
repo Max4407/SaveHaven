@@ -17,7 +17,7 @@ import {
   sellBuilding,
   simulateWeek,
 } from "../src/api/game";
-import type { GameState, SimulatedWeek, TownCatalog } from "../src/api/types";
+import type { Dashboard, GameState, SimulatedWeek, TownCatalog } from "../src/api/types";
 import TownPage from "../src/features/town/TownPage";
 import type { TownBridge } from "../src/features/town/townBridge";
 
@@ -133,6 +133,44 @@ const initialState: GameState = {
   buildings: [],
 };
 
+const simulatedDashboard: Dashboard = {
+  connection: {
+    profile_id: "steady-paycheck",
+    nessie_customer_id: "customer-1",
+    display_name: "Jordan Lee",
+    data_source: "fixture",
+    last_synced_at: "2026-10-18T12:00:00Z",
+  },
+  summary: {
+    as_of: "2026-10-25",
+    total_balance_cents: 1_007_650,
+    checking_balance_cents: 362_650,
+    savings_balance_cents: 645_000,
+    income_last_30_days_cents: 470_000,
+    spending_last_30_days_cents: 214_750,
+  },
+  accounts: [],
+  recent_transactions: [],
+  spending_by_category: [],
+  import_summary: {
+    account_count: 2,
+    transaction_count: 12,
+    transaction_types: ["bill", "deposit", "purchase", "transfer"],
+  },
+  forecast: {
+    weekly_income_cents: 100_000,
+    weekly_recurring_bills_cents: 40_000,
+    weekly_variable_spending_cents: 20_000,
+    safety_buffer_cents: 10_000,
+    income_cadence: "weekly",
+    confidence: "high",
+    detected_deposit_count: 3,
+    evidence: ["Includes the simulated week."],
+  },
+  active_goal: null,
+  current_plan: null,
+};
+
 const simulatedWeek = (gameState: GameState): SimulatedWeek => ({
   source: "fixture_fallback",
   replayed: false,
@@ -169,6 +207,7 @@ const simulatedWeek = (gameState: GameState): SimulatedWeek => ({
     infrastructure: gameState.infrastructure,
   },
   game_state: gameState,
+  dashboard: simulatedDashboard,
 });
 
 function renderTown() {
@@ -183,7 +222,7 @@ function renderTown() {
       </MemoryRouter>
     </QueryClientProvider>,
   );
-  return { ...rendered, invalidateQueries };
+  return { ...rendered, invalidateQueries, queryClient };
 }
 
 beforeEach(() => {
@@ -389,7 +428,7 @@ describe("town economy", () => {
       demo_controls_enabled: true,
     });
     vi.mocked(simulateWeek).mockResolvedValue(simulatedWeek(villageState));
-    const { invalidateQueries } = renderTown();
+    const { invalidateQueries, queryClient } = renderTown();
 
     fireEvent.click(await screen.findByRole("button", { name: "Simulate success" }));
 
@@ -399,7 +438,7 @@ describe("town economy", () => {
     expect(screen.getByRole("dialog")).toHaveTextContent("Saved the full weekly target.");
     expect(screen.getByRole("dialog")).toHaveTextContent("Unlocked: Corner Bakery");
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["game-rewards"] });
-    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["dashboard"] });
+    expect(queryClient.getQueryData(["dashboard"])).toEqual(simulatedDashboard);
   });
 
   it("moves for free and shows the original-price sale refund", async () => {

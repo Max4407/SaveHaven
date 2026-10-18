@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from schemas.finance import DashboardResponse
+
 
 class GridSize(BaseModel):
     width: int = Field(ge=1, le=16)
@@ -142,6 +144,7 @@ class SimulateWeekResponse(BaseModel):
     reward: RewardResponse
     unlocks: LevelUnlocksResponse
     game_state: GameStateResponse
+    dashboard: DashboardResponse
 
 
 class DemoResetResponse(BaseModel):
