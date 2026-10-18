@@ -38,7 +38,7 @@ type Placement = {
 
 type BuildingDisplay = {
   sprite: Phaser.GameObjects.Image;
-  shadow: Phaser.GameObjects.Image;
+  shadow?: Phaser.GameObjects.Image;
 };
 
 export class TownScene extends Phaser.Scene {
@@ -71,7 +71,9 @@ export class TownScene extends Phaser.Scene {
     });
     this.catalog.forEach((item) => {
       this.load.image(`building-${item.id}`, item.asset);
-      this.load.image(`shadow-${item.id}`, item.shadow_asset);
+      if (item.shadow_asset) {
+        this.load.image(`shadow-${item.id}`, item.shadow_asset);
+      }
     });
   }
 
@@ -144,13 +146,17 @@ export class TownScene extends Phaser.Scene {
     const item = this.catalog.find((candidate) => candidate.id === building.catalog_item_id);
     if (!item) return;
     const position = buildingWorldPosition(item, building.grid_x, building.grid_y);
-    const shadow = this.add.image(position.x + 5, position.y + 8, `shadow-${item.id}`);
+    const shadow = item.shadow_asset
+      ? this.add.image(position.x + 5, position.y + 8, `shadow-${item.id}`)
+      : undefined;
     const sprite = this.add.image(position.x, position.y, `building-${item.id}`);
-    this.applyPresentation(shadow, item);
+    if (shadow) {
+      this.applyPresentation(shadow, item);
+      shadow.setAlpha(0.4).setDepth(position.y - 1);
+    }
     this.applyPresentation(sprite, item);
-    shadow.setAlpha(0.4).setDepth(position.y - 1);
     sprite
-      .setDepth(position.y)
+      .setDepth(item.render_kind === "ground" ? -50_000 + position.y : position.y)
       .setInteractive({ useHandCursor: true })
       .setData("isPlacedBuilding", true)
       .setData("buildingId", building.id);
@@ -161,7 +167,7 @@ export class TownScene extends Phaser.Scene {
       }
     });
     this.buildingDisplays.set(building.id, { sprite, shadow });
-    this.buildingLayer?.add([shadow, sprite]);
+    this.buildingLayer?.add(shadow ? [shadow, sprite] : sprite);
   }
 
   private startPlacement(
@@ -207,7 +213,7 @@ export class TownScene extends Phaser.Scene {
     const display = this.buildingDisplays.get(buildingId);
     if (!display) return;
     display.sprite.setAlpha(dimmed ? 0.22 : 1);
-    display.shadow.setAlpha(dimmed ? 0.1 : 0.4);
+    display.shadow?.setAlpha(dimmed ? 0.1 : 0.4);
   }
 
   private updatePlacementAtScreen(canvasX: number, canvasY: number) {
@@ -413,6 +419,11 @@ export class TownScene extends Phaser.Scene {
   }
 
   private applyPresentation(image: Phaser.GameObjects.Image, item: TownCatalogItem) {
+    if (item.render_kind === "ground") {
+      image.setOrigin(0.5, 0.5);
+      image.setDisplaySize(TOWN_GRID_CELL_WIDTH, TOWN_GRID_CELL_HEIGHT);
+      return;
+    }
     image.setOrigin(item.pivot.x / image.width, item.pivot.y / image.height);
     image.setScale(buildingDisplayWidth(item) / image.width);
   }

@@ -104,6 +104,19 @@ const catalog: TownCatalog = {
       pivot: { x: 30, y: 50 },
       landmark: false,
     },
+    {
+      id: "dirt_road_01",
+      name: "Dirt Road",
+      category: "roads",
+      asset: "/dirt_square.png",
+      shadow_asset: null,
+      cost_coins: 1,
+      level_required: 1,
+      footprint: { width: 1, height: 1 },
+      pivot: { x: 44, y: 23 },
+      landmark: false,
+      render_kind: "ground",
+    },
   ],
 };
 
@@ -204,6 +217,9 @@ describe("town economy", () => {
     expect(screen.getByRole("button", { name: "Corner Bakery locked until level 2" })).toBeDisabled();
     expect(screen.getByText("Village Woodshed").closest("article")).toHaveAttribute("draggable", "true");
     expect(screen.getByText("Corner Bakery").closest("article")).toHaveAttribute("draggable", "false");
+    const roadCard = screen.getByText("Dirt Road").closest("article");
+    expect(roadCard).toHaveAttribute("draggable", "true");
+    expect(within(roadCard!).getByText("1")).toBeInTheDocument();
     expect(within(sidebar).getByRole("link", { name: "Open bank and goals" })).toHaveAttribute(
       "href",
       "/dashboard",

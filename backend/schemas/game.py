@@ -19,12 +19,13 @@ class CatalogItemResponse(BaseModel):
     name: str
     category: str
     asset: str
-    shadow_asset: str
+    shadow_asset: str | None = None
     cost_coins: int
     level_required: int
     footprint: GridSize
     pivot: SpritePivot
     landmark: bool
+    render_kind: Literal["building", "ground"] = "building"
 
 
 class CatalogResponse(BaseModel):

@@ -9,7 +9,9 @@ def test_catalog_and_starter_wallet_are_server_authoritative(
     rewards = logged_in_client.get("/api/game/rewards")
 
     assert catalog.status_code == 200
-    assert len(catalog.json()["items"]) == 12
+    assert len(catalog.json()["items"]) == 13
+    dirt_road = next(item for item in catalog.json()["items"] if item["id"] == "dirt_road_01")
+    assert (dirt_road["cost_coins"], dirt_road["render_kind"]) == (1, "ground")
     assert state.status_code == 200
     assert state.json()["wallet"] == {
         "coin_balance": 10_000,
