@@ -17,10 +17,8 @@ import type { PieSectorShapeProps } from "recharts";
 import { isApiError } from "../../api/client";
 import {
   acceptGoalPlan,
-  connectBank,
   createGoal,
   getDashboard,
-  getDemoProfiles,
   regenerateGoalPlan,
   syncBank,
 } from "../../api/finance";
@@ -55,114 +53,6 @@ function formatDateTime(value: string | null) {
 
 function titleCase(value: string) {
   return value.replace(/[-_]/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
-function ConnectBankPanel() {
-  const queryClient = useQueryClient();
-  const [selectedProfileId, setSelectedProfileId] = useState("");
-  const [consented, setConsented] = useState(false);
-  const profilesQuery = useQuery({
-    queryKey: ["demo-profiles"],
-    queryFn: getDemoProfiles,
-  });
-  const connectMutation = useMutation({
-    mutationFn: connectBank,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["dashboard"] }),
-  });
-
-  if (profilesQuery.isPending) {
-    return <div className="route-loading inline-loading" role="status">Loading demo profiles…</div>;
-  }
-
-  if (profilesQuery.isError) {
-    return (
-      <section className="status-card embedded-status" role="alert">
-        <h1>Demo profiles could not be loaded.</h1>
-        <button className="secondary-button" type="button" onClick={() => profilesQuery.refetch()}>
-          Try again
-        </button>
-      </section>
-    );
-  }
-
-  const selectedId = selectedProfileId || profilesQuery.data[0]?.id || "";
-  const selectedProfile = profilesQuery.data.find((profile) => profile.id === selectedId);
-  const demoUsername = selectedProfile ? `${selectedProfile.id}@sandbox.demo` : "";
-
-  return (
-    <main className="onboarding-page">
-      <header className="onboarding-heading">
-        <span className="page-mark" aria-hidden="true">S</span>
-        <div>
-          <p className="eyebrow">Capital One Nessie sandbox</p>
-          <h1>Connect a fictional bank profile.</h1>
-          <p>These read-only credentials are presentation props. Only the selected profile ID is sent.</p>
-        </div>
-      </header>
-
-      <form
-        className="profile-grid"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (selectedId) connectMutation.mutate(selectedId);
-        }}
-      >
-        {profilesQuery.data.map((profile) => (
-          <label
-            className={`profile-card${selectedId === profile.id ? " selected" : ""}`}
-            key={profile.id}
-          >
-            <input
-              type="radio"
-              name="demo-profile"
-              value={profile.id}
-              checked={selectedId === profile.id}
-              onChange={() => setSelectedProfileId(profile.id)}
-            />
-            <span className="profile-check" aria-hidden="true">✓</span>
-            <strong>{profile.display_name}</strong>
-            <small>{profile.income_pattern}</small>
-            <p>{profile.description}</p>
-          </label>
-        ))}
-
-        <section className="sandbox-login" aria-label="Fictional sandbox credentials">
-          <div>
-            <label htmlFor="sandbox-username">Fictional username</label>
-            <input id="sandbox-username" value={demoUsername} readOnly />
-          </div>
-          <div>
-            <label htmlFor="sandbox-password">Fictional password</label>
-            <input id="sandbox-password" value="savehaven-demo" type="password" readOnly />
-          </div>
-          <label className="consent-check">
-            <input
-              type="checkbox"
-              checked={consented}
-              onChange={(event) => setConsented(event.target.checked)}
-            />
-            I understand this connects only fictional Capital One Nessie sandbox data.
-          </label>
-        </section>
-
-        {connectMutation.error ? (
-          <p className="error-banner profile-error" role="alert">
-            {isApiError(connectMutation.error)
-              ? connectMutation.error.message
-              : "The demo bank could not be connected."}
-          </p>
-        ) : null}
-
-        <button
-          className="primary-button connect-button"
-          type="submit"
-          disabled={!selectedId || !consented || connectMutation.isPending}
-        >
-          {connectMutation.isPending ? "Connecting…" : "Connect selected profile"}
-        </button>
-      </form>
-    </main>
-  );
 }
 
 function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
@@ -583,10 +473,6 @@ export function DashboardPage() {
 
   if (dashboardQuery.isPending) {
     return <div className="route-loading" role="status">Loading your financial snapshot…</div>;
-  }
-
-  if (dashboardQuery.isError && isApiError(dashboardQuery.error, 409)) {
-    return <ConnectBankPanel />;
   }
 
   if (dashboardQuery.isError) {

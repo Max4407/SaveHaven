@@ -11,11 +11,9 @@ import App from "../src/App";
 
 const mocks = vi.hoisted(() => ({
   acceptGoalPlan: vi.fn(),
-  connectBank: vi.fn(),
   createGoal: vi.fn(),
   demoLogin: vi.fn(),
   getDashboard: vi.fn(),
-  getDemoProfiles: vi.fn(),
   getHealth: vi.fn(),
   getSession: vi.fn(),
   logout: vi.fn(),
@@ -32,10 +30,8 @@ vi.mock("../src/api/auth", () => ({
 
 vi.mock("../src/api/finance", () => ({
   acceptGoalPlan: mocks.acceptGoalPlan,
-  connectBank: mocks.connectBank,
   createGoal: mocks.createGoal,
   getDashboard: mocks.getDashboard,
-  getDemoProfiles: mocks.getDemoProfiles,
   getHealth: mocks.getHealth,
   regenerateGoalPlan: mocks.regenerateGoalPlan,
   runNessieEvent: mocks.runNessieEvent,
@@ -133,9 +129,7 @@ describe("application API integration", () => {
     vi.resetAllMocks();
     mocks.getSession.mockResolvedValue({ id: "demo-player", display_name: "Jordan Lee" });
     mocks.getDashboard.mockResolvedValue(dashboard);
-    mocks.getDemoProfiles.mockResolvedValue([]);
     mocks.getHealth.mockResolvedValue({ status: "ok", data_mode: "fixture", nessie_configured: false, demo_controls_enabled: false });
-    mocks.connectBank.mockResolvedValue(dashboard.connection);
     mocks.syncBank.mockResolvedValue(dashboard.connection);
     mocks.demoLogin.mockResolvedValue({ id: "demo-player", display_name: "Jordan Lee" });
     mocks.logout.mockResolvedValue(undefined);
@@ -248,6 +242,9 @@ describe("application API integration", () => {
 
     expect(await screen.findByRole("heading", { name: "Welcome back." })).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /Taylor Kim/ })).toHaveValue(
+      "taylor.kim@savehaven.demo",
+    );
     expect(screen.getByLabelText("Password")).toHaveAttribute("type", "password");
     expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /Build your town/ })).not.toBeInTheDocument();
@@ -299,30 +296,16 @@ describe("application API integration", () => {
     expect(screen.queryByRole("link", { name: /Build your town/ })).not.toBeInTheDocument();
   });
 
-  it("connects a selected profile when the dashboard reports no bank connection", async () => {
-    const user = userEvent.setup();
-    mocks.getDashboard
-      .mockRejectedValueOnce(new ApiError(409, "Connect a demo bank before opening the dashboard"))
-      .mockResolvedValue(dashboard);
-    mocks.getDemoProfiles.mockResolvedValue([
-      {
-        id: "steady-paycheck",
-        display_name: "Jordan Lee",
-        description: "A predictable twice-monthly income.",
-        income_pattern: "Steady paycheck",
-      },
-    ]);
+  it("does not show a second profile-selection page when the dashboard is unavailable", async () => {
+    mocks.getDashboard.mockRejectedValue(
+      new ApiError(409, "This demo account has no connected bank profile"),
+    );
     renderApp();
 
-    expect(await screen.findByRole("heading", { name: "Connect a fictional bank profile." })).toBeInTheDocument();
-    expect(screen.getByLabelText("Fictional username")).toHaveAttribute("readonly");
-    expect(screen.getByLabelText("Fictional password")).toHaveAttribute("readonly");
-    await user.click(screen.getByRole("checkbox"));
-    await user.click(screen.getByRole("button", { name: "Connect selected profile" }));
-
-    expect(mocks.connectBank).toHaveBeenCalled();
-    expect(mocks.connectBank.mock.calls[0][0]).toBe("steady-paycheck");
-    expect(await screen.findByRole("heading", { name: "Bank" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Your financial snapshot could not be loaded." }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Connect a fictional bank profile.")).not.toBeInTheDocument();
   });
 
   it("submits a savings goal in integer cents for a data-driven recommendation", async () => {

@@ -75,7 +75,9 @@ def test_connection_errors_are_actionable(logged_in_client: TestClient) -> None:
     assert missing_profile.status_code == 404
 
 
-def test_each_demo_user_has_isolated_financial_state(client: TestClient) -> None:
+def test_each_demo_user_automatically_gets_isolated_financial_state(
+    client: TestClient,
+) -> None:
     client.post(
         "/api/auth/demo-login",
         json={"email": "jordan.lee@savehaven.demo", "password": "savehaven-demo"},
@@ -91,4 +93,8 @@ def test_each_demo_user_has_isolated_financial_state(client: TestClient) -> None
     )
     response = client.get("/api/dashboard")
 
-    assert response.status_code == 409
+    assert response.status_code == 200
+    assert response.json()["connection"]["profile_id"] == "variable-income"
+    assert {
+        account["source_account_id"] for account in response.json()["accounts"]
+    } == {"alex-checking", "alex-savings"}

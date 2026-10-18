@@ -12,6 +12,7 @@ class DemoUser:
     display_name: str
     email: str
     password: str
+    profile_id: str
 
 
 DEMO_USERS = (
@@ -20,12 +21,21 @@ DEMO_USERS = (
         display_name="Jordan Lee",
         email="jordan.lee@savehaven.demo",
         password="savehaven-demo",
+        profile_id="steady-paycheck",
     ),
     DemoUser(
         id="demo-reviewer",
         display_name="Alex Morgan",
         email="alex.morgan@savehaven.demo",
         password="savehaven-demo",
+        profile_id="variable-income",
+    ),
+    DemoUser(
+        id="demo-taylor",
+        display_name="Taylor Kim",
+        email="taylor.kim@savehaven.demo",
+        password="savehaven-demo",
+        profile_id="tight-budget",
     ),
 )
 
@@ -42,6 +52,11 @@ def seed_demo_users(session: Session) -> None:
 
 def get_user(session: Session, user_id: str) -> User | None:
     return session.get(User, user_id)
+
+
+def get_demo_profile_id(user_id: str) -> str | None:
+    demo_user = next((user for user in DEMO_USERS if user.id == user_id), None)
+    return demo_user.profile_id if demo_user is not None else None
 
 
 def authenticate_demo_user(session: Session, email: str, password: str) -> User | None:
