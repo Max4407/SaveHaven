@@ -67,9 +67,9 @@ export function TownMusic() {
         ref={buttonRef}
         className={`pixel-sound-button${soundOff ? " muted" : ""}`}
         type="button"
-        aria-label={soundOff ? "Turn town sound on" : "Mute town sound"}
+        aria-label={soundOff ? "Play town music" : "Mute town music"}
         aria-pressed={!soundOff}
-        title={soundOff ? "Sound off — click to play" : "Sound on — click to mute"}
+        title={soundOff ? "Music off — click to play (effects stay on)" : "Music on — click to mute music only"}
         onClick={toggleSound}
       >
         <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor" shapeRendering="crispEdges" aria-hidden="true">
