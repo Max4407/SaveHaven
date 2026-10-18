@@ -6,6 +6,7 @@ import { ApiError } from "../../api/client";
 import { getHealth } from "../../api/finance";
 import {
   buyBuilding,
+  consumeFood,
   getGameRewards,
   getGameState,
   getTownCatalog,
@@ -23,10 +24,13 @@ import type {
 import { usePlacementSound } from "./usePlacementSound";
 import { TownMusic } from "./TownMusic";
 import { TownCanvas } from "./TownCanvas";
+import { foodFramePosition, randomFoodFrame } from "./objects/food";
 import {
   CATALOG_DRAG_TYPE,
   CATALOG_FACING_TYPE,
+  CATALOG_VARIANT_TYPE,
   createTownBridge,
+  type CharacterDetails,
 } from "./townBridge";
 
 type PlacementStatus = { active: boolean; valid: boolean; reason: string | null };
@@ -49,6 +53,37 @@ function createIdempotencyKey(scenario: string): string {
   return `${scenario}-${random}`.slice(0, 80);
 }
 
+function itemSupportsFacing(item: TownCatalogItem): boolean {
+  return (item.render_kind ?? "building") === "building";
+}
+
+function CatalogArt({
+  item,
+  facing,
+  visualVariant = 0,
+}: {
+  item: TownCatalogItem;
+  facing: BuildingFacing;
+  visualVariant?: number;
+}) {
+  if (item.render_kind === "food") {
+    const position = foodFramePosition(visualVariant);
+    return (
+      <div className="catalog-art food-art" aria-hidden="true">
+        <span style={{
+          backgroundImage: `url(${item.asset})`,
+          backgroundPosition: `${-position.column * 64}px ${-position.row * 64}px`,
+        }} />
+      </div>
+    );
+  }
+  return (
+    <div className={`catalog-art${itemSupportsFacing(item) && facing === "right" ? " facing-right" : ""}`}>
+      <img src={item.asset} alt="" />
+    </div>
+  );
+}
+
 function TownPage() {
   const playPlacementSound = usePlacementSound();
   const bridge = useMemo(() => createTownBridge(), []);
@@ -58,7 +93,9 @@ function TownPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [category, setCategory] = useState("all");
   const [placementFacing, setPlacementFacing] = useState<BuildingFacing>("left");
+  const [foodPreviewFrame, setFoodPreviewFrame] = useState(() => randomFoodFrame());
   const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);
+  const [selectedCharacter, setSelectedCharacter] = useState<CharacterDetails | null>(null);
   const [placement, setPlacement] = useState<PlacementStatus>({ active: false, valid: false, reason: null });
   const [actionError, setActionError] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<SimulatedWeek | null>(null);
@@ -126,6 +163,17 @@ function TownPage() {
     onError: (error) => setActionError(mutationMessage(error)),
     onSettled: finishAction,
   });
+  const consumeFoodMutation = useMutation({
+    mutationFn: consumeFood,
+    onSuccess: (nextState) => {
+      queryClient.setQueryData(["game-state"], nextState);
+      setActionError(null);
+    },
+    onError: (error, buildingId) => {
+      setActionError(mutationMessage(error));
+      bridge.emit("foodConsumptionRejected", { buildingId });
+    },
+  });
   const simulateMutation = useMutation({
     mutationFn: (scenario: "successful" | "off-plan") => simulateWeek(
       scenario,
@@ -158,7 +206,21 @@ function TownPage() {
   useEffect(() => {
     const unsubscribeSelection = bridge.subscribe("buildingSelected", ({ buildingId }) => {
       setSelectedBuildingId(buildingId);
+      setSelectedCharacter(null);
       setIsSidebarOpen(true);
+    });
+    const unsubscribeCharacter = bridge.subscribe(
+      "characterSelectionChanged",
+      ({ character }) => {
+        setSelectedCharacter(character);
+        if (character) {
+          setSelectedBuildingId(null);
+          setIsSidebarOpen(true);
+        }
+      },
+    );
+    const unsubscribeFood = bridge.subscribe("foodConsumed", ({ buildingId }) => {
+      consumeFoodMutation.mutate(buildingId);
     });
     const unsubscribePlacement = bridge.subscribe("placementChanged", setPlacement);
     const unsubscribeConfirmation = bridge.subscribe("placementConfirmed", (detail) => {
@@ -170,6 +232,7 @@ function TownPage() {
             grid_x: detail.gridX,
             grid_y: detail.gridY,
             facing: detail.facing,
+            visual_variant: detail.visualVariant,
           });
         } else {
           moveMutation.mutate({
@@ -183,10 +246,18 @@ function TownPage() {
     });
     return () => {
       unsubscribeSelection();
+      unsubscribeCharacter();
+      unsubscribeFood();
       unsubscribePlacement();
       unsubscribeConfirmation();
     };
-  }, [bridge, purchaseMutation, moveMutation, startAction]);
+  }, [
+    bridge,
+    consumeFoodMutation,
+    purchaseMutation,
+    moveMutation,
+    startAction,
+  ]);
 
   const catalog = catalogQuery.data;
   const state = stateQuery.data;
@@ -203,9 +274,17 @@ function TownPage() {
 
   const beginPurchase = (item: TownCatalogItem) => {
     if (actionPending.current) return;
+    const visualVariant = item.render_kind === "food" ? foodPreviewFrame : undefined;
     setSelectedBuildingId(null);
+    setSelectedCharacter(null);
     setActionError(null);
-    bridge.emit("startPlacement", { catalogItemId: item.id, facing: placementFacing });
+    bridge.emit("clearCharacterSelection", {});
+    bridge.emit("startPlacement", {
+      catalogItemId: item.id,
+      facing: itemSupportsFacing(item) ? placementFacing : "left",
+      visualVariant,
+    });
+    if (item.render_kind === "food") setFoodPreviewFrame(randomFoodFrame());
   };
 
   const beginCatalogDrag = (event: DragEvent<HTMLElement>, item: TownCatalogItem) => {
@@ -213,13 +292,27 @@ function TownPage() {
       event.preventDefault();
       return;
     }
+    const visualVariant = item.render_kind === "food" ? foodPreviewFrame : undefined;
     setSelectedBuildingId(null);
+    setSelectedCharacter(null);
     setActionError(null);
+    bridge.emit("clearCharacterSelection", {});
     event.dataTransfer.effectAllowed = "copy";
     event.dataTransfer.setData(CATALOG_DRAG_TYPE, item.id);
-    event.dataTransfer.setData(CATALOG_FACING_TYPE, placementFacing);
+    event.dataTransfer.setData(
+      CATALOG_FACING_TYPE,
+      itemSupportsFacing(item) ? placementFacing : "left",
+    );
+    if (visualVariant != null) {
+      event.dataTransfer.setData(CATALOG_VARIANT_TYPE, String(visualVariant));
+    }
     event.dataTransfer.setData("text/plain", item.id);
-    bridge.emit("catalogDragStarted", { catalogItemId: item.id, facing: placementFacing });
+    bridge.emit("catalogDragStarted", {
+      catalogItemId: item.id,
+      facing: itemSupportsFacing(item) ? placementFacing : "left",
+      visualVariant,
+    });
+    if (item.render_kind === "food") setFoodPreviewFrame(randomFoodFrame());
   };
 
   if (catalogQuery.isLoading || stateQuery.isLoading) {
@@ -292,15 +385,45 @@ function TownPage() {
 
         {actionError && <p className="error-banner town-action-error" role="alert">{actionError}</p>}
 
-        {selectedBuilding && selectedItem ? (
+        {selectedCharacter ? (
+          <section className="character-details" aria-label="Selected character">
+            <div className="character-portrait" aria-hidden="true">☺</div>
+            <div>
+              <p className="eyebrow">Town resident</p>
+              <h2>{selectedCharacter.name}</h2>
+            </div>
+            <div className="happiness-summary">
+              <div><strong>Happiness</strong><span>{selectedCharacter.happiness}%</span></div>
+              <div
+                className="happiness-track"
+                role="meter"
+                aria-label={`${selectedCharacter.name}'s happiness`}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={selectedCharacter.happiness}
+              >
+                <span style={{ width: `${selectedCharacter.happiness}%` }} />
+              </div>
+              <p>Place food nearby to cheer them up.</p>
+            </div>
+            <button className="secondary-button" type="button" onClick={() => {
+              setSelectedCharacter(null);
+              bridge.emit("clearCharacterSelection", {});
+            }}>Back to building catalog</button>
+          </section>
+        ) : selectedBuilding && selectedItem ? (
           <section className="building-actions" aria-label="Selected building">
-            <div className={`catalog-art${(selectedBuilding.facing ?? "left") === "right" ? " facing-right" : ""}`}><img src={selectedItem.asset} alt="" /></div>
+            <CatalogArt
+              item={selectedItem}
+              facing={selectedBuilding.facing ?? "left"}
+              visualVariant={selectedBuilding.visual_variant}
+            />
             <div>
               <p className="eyebrow">Selected building</p>
               <h2>{selectedItem.name}</h2>
               <p>Purchased for {selectedBuilding.purchase_price_coins} Coins · sells for {Math.floor(selectedBuilding.purchase_price_coins * 0.6)}</p>
             </div>
-            {selectedItem.render_kind !== "ground" && (
+            {itemSupportsFacing(selectedItem) && (
               <div className="building-facing-controls" aria-label="Building facing">
                 {(["left", "right"] as const).map((facing) => (
                   <button
@@ -325,6 +448,7 @@ function TownPage() {
                 catalogItemId: selectedItem.id,
                 buildingId: selectedBuilding.id,
                 facing: selectedBuilding.facing ?? "left",
+                visualVariant: selectedBuilding.visual_variant,
               });
             }}>Move</button>
             <button className="sell-button" type="button" disabled={isMutating} onClick={() => startAction(() => sellMutation.mutate(selectedBuilding.id))}>Sell</button>
@@ -335,7 +459,7 @@ function TownPage() {
               <div><p className="eyebrow">Building catalog</p><h2>Build your haven</h2></div>
               <span className="preview-pill">Server verified</span>
             </div>
-            <p className="catalog-intro">Drag an unlocked building onto the grass, or use its place button.</p>
+            <p className="catalog-intro">Drag an unlocked item onto the grass, or use its place button.</p>
 
             <div className="building-facing-picker" aria-label="New building facing">
               <span>Facing</span>
@@ -377,7 +501,11 @@ function TownPage() {
                       }
                     }}
                   >
-                    <div className={`catalog-art${item.render_kind !== "ground" && placementFacing === "right" ? " facing-right" : ""}`}><img src={item.asset} alt="" /></div>
+                    <CatalogArt
+                      item={item}
+                      facing={placementFacing}
+                      visualVariant={item.render_kind === "food" ? foodPreviewFrame : undefined}
+                    />
                     <div className="catalog-card-copy">
                       <span className="level-pill">{levelLocked ? `Unlocks Level ${item.level_required}` : `${item.footprint.width}×${item.footprint.height}${item.landmark ? " landmark" : ""}`}</span>
                       <h3>{item.name}</h3>

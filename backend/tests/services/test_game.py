@@ -31,6 +31,7 @@ def test_starter_grant_purchase_move_and_original_price_refund() -> None:
                 grid_x=4,
                 grid_y=4,
                 facing="right",
+                visual_variant=27,
             ),
         )
         moved = game.move_building(
@@ -51,11 +52,37 @@ def test_starter_grant_purchase_move_and_original_price_refund() -> None:
         assert purchased.wallet.coin_balance == 200
         assert purchased.buildings[0].purchase_price_coins == 100
         assert purchased.buildings[0].facing == "right"
+        assert purchased.buildings[0].visual_variant == 27
         assert moved.wallet.coin_balance == 200
         assert moved.buildings[0].facing == "left"
         assert (moved.buildings[0].grid_x, moved.buildings[0].grid_y) == (5, 4)
         assert sold.wallet.coin_balance == 260
         assert sold.buildings == []
+
+
+def test_food_costs_one_coin_and_is_removed_without_a_refund_when_consumed() -> None:
+    session, game = game_session()
+    with session:
+        purchased = game.buy_building(
+            session,
+            user_id="demo-player",
+            request=PlaceBuildingRequest(
+                catalog_item_id="food_01",
+                grid_x=4,
+                grid_y=4,
+                visual_variant=42,
+            ),
+        )
+        consumed = game.consume_food(
+            session,
+            user_id="demo-player",
+            building_id=purchased.buildings[0].id,
+        )
+
+        assert purchased.wallet.coin_balance == 299
+        assert purchased.buildings[0].visual_variant == 42
+        assert consumed.wallet.coin_balance == 299
+        assert consumed.buildings == []
 
 
 @pytest.mark.parametrize(

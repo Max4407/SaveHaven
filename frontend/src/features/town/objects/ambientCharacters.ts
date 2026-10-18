@@ -6,11 +6,21 @@ export type AmbientCharacterVariant = typeof AMBIENT_CHARACTER_VARIANTS[number];
 export type CharacterDirection = "down" | "left" | "right" | "up";
 export type ResidentAssignment = {
   key: string;
+  name: string;
   buildingId: number;
   catalogItemId: string;
   residentIndex: number;
   variant: AmbientCharacterVariant;
 };
+
+export const MAX_CHARACTER_HAPPINESS = 100;
+export const CHARACTER_HAPPINESS_DECAY_PER_SECOND = 0.25;
+export const FOOD_HAPPINESS_RESTORE = 30;
+
+const CHARACTER_NAMES = [
+  "Rowan", "Mira", "Theo", "Ivy", "Finn", "Nora", "Jasper", "Lina",
+  "Milo", "Wren", "Ada", "Eli", "Poppy", "Silas", "Mae", "Otis",
+] as const;
 
 const CHARACTER_ASSET_DIRECTORY = "/Free%20Character%20Sprites%20-%20Fantasy%20Dreamland/16x16";
 const DIRECTION_ROWS: Record<CharacterDirection, number> = {
@@ -52,6 +62,18 @@ export function residentAssignmentKey(buildingId: number, residentIndex: number)
   return `${buildingId}:${residentIndex}`;
 }
 
+export function residentName(buildingId: number, residentIndex: number): string {
+  return CHARACTER_NAMES[(buildingId * 5 + residentIndex * 3) % CHARACTER_NAMES.length];
+}
+
+export function decayCharacterHappiness(happiness: number, elapsedSeconds: number): number {
+  return Math.max(0, happiness - elapsedSeconds * CHARACTER_HAPPINESS_DECAY_PER_SECOND);
+}
+
+export function feedCharacter(happiness: number): number {
+  return Math.min(MAX_CHARACTER_HAPPINESS, happiness + FOOD_HAPPINESS_RESTORE);
+}
+
 export function createResidentAssignments(
   state: GameState,
   catalog: TownCatalogItem[],
@@ -63,6 +85,7 @@ export function createResidentAssignments(
     for (let residentIndex = 0; residentIndex < residentCount; residentIndex += 1) {
       residents.push({
         key: residentAssignmentKey(building.id, residentIndex),
+        name: residentName(building.id, residentIndex),
         buildingId: building.id,
         catalogItemId: building.catalog_item_id,
         residentIndex,

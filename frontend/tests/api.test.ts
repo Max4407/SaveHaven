@@ -14,6 +14,7 @@ import {
 } from "../src/api/finance";
 import {
   buyBuilding,
+  consumeFood,
   getGameRewards,
   getGameState,
   getTownCatalog,
@@ -75,6 +76,7 @@ describe("backend endpoint contracts", () => {
     await buyBuilding({ catalog_item_id: "woodshed_01", grid_x: 4, grid_y: 4, facing: "right" });
     await moveBuilding(7, { grid_x: 5, grid_y: 4, facing: "left" });
     await sellBuilding(7);
+    await consumeFood(8);
     await simulateWeek("successful", "successful-demo-001");
     await resetDemo();
 
@@ -97,6 +99,7 @@ describe("backend endpoint contracts", () => {
       "/api/game/buildings",
       "/api/game/buildings/7",
       "/api/game/buildings/7",
+      "/api/game/food/8",
       "/api/demo/simulate-successful-week",
       "/api/demo/reset",
     ]);
@@ -143,11 +146,12 @@ describe("backend endpoint contracts", () => {
       body: JSON.stringify({ grid_x: 5, grid_y: 4, facing: "left" }),
     });
     expect(fetchMock.mock.calls[17][1]).toMatchObject({ method: "DELETE" });
-    expect(fetchMock.mock.calls[18][1]).toMatchObject({
+    expect(fetchMock.mock.calls[18][1]).toMatchObject({ method: "DELETE" });
+    expect(fetchMock.mock.calls[19][1]).toMatchObject({
       method: "POST",
       body: JSON.stringify({ idempotency_key: "successful-demo-001" }),
     });
-    expect(fetchMock.mock.calls[19][1]).toMatchObject({ method: "POST" });
+    expect(fetchMock.mock.calls[20][1]).toMatchObject({ method: "POST" });
   });
 
   it("maps backend detail responses to actionable API errors", async () => {

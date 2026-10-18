@@ -1,5 +1,19 @@
 [
   {
+    "id": "food_01",
+    "name": "Food",
+    "category": "food",
+    "asset": "/Food.png",
+    "shadow_asset": null,
+    "cost_coins": 1,
+    "level_required": 1,
+    "footprint": { "width": 1, "height": 1 },
+    "pivot": { "x": 8, "y": 14 },
+    "landmark": false,
+    "render_kind": "food",
+    "resident_count": 0
+  },
+  {
     "id": "dirt_road_01",
     "name": "Dirt Road",
     "category": "roads",

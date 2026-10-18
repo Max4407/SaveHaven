@@ -9,6 +9,7 @@ import { ApiError } from "../src/api/client";
 import { getHealth } from "../src/api/finance";
 import {
   buyBuilding,
+  consumeFood,
   getGameRewards,
   getGameState,
   getTownCatalog,
@@ -31,6 +32,7 @@ vi.mock("../src/features/town/TownMusic", () => ({ TownMusic: () => null }));
 vi.mock("../src/api/finance", () => ({ getHealth: vi.fn() }));
 vi.mock("../src/api/game", () => ({
   buyBuilding: vi.fn(),
+  consumeFood: vi.fn(),
   getGameRewards: vi.fn(),
   getGameState: vi.fn(),
   getTownCatalog: vi.fn(),
@@ -48,6 +50,7 @@ vi.mock("../src/features/town/TownCanvas", async () => {
         catalogItemId: string;
         buildingId?: number;
         facing: BuildingFacing;
+        visualVariant?: number;
       } | null>(null);
       React.useEffect(() => {
         const beginPlacement = (detail: {
@@ -73,6 +76,12 @@ vi.mock("../src/features/town/TownCanvas", async () => {
               {state.buildings[0].grid_x},{state.buildings[0].grid_y}
             </output>
           ) : null}
+          <button type="button" onClick={() => bridge.emit("characterSelectionChanged", {
+            character: { key: "7:0", name: "Mira", happiness: 74 },
+          })}>Select character</button>
+          <button type="button" onClick={() => bridge.emit("foodConsumed", {
+            buildingId: 9,
+          })}>Simulate food collision</button>
           {state.buildings[0] ? (
             <button type="button" onClick={() => bridge.emit("buildingSelected", {
               buildingId: state.buildings[0].id,
@@ -93,6 +102,20 @@ vi.mock("../src/features/town/TownCanvas", async () => {
 
 const catalog: TownCatalog = {
   items: [
+    {
+      id: "food_01",
+      name: "Food",
+      category: "food",
+      asset: "/Food.png",
+      shadow_asset: null,
+      cost_coins: 1,
+      level_required: 1,
+      footprint: { width: 1, height: 1 },
+      pivot: { x: 8, y: 14 },
+      landmark: false,
+      render_kind: "food",
+      resident_count: 0,
+    },
     {
       id: "woodshed_01",
       name: "Village Woodshed",
@@ -179,7 +202,7 @@ const simulatedWeek = (gameState: GameState): SimulatedWeek => ({
     created_at: "2026-10-18T12:00:00Z",
   },
   unlocks: {
-    catalog_items: [catalog.items[1]],
+    catalog_items: [catalog.items.find(({ id }) => id === "bakery_01")!],
     district: gameState.district,
     infrastructure: gameState.infrastructure,
   },
@@ -213,6 +236,7 @@ beforeEach(() => {
     demo_controls_enabled: false,
   });
   vi.mocked(moveBuilding).mockResolvedValue(initialState);
+  vi.mocked(consumeFood).mockResolvedValue(initialState);
   vi.mocked(sellBuilding).mockResolvedValue(initialState);
   vi.mocked(simulateWeek).mockRejectedValue(new Error("not used"));
   vi.mocked(resetDemo).mockResolvedValue({ game_state: initialState, cleanup_warnings: [] });
@@ -352,6 +376,46 @@ describe("town economy", () => {
       grid_y: 4,
       facing: "right",
     }, expect.anything()));
+  });
+
+  it("purchases one randomized food frame for one coin without applying building rotation", async () => {
+    vi.mocked(buyBuilding).mockResolvedValue(initialState);
+    renderTown();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Right →" }));
+    fireEvent.click(screen.getByRole("button", { name: "Place Food" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
+
+    await waitFor(() => expect(buyBuilding).toHaveBeenCalledWith({
+      catalog_item_id: "food_01",
+      grid_x: 4,
+      grid_y: 4,
+      facing: "left",
+      visual_variant: expect.any(Number),
+    }, expect.anything()));
+    expect(screen.getAllByText("Food")).toHaveLength(1);
+  });
+
+  it("shows a selected resident's name and live happiness in the sidebar", async () => {
+    renderTown();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Select character" }));
+
+    expect(screen.getByRole("heading", { name: "Mira" })).toBeInTheDocument();
+    expect(screen.getByRole("meter", { name: "Mira's happiness" })).toHaveAttribute(
+      "aria-valuenow",
+      "74",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Back to building catalog" }));
+    expect(screen.getByRole("button", { name: "Place Food" })).toBeInTheDocument();
+  });
+
+  it("removes collided food through the server-authoritative consume endpoint", async () => {
+    renderTown();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Simulate food collision" }));
+
+    await waitFor(() => expect(consumeFood).toHaveBeenCalledWith(9, expect.anything()));
   });
 
   it("starts catalog drag placement without charging before the snapped drop is confirmed", async () => {
