@@ -5,8 +5,10 @@ export const AMBIENT_CHARACTER_VARIANTS = [1, 2, 3, 4, 5, 6] as const;
 export type AmbientCharacterVariant = typeof AMBIENT_CHARACTER_VARIANTS[number];
 export type CharacterDirection = "down" | "left" | "right" | "up";
 export type ResidentAssignment = {
+  key: string;
   buildingId: number;
   catalogItemId: string;
+  residentIndex: number;
   variant: AmbientCharacterVariant;
 };
 
@@ -46,6 +48,10 @@ export function characterDirection(deltaX: number, deltaY: number): CharacterDir
   return deltaY < 0 ? "up" : "down";
 }
 
+export function residentAssignmentKey(buildingId: number, residentIndex: number): string {
+  return `${buildingId}:${residentIndex}`;
+}
+
 export function createResidentAssignments(
   state: GameState,
   catalog: TownCatalogItem[],
@@ -56,10 +62,12 @@ export function createResidentAssignments(
     const residentCount = catalogById.get(building.catalog_item_id)?.resident_count ?? 0;
     for (let residentIndex = 0; residentIndex < residentCount; residentIndex += 1) {
       residents.push({
+        key: residentAssignmentKey(building.id, residentIndex),
         buildingId: building.id,
         catalogItemId: building.catalog_item_id,
+        residentIndex,
         variant: AMBIENT_CHARACTER_VARIANTS[
-          residents.length % AMBIENT_CHARACTER_VARIANTS.length
+          (building.id + residentIndex) % AMBIENT_CHARACTER_VARIANTS.length
         ],
       });
     }

@@ -72,8 +72,8 @@ describe("backend endpoint contracts", () => {
     await getTownCatalog();
     await getGameState();
     await getGameRewards();
-    await buyBuilding({ catalog_item_id: "woodshed_01", grid_x: 4, grid_y: 4 });
-    await moveBuilding(7, { grid_x: 5, grid_y: 4 });
+    await buyBuilding({ catalog_item_id: "woodshed_01", grid_x: 4, grid_y: 4, facing: "right" });
+    await moveBuilding(7, { grid_x: 5, grid_y: 4, facing: "left" });
     await sellBuilding(7);
     await simulateWeek("successful", "successful-demo-001");
     await resetDemo();
@@ -131,11 +131,16 @@ describe("backend endpoint contracts", () => {
     });
     expect(fetchMock.mock.calls[15][1]).toMatchObject({
       method: "POST",
-      body: JSON.stringify({ catalog_item_id: "woodshed_01", grid_x: 4, grid_y: 4 }),
+      body: JSON.stringify({
+        catalog_item_id: "woodshed_01",
+        grid_x: 4,
+        grid_y: 4,
+        facing: "right",
+      }),
     });
     expect(fetchMock.mock.calls[16][1]).toMatchObject({
       method: "PATCH",
-      body: JSON.stringify({ grid_x: 5, grid_y: 4 }),
+      body: JSON.stringify({ grid_x: 5, grid_y: 4, facing: "left" }),
     });
     expect(fetchMock.mock.calls[17][1]).toMatchObject({ method: "DELETE" });
     expect(fetchMock.mock.calls[18][1]).toMatchObject({

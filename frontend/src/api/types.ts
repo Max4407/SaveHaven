@@ -171,11 +171,14 @@ export type GameWallet = {
   streak_weeks: number;
 };
 
+export type BuildingFacing = "left" | "right";
+
 export type PlacedBuilding = {
   id: number;
   catalog_item_id: string;
   grid_x: number;
   grid_y: number;
+  facing?: BuildingFacing;
   purchase_price_coins: number;
   purchased_at: string;
   updated_at: string;

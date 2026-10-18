@@ -1,23 +1,34 @@
-import type { GameState } from "../../api/types";
+import type { BuildingFacing, GameState } from "../../api/types";
 
 export const CATALOG_DRAG_TYPE = "application/x-savehaven-catalog-item";
+export const CATALOG_FACING_TYPE = "application/x-savehaven-building-facing";
 
 export type TownBridgeEvents = {
   interactionLocked: { locked: boolean };
   cameraChanged: { zoom: number };
   buildingSelected: { buildingId: number };
+  catalogDragStarted: { catalogItemId: string; facing: BuildingFacing };
   buildingDeselected: Record<string, never>;
-  catalogDragStarted: { catalogItemId: string };
   catalogDragMoved: { catalogItemId: string; canvasX: number; canvasY: number };
-  catalogDropped: { catalogItemId: string; canvasX: number; canvasY: number };
+  catalogDropped: {
+    catalogItemId: string;
+    facing: BuildingFacing;
+    canvasX: number;
+    canvasY: number;
+  };
   placementChanged: { active: boolean; valid: boolean; reason: string | null };
   placementConfirmed: {
     catalogItemId: string;
     buildingId?: number;
     gridX: number;
     gridY: number;
+    facing: BuildingFacing;
   };
-  startPlacement: { catalogItemId: string; buildingId?: number };
+  startPlacement: {
+    catalogItemId: string;
+    buildingId?: number;
+    facing: BuildingFacing;
+  };
   cancelPlacement: Record<string, never>;
   stateChanged: { state: GameState };
 };
