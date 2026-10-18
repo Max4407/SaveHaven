@@ -10,10 +10,10 @@ export async function getSession(): Promise<SessionUser | null> {
   }
 }
 
-export function demoLogin(userId = "demo-player"): Promise<SessionUser> {
+export function demoLogin(email: string, password: string): Promise<SessionUser> {
   return apiRequest<SessionUser>("/api/auth/demo-login", {
     method: "POST",
-    body: JSON.stringify({ user_id: userId }),
+    body: JSON.stringify({ email, password }),
   });
 }
 

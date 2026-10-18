@@ -76,13 +76,19 @@ def test_connection_errors_are_actionable(logged_in_client: TestClient) -> None:
 
 
 def test_each_demo_user_has_isolated_financial_state(client: TestClient) -> None:
-    client.post("/api/auth/demo-login", json={"user_id": "demo-player"})
+    client.post(
+        "/api/auth/demo-login",
+        json={"email": "jordan.lee@savehaven.demo", "password": "savehaven-demo"},
+    )
     client.post(
         "/api/bank-connections",
         json={"profile_id": "steady-paycheck"},
     )
 
-    client.post("/api/auth/demo-login", json={"user_id": "demo-reviewer"})
+    client.post(
+        "/api/auth/demo-login",
+        json={"email": "alex.morgan@savehaven.demo", "password": "savehaven-demo"},
+    )
     response = client.get("/api/dashboard")
 
     assert response.status_code == 409

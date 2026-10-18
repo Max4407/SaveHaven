@@ -1,16 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, type FormEvent } from "react";
 import { demoLogin } from "../../api/auth";
 import { isApiError } from "../../api/client";
 
-const DEMO_USERS = [
-  { id: "demo-player", displayName: "Demo Player", description: "Primary demo profile" },
-  { id: "demo-reviewer", displayName: "Demo Reviewer", description: "Second saved profile" },
+const DEMO_ACCOUNTS = [
+  { email: "jordan.lee@savehaven.demo", displayName: "Jordan Lee" },
+  { email: "alex.morgan@savehaven.demo", displayName: "Alex Morgan" },
 ] as const;
 
 export function LoginPage() {
   const queryClient = useQueryClient();
+  const [email, setEmail] = useState<string>(DEMO_ACCOUNTS[0].email);
+  const [password, setPassword] = useState("");
   const loginMutation = useMutation({
-    mutationFn: (userId: string) => demoLogin(userId),
+    mutationFn: () => demoLogin(email, password),
     onSuccess: (user) => {
       queryClient.removeQueries({
         predicate: (query) => query.queryKey[0] !== "session",
@@ -19,16 +22,20 @@ export function LoginPage() {
     },
   });
 
+  const submitLogin = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    loginMutation.mutate();
+  };
+
   return (
     <main className="auth-page">
       <section className="auth-card" aria-labelledby="login-heading">
         <span className="page-mark auth-mark" aria-hidden="true">S</span>
-        <p className="eyebrow">SaveHaven demo</p>
-        <h1 id="login-heading">Grow savings into something you can see.</h1>
+        <p className="eyebrow">SaveHaven</p>
+        <h1 id="login-heading">Welcome back.</h1>
         <p>
-          Choose a pre-seeded demo profile. Each person keeps their own savings goals and town.
-          SaveHaven uses fictional Capital One Nessie sandbox data and never asks for real banking
-          credentials.
+          Sign in to continue to your saved plan and town. This prototype accepts only the
+          fictional accounts below and never asks for real banking credentials.
         </p>
         {loginMutation.error ? (
           <p className="error-banner" role="alert">
@@ -37,28 +44,42 @@ export function LoginPage() {
               : "The demo session could not be started."}
           </p>
         ) : null}
-        <div className="auth-user-list" aria-label="Choose a demo user">
-          {DEMO_USERS.map((user) => (
-            <button
-              className="auth-user-option"
-              type="button"
-              key={user.id}
-              aria-label={`Continue as ${user.displayName}`}
+        <form className="auth-login-form" onSubmit={submitLogin}>
+          <label htmlFor="login-email">
+            Email
+            <select
+              id="login-email"
+              value={email}
+              autoComplete="username"
               disabled={loginMutation.isPending}
-              onClick={() => loginMutation.mutate(user.id)}
+              onChange={(event) => setEmail(event.target.value)}
             >
-              <span className="auth-user-avatar" aria-hidden="true">
-                {user.displayName.slice(0, 2).toUpperCase()}
-              </span>
-              <span>
-                <strong>{user.displayName}</strong>
-                <small>{user.description}</small>
-              </span>
-              <span className="auth-user-arrow" aria-hidden="true">→</span>
-            </button>
-          ))}
-        </div>
-        {loginMutation.isPending ? <p className="auth-login-status" role="status">Signing in…</p> : null}
+              {DEMO_ACCOUNTS.map((account) => (
+                <option value={account.email} key={account.email}>
+                  {account.displayName} — {account.email}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label htmlFor="login-password">
+            Password
+            <input
+              id="login-password"
+              type="password"
+              value={password}
+              autoComplete="current-password"
+              disabled={loginMutation.isPending}
+              required
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </label>
+          <p className="demo-credential-note">
+            Demo password: <code>savehaven-demo</code>
+          </p>
+          <button className="primary-button" type="submit" disabled={loginMutation.isPending}>
+            {loginMutation.isPending ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
       </section>
     </main>
   );

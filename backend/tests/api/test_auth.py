@@ -31,33 +31,50 @@ def test_protected_routes_require_a_signed_demo_session(client: TestClient) -> N
     ).status_code == 401
 
 
-def test_demo_login_grants_access_without_collecting_credentials(client: TestClient) -> None:
+def test_demo_login_grants_access_for_a_preseeded_fictional_account(
+    client: TestClient,
+) -> None:
     login_response = client.post(
         "/api/auth/demo-login",
-        json={"user_id": "demo-player"},
+        json={
+            "email": "jordan.lee@savehaven.demo",
+            "password": "savehaven-demo",
+        },
     )
 
     assert login_response.status_code == 200
     assert login_response.json() == {
         "id": "demo-player",
-        "display_name": "Demo Player",
+        "display_name": "Jordan Lee",
     }
     assert "HttpOnly" in login_response.headers["set-cookie"]
     assert "SameSite=lax" in login_response.headers["set-cookie"]
     assert client.get("/api/auth/session").json() == {
         "id": "demo-player",
-        "display_name": "Demo Player",
+        "display_name": "Jordan Lee",
     }
     assert client.get("/api/demo/nessie-profiles").status_code == 200
 
 
-def test_demo_login_rejects_unseeded_identities(client: TestClient) -> None:
+def test_demo_login_rejects_unseeded_or_incorrect_credentials(client: TestClient) -> None:
     response = client.post(
         "/api/auth/demo-login",
-        json={"user_id": "not-a-demo-user"},
+        json={
+            "email": "not-a-user@savehaven.demo",
+            "password": "savehaven-demo",
+        },
+    )
+    wrong_password = client.post(
+        "/api/auth/demo-login",
+        json={
+            "email": "jordan.lee@savehaven.demo",
+            "password": "wrong-password",
+        },
     )
 
     assert response.status_code == 401
+    assert wrong_password.status_code == 401
+    assert response.json() == wrong_password.json()
 
 
 def test_tampered_session_cookie_is_rejected(client: TestClient) -> None:
@@ -69,7 +86,10 @@ def test_tampered_session_cookie_is_rejected(client: TestClient) -> None:
 
 
 def test_logout_revokes_browser_access(client: TestClient) -> None:
-    client.post("/api/auth/demo-login", json={"user_id": "demo-player"})
+    client.post(
+        "/api/auth/demo-login",
+        json={"email": "jordan.lee@savehaven.demo", "password": "savehaven-demo"},
+    )
 
     logout_response = client.post("/api/auth/logout")
 
@@ -81,7 +101,10 @@ def test_logout_revokes_browser_access(client: TestClient) -> None:
 def test_switching_demo_users_restores_each_users_goal_and_town(client: TestClient) -> None:
     target_date = date(date.today().year + 1, 12, 1).isoformat()
 
-    client.post("/api/auth/demo-login", json={"user_id": "demo-player"})
+    client.post(
+        "/api/auth/demo-login",
+        json={"email": "jordan.lee@savehaven.demo", "password": "savehaven-demo"},
+    )
     client.post("/api/bank-connections", json={"profile_id": "steady-paycheck"})
     player_goal = client.post(
         "/api/goals",
@@ -100,7 +123,10 @@ def test_switching_demo_users_restores_each_users_goal_and_town(client: TestClie
     assert player_purchase.status_code == 201
     client.post("/api/auth/logout")
 
-    client.post("/api/auth/demo-login", json={"user_id": "demo-reviewer"})
+    client.post(
+        "/api/auth/demo-login",
+        json={"email": "alex.morgan@savehaven.demo", "password": "savehaven-demo"},
+    )
     client.post("/api/bank-connections", json={"profile_id": "variable-income"})
     reviewer_goal = client.post(
         "/api/goals",
@@ -119,7 +145,10 @@ def test_switching_demo_users_restores_each_users_goal_and_town(client: TestClie
     assert reviewer_purchase.status_code == 201
     client.post("/api/auth/logout")
 
-    client.post("/api/auth/demo-login", json={"user_id": "demo-player"})
+    client.post(
+        "/api/auth/demo-login",
+        json={"email": "jordan.lee@savehaven.demo", "password": "savehaven-demo"},
+    )
     player_dashboard = client.get("/api/dashboard").json()
     player_state = client.get("/api/game/state").json()
     assert player_dashboard["active_goal"]["name"] == "Emergency fund"
@@ -128,7 +157,10 @@ def test_switching_demo_users_restores_each_users_goal_and_town(client: TestClie
     ]
     client.post("/api/auth/logout")
 
-    client.post("/api/auth/demo-login", json={"user_id": "demo-reviewer"})
+    client.post(
+        "/api/auth/demo-login",
+        json={"email": "alex.morgan@savehaven.demo", "password": "savehaven-demo"},
+    )
     reviewer_dashboard = client.get("/api/dashboard").json()
     reviewer_state = client.get("/api/game/state").json()
     assert reviewer_dashboard["active_goal"]["name"] == "Travel fund"

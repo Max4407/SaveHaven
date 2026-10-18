@@ -31,11 +31,17 @@ def test_goal_generates_and_accepts_an_explainable_plan(
 
 
 def test_goal_access_is_scoped_to_the_signed_in_user(client: TestClient) -> None:
-    client.post("/api/auth/demo-login", json={"user_id": "demo-player"})
+    client.post(
+        "/api/auth/demo-login",
+        json={"email": "jordan.lee@savehaven.demo", "password": "savehaven-demo"},
+    )
     client.post("/api/bank-connections", json={"profile_id": "steady-paycheck"})
     goal_id = client.post("/api/goals", json=goal_payload()).json()["goal"]["id"]
 
-    client.post("/api/auth/demo-login", json={"user_id": "demo-reviewer"})
+    client.post(
+        "/api/auth/demo-login",
+        json={"email": "alex.morgan@savehaven.demo", "password": "savehaven-demo"},
+    )
 
     assert client.get(f"/api/goals/{goal_id}/plan").status_code == 404
     assert client.post(f"/api/goals/{goal_id}/accept-plan").status_code == 404

@@ -131,13 +131,13 @@ describe("application API integration", () => {
   beforeEach(() => {
     cleanup();
     vi.resetAllMocks();
-    mocks.getSession.mockResolvedValue({ id: "demo-player", display_name: "Demo Player" });
+    mocks.getSession.mockResolvedValue({ id: "demo-player", display_name: "Jordan Lee" });
     mocks.getDashboard.mockResolvedValue(dashboard);
     mocks.getDemoProfiles.mockResolvedValue([]);
     mocks.getHealth.mockResolvedValue({ status: "ok", data_mode: "fixture", nessie_configured: false, demo_controls_enabled: false });
     mocks.connectBank.mockResolvedValue(dashboard.connection);
     mocks.syncBank.mockResolvedValue(dashboard.connection);
-    mocks.demoLogin.mockResolvedValue({ id: "demo-player", display_name: "Demo Player" });
+    mocks.demoLogin.mockResolvedValue({ id: "demo-player", display_name: "Jordan Lee" });
     mocks.logout.mockResolvedValue(undefined);
   });
 
@@ -242,13 +242,14 @@ describe("application API integration", () => {
     expect(screen.getByText("Market")).toBeInTheDocument();
   });
 
-  it("shows demo login when there is no signed session", async () => {
+  it("shows credential login when there is no signed session", async () => {
     mocks.getSession.mockResolvedValue(null);
     renderApp();
 
-    expect(await screen.findByRole("heading", { name: "Grow savings into something you can see." })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Continue as Demo Player" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Continue as Demo Reviewer" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Welcome back." })).toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByLabelText("Password")).toHaveAttribute("type", "password");
+    expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /Build your town/ })).not.toBeInTheDocument();
   });
 
@@ -262,30 +263,39 @@ describe("application API integration", () => {
     expect(screen.getByText("Checking your demo session…")).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /Build your town/ })).not.toBeInTheDocument();
     await act(async () => finishSession(null));
-    await user.click(await screen.findByRole("button", { name: "Continue as Demo Player" }));
-    expect(screen.getByText("Signing in…")).toBeInTheDocument();
+    await user.type(await screen.findByLabelText("Password"), "savehaven-demo");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+    expect(screen.getByRole("button", { name: "Signing in…" })).toBeDisabled();
     expect(screen.queryByRole("link", { name: /Build your town/ })).not.toBeInTheDocument();
-    await act(async () => finishLogin({ id: "demo-player", display_name: "Demo Player" }));
+    await act(async () => finishLogin({ id: "demo-player", display_name: "Jordan Lee" }));
     expect(await screen.findByRole("link", { name: /Build your town/ })).toBeInTheDocument();
   });
 
   it("signs in as a selected demo user and lets that user sign out", async () => {
     const user = userEvent.setup();
     mocks.getSession.mockResolvedValue(null);
-    mocks.demoLogin.mockResolvedValue({ id: "demo-reviewer", display_name: "Demo Reviewer" });
+    mocks.demoLogin.mockResolvedValue({ id: "demo-reviewer", display_name: "Alex Morgan" });
     renderApp();
 
-    await user.click(await screen.findByRole("button", { name: "Continue as Demo Reviewer" }));
+    await user.selectOptions(
+      await screen.findByLabelText("Email"),
+      "alex.morgan@savehaven.demo",
+    );
+    await user.type(screen.getByLabelText("Password"), "savehaven-demo");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
 
-    expect(mocks.demoLogin).toHaveBeenCalledWith("demo-reviewer");
+    expect(mocks.demoLogin).toHaveBeenCalledWith(
+      "alex.morgan@savehaven.demo",
+      "savehaven-demo",
+    );
     expect(await screen.findByRole("heading", { name: "Bank" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Demo session")).toHaveTextContent("Demo Reviewer");
+    expect(screen.getByLabelText("Demo session")).toHaveTextContent("Alex Morgan");
     expect(screen.getByRole("link", { name: /Build your town/ })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Sign out" }));
 
     expect(mocks.logout).toHaveBeenCalledOnce();
-    expect(await screen.findByRole("heading", { name: "Grow savings into something you can see." })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Welcome back." })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /Build your town/ })).not.toBeInTheDocument();
   });
 

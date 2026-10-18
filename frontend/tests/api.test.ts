@@ -41,7 +41,7 @@ describe("backend endpoint contracts", () => {
       }
       return Promise.resolve(Response.json({
         id: "demo-player",
-        display_name: "Demo Player",
+        display_name: "Jordan Lee",
         profile_id: "steady-paycheck",
         connection: {},
       }));
@@ -49,7 +49,7 @@ describe("backend endpoint contracts", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     await getHealth();
-    await demoLogin();
+    await demoLogin("jordan.lee@savehaven.demo", "savehaven-demo");
     await getSession();
     await logout();
     await getDemoProfiles();
@@ -101,7 +101,13 @@ describe("backend endpoint contracts", () => {
       "/api/demo/reset",
     ]);
     expect(fetchMock.mock.calls.every(([, init]) => init.credentials === "include")).toBe(true);
-    expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: "POST" });
+    expect(fetchMock.mock.calls[1][1]).toMatchObject({
+      method: "POST",
+      body: JSON.stringify({
+        email: "jordan.lee@savehaven.demo",
+        password: "savehaven-demo",
+      }),
+    });
     expect(fetchMock.mock.calls[5][1]).toMatchObject({
       method: "POST",
       body: JSON.stringify({ profile_id: "steady-paycheck" }),

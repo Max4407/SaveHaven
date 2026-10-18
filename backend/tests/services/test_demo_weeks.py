@@ -1,5 +1,6 @@
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 
 from sqlalchemy import func, select
 
@@ -13,11 +14,58 @@ from models import (
     PlanPeriodEvaluation,
     RewardEvent,
 )
-from repository import replace_active_goal, seed_demo_users
-from schemas import PlaceBuildingRequest
+from repository import get_bank_connection, replace_active_goal, seed_demo_users
+from schemas import NessieRecordReference, PlaceBuildingRequest
 from services import BankSyncService, DemoWeekService, GameService, NessieEventService, TownCatalog
 
 CATALOG_PATH = Path(__file__).resolve().parents[3] / "data" / "catalog" / "town_catalog.json"
+
+
+class ResyncingNessieEvents:
+    def __init__(self) -> None:
+        self.client = object()
+        self.events = []
+
+    def run(self, session, *, user_id: str, event):
+        self.events.append(event)
+        now = datetime.now(UTC)
+        session.add_all(
+            [
+                NormalizedTransaction(
+                    user_id=user_id,
+                    source_account_id="jordan-checking",
+                    source_id=f"withdrawal:demo:{event.idempotency_key}:withdrawal:fake",
+                    occurred_at=date.today(),
+                    signed_amount_cents=-event.amount_cents,
+                    direction="outflow",
+                    kind="transfer",
+                    merchant_name="Goal Savings",
+                    category="savings",
+                    description="Weekly savings transfer",
+                    synced_at=now,
+                ),
+                NormalizedTransaction(
+                    user_id=user_id,
+                    source_account_id="jordan-savings",
+                    source_id=f"deposit:demo:{event.idempotency_key}:deposit:fake",
+                    occurred_at=date.today(),
+                    signed_amount_cents=event.amount_cents,
+                    direction="inflow",
+                    kind="transfer",
+                    merchant_name="Checking",
+                    category="savings",
+                    description="Weekly savings transfer",
+                    synced_at=now,
+                ),
+            ]
+        )
+        session.flush()
+        return SimpleNamespace(
+            remote_records=[
+                NessieRecordReference(resource="withdrawals", record_id="withdrawal-live-1"),
+                NessieRecordReference(resource="deposits", record_id="deposit-live-1"),
+            ]
+        )
 
 
 def setup_demo_week_service():
@@ -113,6 +161,38 @@ def test_fixture_fallback_success_is_explained_and_idempotent() -> None:
         assert replay.replayed is True
         assert replay.reward.id == first.reward.id
         assert replay.game_state.wallet.coin_balance == 720
+
+
+def test_live_week_uses_the_resynced_nessie_amount_for_rewards() -> None:
+    database, service = setup_demo_week_service()
+    nessie_events = ResyncingNessieEvents()
+    service.nessie_events = nessie_events  # type: ignore[assignment]
+
+    with database.session_factory() as session:
+        connection = get_bank_connection(session, "demo-player")
+        plan = session.scalar(select(AcceptedSavingsPlan))
+        assert connection is not None
+        assert plan is not None
+        connection.data_source = "live"
+        plan.weekly_savings_cents = 20_049
+        session.commit()
+
+        result = service.simulate(
+            session,
+            user_id="demo-player",
+            idempotency_key="live-week-001",
+            scenario="successful",
+        )
+        remote_records = list(session.scalars(select(DemoNessieRecord)))
+
+    assert result.source == "live"
+    assert nessie_events.events[0].event_type == "move_to_savings"
+    assert nessie_events.events[0].amount_cents == 20_000
+    assert result.evaluation.actual_net_savings_cents == 20_000
+    assert {record.remote_id for record in remote_records} == {
+        "withdrawal-live-1",
+        "deposit-live-1",
+    }
 
 
 def test_three_successful_periods_unlock_haven_without_rewriting_history() -> None:

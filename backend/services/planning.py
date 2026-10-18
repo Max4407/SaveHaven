@@ -53,13 +53,20 @@ def build_forecast(transactions: list[NormalizedTransaction]) -> ForecastRespons
         key=lambda group: (len(group), sum(t.signed_amount_cents for t in group)),
         default=[],
     )
+    total_income = sum(transaction.signed_amount_cents for transaction in income)
+    recurring_income_share = (
+        sum(transaction.signed_amount_cents for transaction in recurring) / total_income
+        if total_income > 0
+        else 0
+    )
+    has_dominant_recurring_source = len(groups) == 1 or recurring_income_share >= 0.75
 
     cadence = "irregular"
     detected_count = len(recurring)
     weekly_income = 0
     confidence = "low"
     evidence: list[str] = []
-    if len(recurring) >= 2:
+    if len(recurring) >= 2 and has_dominant_recurring_source:
         ordered = sorted(recurring, key=lambda transaction: transaction.occurred_at)
         intervals = [
             (right.occurred_at - left.occurred_at).days
@@ -77,17 +84,22 @@ def build_forecast(transactions: list[NormalizedTransaction]) -> ForecastRespons
         evidence.append(f"Median gap between those deposits is {median_days:g} days.")
     else:
         cutoff = as_of - timedelta(days=29)
-        recent_income = sum(
-            transaction.signed_amount_cents
-            for transaction in income
-            if transaction.occurred_at >= cutoff
-        )
+        recent_deposits = [
+            transaction for transaction in income if transaction.occurred_at >= cutoff
+        ]
+        recent_income = sum(transaction.signed_amount_cents for transaction in recent_deposits)
         weekly_income = round(recent_income * 7 / 30)
-        detected_count = len(income)
-        evidence.append(
-            "Income history is sparse, so the estimate uses imported deposits "
-            "from the last 30 days."
-        )
+        detected_count = len(recent_deposits)
+        if len(groups) > 1 and not has_dominant_recurring_source:
+            evidence.append(
+                f"Income is spread across {len(groups)} sources, so the estimate uses all "
+                f"{len(recent_deposits)} imported deposits from the last 30 days."
+            )
+        else:
+            evidence.append(
+                "Income history is sparse, so the estimate uses imported deposits "
+                "from the last 30 days."
+            )
 
     observation_start = max(as_of - timedelta(days=89), min(t.occurred_at for t in transactions))
     observation_days = max(30, (as_of - observation_start).days + 1)

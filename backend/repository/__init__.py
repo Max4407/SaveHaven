@@ -15,10 +15,11 @@ from repository.goals import (
     replace_active_goal,
     save_accepted_plan,
 )
-from repository.users import DEMO_USERS, get_user, seed_demo_users
+from repository.users import DEMO_USERS, authenticate_demo_user, get_user, seed_demo_users
 
 __all__ = [
     "DEMO_USERS",
+    "authenticate_demo_user",
     "ensure_wallet",
     "get_bank_connection",
     "get_accepted_plan",
