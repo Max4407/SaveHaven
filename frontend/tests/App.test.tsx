@@ -247,7 +247,26 @@ describe("application API integration", () => {
     renderApp();
 
     expect(await screen.findByRole("heading", { name: "Grow savings into something you can see." })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Enter the demo" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Continue as Demo Player" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Continue as Demo Reviewer" })).toBeInTheDocument();
+  });
+
+  it("signs in as a selected demo user and lets that user sign out", async () => {
+    const user = userEvent.setup();
+    mocks.getSession.mockResolvedValue(null);
+    mocks.demoLogin.mockResolvedValue({ id: "demo-reviewer", display_name: "Demo Reviewer" });
+    renderApp();
+
+    await user.click(await screen.findByRole("button", { name: "Continue as Demo Reviewer" }));
+
+    expect(mocks.demoLogin).toHaveBeenCalledWith("demo-reviewer");
+    expect(await screen.findByRole("heading", { name: "Bank" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Demo session")).toHaveTextContent("Demo Reviewer");
+
+    await user.click(screen.getByRole("button", { name: "Sign out" }));
+
+    expect(mocks.logout).toHaveBeenCalledOnce();
+    expect(await screen.findByRole("heading", { name: "Grow savings into something you can see." })).toBeInTheDocument();
   });
 
   it("connects a selected profile when the dashboard reports no bank connection", async () => {

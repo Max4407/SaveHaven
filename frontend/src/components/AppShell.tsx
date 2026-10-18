@@ -12,11 +12,14 @@ export function AppShell({ user }: AppShellProps) {
   const queryClient = useQueryClient();
   const logoutMutation = useMutation({
     mutationFn: logout,
-    onSuccess: () => {
-      queryClient.setQueryData(["session"], null);
+    onSuccess: async () => {
+      await queryClient.cancelQueries({
+        predicate: (query) => query.queryKey[0] !== "session",
+      });
       queryClient.removeQueries({
         predicate: (query) => query.queryKey[0] !== "session",
       });
+      queryClient.setQueryData(["session"], null);
     },
   });
 
@@ -35,20 +38,23 @@ export function AppShell({ user }: AppShellProps) {
           </Link>
         </nav>
       ) : null}
-      {location.pathname.startsWith("/dashboard") ? (
-        <div className="session-controls bank-session-controls" aria-label="Demo session">
-          <span className="avatar" aria-hidden="true">{user.display_name.slice(0, 2).toUpperCase()}</span>
-          <span>{user.display_name}</span>
-          <button
-            className="text-button"
-            type="button"
-            disabled={logoutMutation.isPending}
-            onClick={() => logoutMutation.mutate()}
-          >
-            {logoutMutation.isPending ? "Signing out…" : "Sign out"}
-          </button>
-        </div>
-      ) : null}
+      <div
+        className={`session-controls${location.pathname.startsWith("/dashboard") ? " bank-session-controls" : ""}${location.pathname.startsWith("/town") ? " town-session-controls" : ""}`}
+        aria-label="Demo session"
+      >
+        <span className="avatar" aria-hidden="true">{user.display_name.slice(0, 2).toUpperCase()}</span>
+        <span>{user.display_name}</span>
+        <button
+          className="text-button"
+          type="button"
+          disabled={logoutMutation.isPending}
+          onClick={() => logoutMutation.mutate()}
+        >
+          {logoutMutation.isPending
+            ? "Signing out…"
+            : logoutMutation.isError ? "Retry sign out" : "Sign out"}
+        </button>
+      </div>
     </div>
   );
 }

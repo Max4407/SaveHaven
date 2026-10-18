@@ -36,7 +36,6 @@ function TownPage() {
   const bridge = useMemo(() => createTownBridge(), []);
   const queryClient = useQueryClient();
   const actionPending = useRef(false);
-  const [zoom, setZoom] = useState(90);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [category, setCategory] = useState("all");
   const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);
@@ -123,9 +122,6 @@ function TownPage() {
   });
 
   useEffect(() => {
-    const unsubscribeCamera = bridge.subscribe("cameraChanged", ({ zoom: nextZoom }) => {
-      setZoom(Math.round(nextZoom * 100));
-    });
     const unsubscribeSelection = bridge.subscribe("buildingSelected", ({ buildingId }) => {
       setSelectedBuildingId(buildingId);
       setIsSidebarOpen(true);
@@ -150,7 +146,6 @@ function TownPage() {
       });
     });
     return () => {
-      unsubscribeCamera();
       unsubscribeSelection();
       unsubscribePlacement();
       unsubscribeConfirmation();
@@ -252,13 +247,6 @@ function TownPage() {
         </div>
 
         <div className="town-catalog-body">
-        <div className="sidebar-map-meta">
-          <span className="map-status"><i /> Town map ready</span>
-          <span><strong>Drag</strong> to explore</span>
-          <span><strong>Scroll</strong> to zoom</span>
-          <span className="zoom-value">{zoom}%</span>
-        </div>
-
         <section className="town-level-card" aria-label="Town level progress">
           <div><strong>{state.wallet.level_name}</strong><span>{state.progression.next_level_xp == null ? "Future XP banked" : `${state.wallet.xp} / ${state.progression.next_level_xp} XP`}</span></div>
           <div className="level-track"><span style={{ width: `${state.progression.progress_percent}%` }} /></div>
