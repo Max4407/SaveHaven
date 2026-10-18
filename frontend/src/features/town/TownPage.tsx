@@ -205,7 +205,7 @@ function TownPage() {
           <div>
             <p className="eyebrow">Level {state.wallet.level} · {state.wallet.level_name}</p>
             <h1>Your future haven</h1>
-            <p>Saving progress grows the district. Buildings make it yours.</p>
+            <p>Saving progress grows your town. Buildings make it yours.</p>
           </div>
           <Link className="route-arrow" to="/dashboard" aria-label="Open bank and goals">
             <span aria-hidden="true">→</span>
@@ -220,7 +220,7 @@ function TownPage() {
 
         <div className="town-catalog-body">
         <div className="sidebar-map-meta">
-          <span className="map-status"><i /> {state.district.max_x - state.district.min_x + 1}×{state.district.max_y - state.district.min_y + 1} district</span>
+          <span className="map-status"><i /> Town map ready</span>
           <span><strong>Drag</strong> to explore</span>
           <span><strong>Scroll</strong> to zoom</span>
           <span className="zoom-value">{zoom}%</span>
@@ -229,7 +229,7 @@ function TownPage() {
         <section className="town-level-card" aria-label="Town level progress">
           <div><strong>{state.wallet.level_name}</strong><span>{state.progression.next_level_xp == null ? "Future XP banked" : `${state.wallet.xp} / ${state.progression.next_level_xp} XP`}</span></div>
           <div className="level-track"><span style={{ width: `${state.progression.progress_percent}%` }} /></div>
-          <p>{state.infrastructure.tier} route · XP comes only from verified savings</p>
+          <p>XP comes only from verified savings</p>
         </section>
 
         {actionError && <p className="error-banner town-action-error" role="alert">{actionError}</p>}
@@ -253,7 +253,7 @@ function TownPage() {
               <div><p className="eyebrow">Building catalog</p><h2>Build your haven</h2></div>
               <span className="preview-pill">Server verified</span>
             </div>
-            <p className="catalog-intro">Drag an unlocked building onto the grid, or use its place button. Roads stay clear automatically.</p>
+            <p className="catalog-intro">Drag an unlocked building onto the grass, or use its place button.</p>
 
             <div className="catalog-filters" aria-label="Catalog categories">
               {categories.map((itemCategory) => (
@@ -327,7 +327,7 @@ function TownPage() {
               <strong>+{celebration.reward.xp_awarded} XP</strong>
             </div>
             <p>{celebration.reward.explanation}</p>
-            {celebration.reward.new_level > celebration.reward.previous_level && <p>Your district and route upgraded automatically. New buildings are ready in the catalog.</p>}
+            {celebration.reward.new_level > celebration.reward.previous_level && <p>New buildings are ready in the catalog.</p>}
             {celebration.unlocks.catalog_items.length > 0 && (
               <p>Unlocked: {celebration.unlocks.catalog_items.map((item) => item.name).join(", ")}.</p>
             )}
