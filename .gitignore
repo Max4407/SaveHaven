@@ -29,3 +29,8 @@ data/fixtures/nessie_demo_state.local.json
 *.db
 *.sqlite
 *.sqlite3
+
+# SQLite runtime journals
+*.db-wal
+*.db-shm
+*.db-journal
