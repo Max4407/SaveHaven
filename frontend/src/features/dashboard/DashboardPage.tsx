@@ -190,7 +190,6 @@ function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
   const [showForm, setShowForm] = useState(!dashboard.active_goal);
   const [name, setName] = useState("Emergency fund");
   const [targetAmount, setTargetAmount] = useState("3000");
-  const [savedAmount, setSavedAmount] = useState("0");
   const defaultTarget = useMemo(() => {
     const target = new Date();
     target.setMonth(target.getMonth() + 6);
@@ -228,14 +227,18 @@ function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
             createMutation.mutate({
               name,
               target_amount_cents: Math.round(Number(targetAmount) * 100),
-              amount_already_saved_cents: Math.round(Number(savedAmount) * 100),
+              amount_already_saved_cents: dashboard.summary.savings_balance_cents,
               target_date: targetDate,
             });
           }}
         >
           <label>Goal name<input required value={name} onChange={(event) => setName(event.target.value)} /></label>
           <label>Target amount<input required min="1" step="1" type="number" value={targetAmount} onChange={(event) => setTargetAmount(event.target.value)} /></label>
-          <label>Already saved<input required min="0" step="1" type="number" value={savedAmount} onChange={(event) => setSavedAmount(event.target.value)} /></label>
+          <div className="linked-savings-field">
+            <span>Current savings balance</span>
+            <strong>{formatDollars(dashboard.summary.savings_balance_cents)}</strong>
+            <small>Tracked automatically from the connected savings account</small>
+          </div>
           <label>Target date<input required type="date" value={targetDate} onChange={(event) => setTargetDate(event.target.value)} /></label>
           <button className="primary-button" disabled={createMutation.isPending} type="submit">
             {createMutation.isPending ? "Calculating…" : "Generate recommendation"}
@@ -382,7 +385,7 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
         <article className="stat-card">
           <p>Total balance</p>
           <h2>{formatDollars(dashboard.summary.total_balance_cents)}</h2>
-          <small>Across connected accounts</small>
+          <small>{formatDollars(dashboard.summary.savings_balance_cents)} in savings · transfers stay inside this total</small>
         </article>
         <button className="stat-card finance-summary-button" type="button" onClick={() => openTransactions("income")} aria-controls="bank-transactions">
           <p>Income · 30 days</p>

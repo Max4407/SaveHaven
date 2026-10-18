@@ -332,16 +332,16 @@ describe("application API integration", () => {
 
     await screen.findByRole("heading", { name: "Savings plan" });
     await user.clear(screen.getByLabelText("Target amount"));
-    await user.type(screen.getByLabelText("Target amount"), "4250");
-    await user.clear(screen.getByLabelText("Already saved"));
-    await user.type(screen.getByLabelText("Already saved"), "250");
+    await user.type(screen.getByLabelText("Target amount"), "8250");
+    expect(screen.getByText("Tracked automatically from the connected savings account"))
+      .toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Generate recommendation" }));
 
     expect(mocks.createGoal).toHaveBeenCalledWith(
       expect.objectContaining({
         name: "Emergency fund",
-        target_amount_cents: 425000,
-        amount_already_saved_cents: 25000,
+        target_amount_cents: 825000,
+        amount_already_saved_cents: 625000,
       }),
       expect.anything(),
     );

@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 
 from auth import CurrentDemoUser
 from database.dependencies import DatabaseSession
-from repository import get_bank_connection, get_goal, replace_active_goal
+from repository import get_bank_connection, get_goal, list_accounts, replace_active_goal
 from schemas import CreateGoalRequest, GoalPlanResponse
 from services import accept_goal_plan, build_goal_plan
 
@@ -39,7 +39,11 @@ def create_goal(
         user_id=user.id,
         name=payload.name,
         target_amount_cents=payload.target_amount_cents,
-        amount_already_saved_cents=payload.amount_already_saved_cents,
+        amount_already_saved_cents=sum(
+            account.balance_cents
+            for account in list_accounts(session, user.id)
+            if account.account_type == "savings"
+        ),
         target_date=payload.target_date,
     )
     session.commit()

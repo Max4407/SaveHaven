@@ -43,6 +43,17 @@ def get_active_goal(session: Session, user_id: str) -> SavingsGoal | None:
     )
 
 
+def set_active_goal_saved_amount(
+    session: Session, *, user_id: str, amount_saved_cents: int
+) -> SavingsGoal | None:
+    goal = get_active_goal(session, user_id)
+    if goal is None:
+        return None
+    goal.amount_already_saved_cents = max(0, amount_saved_cents)
+    session.flush()
+    return goal
+
+
 def get_goal(session: Session, *, user_id: str, goal_id: int) -> SavingsGoal | None:
     return session.scalar(
         select(SavingsGoal).where(SavingsGoal.user_id == user_id, SavingsGoal.id == goal_id)

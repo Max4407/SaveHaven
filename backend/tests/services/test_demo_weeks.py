@@ -14,7 +14,13 @@ from models import (
     PlanPeriodEvaluation,
     RewardEvent,
 )
-from repository import get_bank_connection, list_accounts, replace_active_goal, seed_demo_users
+from repository import (
+    get_active_goal,
+    get_bank_connection,
+    list_accounts,
+    replace_active_goal,
+    seed_demo_users,
+)
 from schemas import NessieRecordReference, PlaceBuildingRequest
 from services import BankSyncService, DemoWeekService, GameService, NessieEventService, TownCatalog
 
@@ -214,6 +220,8 @@ def test_fixture_fallback_success_is_explained_and_idempotent() -> None:
         assert first.dashboard.summary.as_of == first.evaluation.period_end
         assert first.dashboard.summary.checking_balance_cents == 362_650
         assert first.dashboard.summary.savings_balance_cents == 645_000
+        assert first.dashboard.active_goal is not None
+        assert first.dashboard.active_goal.amount_already_saved_cents == 645_000
         generated = [
             transaction
             for transaction in first.dashboard.recent_transactions
@@ -395,6 +403,9 @@ def test_reset_removes_demo_transactions_rewards_and_town_state() -> None:
         assert [reward.reward_type for reward in rewards] == ["starter_grant"]
         assert local_demo_count == 0
         assert reset_balances == starting_balances
+        reset_goal = get_active_goal(session, "demo-player")
+        assert reset_goal is not None
+        assert reset_goal.amount_already_saved_cents == starting_balances["jordan-savings"]
 
 
 def test_reset_retains_unavailable_remote_cleanup_for_a_later_retry() -> None:

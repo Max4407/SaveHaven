@@ -22,6 +22,7 @@ from repository import (
     get_reward_by_source,
     list_accounts,
     list_transactions,
+    set_active_goal_saved_amount,
 )
 from schemas import (
     GameStateResponse,
@@ -187,7 +188,6 @@ class DemoWeekService:
             user_id=user_id,
             plan=plan,
             idempotency_key=idempotency_key,
-            event_key=event_key,
             source=source,
             period_start=period_start,
             period_end=period_end,
@@ -307,6 +307,15 @@ class DemoWeekService:
             )
         for account in list_accounts(session, user_id):
             account.balance_cents -= local_balance_changes.get(account.source_account_id, 0)
+        set_active_goal_saved_amount(
+            session,
+            user_id=user_id,
+            amount_saved_cents=sum(
+                account.balance_cents
+                for account in list_accounts(session, user_id)
+                if account.account_type == "savings"
+            ),
+        )
         session.execute(delete(RewardEvent).where(RewardEvent.user_id == user_id))
         session.execute(
             delete(PlanPeriodEvaluation).where(PlanPeriodEvaluation.user_id == user_id)
@@ -330,7 +339,6 @@ class DemoWeekService:
         user_id: str,
         plan,
         idempotency_key: str,
-        event_key: str,
         source: str,
         period_start: date,
         period_end: date,
@@ -341,11 +349,10 @@ class DemoWeekService:
             for account in accounts
             if account.account_type == "savings"
         }
-        prefix = f":demo:{event_key}-"
         transactions = [
             transaction
             for transaction in list_transactions(session, user_id)
-            if prefix in transaction.source_id
+            if period_start <= transaction.occurred_at <= period_end
         ]
         actual_savings = sum(
             transaction.signed_amount_cents
@@ -519,6 +526,15 @@ class DemoWeekService:
         for account in accounts:
             account.balance_cents += balance_changes.get(account.source_account_id, 0)
             account.synced_at = now
+        set_active_goal_saved_amount(
+            session,
+            user_id=user_id,
+            amount_saved_cents=sum(
+                account.balance_cents
+                for account in accounts
+                if account.account_type == "savings"
+            ),
+        )
         connection = get_bank_connection(session, user_id)
         if connection is not None:
             connection.last_synced_at = now

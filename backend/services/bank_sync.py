@@ -8,6 +8,7 @@ from models import BankConnection
 from repository import (
     get_bank_connection,
     replace_financial_snapshot,
+    set_active_goal_saved_amount,
     upsert_bank_connection,
 )
 from schemas import FinancialSnapshot
@@ -85,6 +86,15 @@ class BankSyncService:
             user_id=user_id,
             snapshot=snapshot,
             synced_at=synced_at,
+        )
+        set_active_goal_saved_amount(
+            session,
+            user_id=user_id,
+            amount_saved_cents=sum(
+                account.balance_cents
+                for account in snapshot.accounts
+                if account.account_type == "savings"
+            ),
         )
         session.commit()
         return connection
