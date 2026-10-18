@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import {
   CartesianGrid,
   Line,
@@ -107,9 +106,6 @@ function ConnectBankPanel() {
   return (
     <main className="onboarding-page">
       <header className="onboarding-heading">
-        <Link className="route-arrow" to="/town" aria-label="Back to town">
-          <span aria-hidden="true">←</span>
-        </Link>
         <span className="page-mark" aria-hidden="true">S</span>
         <div>
           <p className="eyebrow">Capital One Nessie sandbox</p>
@@ -287,6 +283,10 @@ function TransactionRow({ transaction }: { transaction: Transaction }) {
 }
 
 function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
+  const [showAllTransactions, setShowAllTransactions] = useState(false);
+  const visibleTransactions = showAllTransactions
+    ? dashboard.recent_transactions
+    : dashboard.recent_transactions.slice(0, 5);
   const queryClient = useQueryClient();
   const balanceHistory = useMemo(() => buildBalanceHistory(dashboard), [dashboard]);
   const activeGoal = dashboard.active_goal;
@@ -303,9 +303,6 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
     <main className="dashboard-page bank-page">
       <header className="topbar bank-topbar">
         <div className="page-heading">
-          <Link className="route-arrow" to="/town" aria-label="Back to town">
-            <span aria-hidden="true">←</span>
-          </Link>
           <div>
             <p className="eyebrow">SaveHaven finances</p>
             <h1>Bank</h1>
@@ -448,15 +445,25 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
             <p className="eyebrow">Past activity</p>
             <h2 id="transactions-heading">Transactions</h2>
           </div>
-          <span className="record-count">{dashboard.recent_transactions.length} records</span>
+          <div className="transaction-actions">
+            <span className="record-count">{dashboard.recent_transactions.length} records</span>
+            {dashboard.recent_transactions.length > 5 ? (
+              <button className="secondary-button transaction-toggle" type="button" aria-expanded={showAllTransactions} aria-controls="bank-transaction-list" onClick={() => setShowAllTransactions((current) => !current)}>
+                {showAllTransactions ? "Show less" : `View all (${dashboard.recent_transactions.length})`}
+              </button>
+            ) : null}
+          </div>
         </div>
         {dashboard.recent_transactions.length > 0 ? (
-          <ul className="transaction-list">
-            {dashboard.recent_transactions.map((transaction) => (
+          <ul id="bank-transaction-list" className={`transaction-list${showAllTransactions ? " transaction-list-expanded" : ""}`}>
+            {visibleTransactions.map((transaction) => (
               <TransactionRow transaction={transaction} key={transaction.source_id} />
             ))}
           </ul>
         ) : <p className="empty-state">No transactions have been imported.</p>}
+        {dashboard.recent_transactions.length > 5 ? (
+          <p className="transaction-count-note">Showing {visibleTransactions.length} of {dashboard.recent_transactions.length} recent transactions</p>
+        ) : null}
       </section>
 
       <footer>
