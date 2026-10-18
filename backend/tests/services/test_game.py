@@ -104,6 +104,24 @@ def test_placements_ignore_district_and_road_cells() -> None:
         assert len(on_former_road.buildings) == 2
 
 
+def test_dirt_road_uses_the_standard_purchase_and_placement_flow() -> None:
+    session, game = game_session()
+    with session:
+        state = game.buy_building(
+            session,
+            user_id="demo-player",
+            request=PlaceBuildingRequest(
+                catalog_item_id="dirt_road_01",
+                grid_x=12,
+                grid_y=20,
+            ),
+        )
+
+        assert state.wallet.coin_balance == 299
+        assert state.buildings[0].catalog_item_id == "dirt_road_01"
+        assert (state.buildings[0].grid_x, state.buildings[0].grid_y) == (12, 20)
+
+
 def test_collision_and_cross_user_ownership_are_server_authoritative() -> None:
     session, game = game_session()
     with session:

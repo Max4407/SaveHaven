@@ -27,11 +27,11 @@ describe("Town soundtrack", () => {
     expect(audio.volume).toBe(.5);
     expect(container.querySelector("iframe")).toBeNull();
     expect(screen.getAllByRole("button")).toHaveLength(1);
-    fireEvent.click(screen.getByRole("button", { name: "Mute town sound" }));
+    fireEvent.click(screen.getByRole("button", { name: "Mute town music" }));
     expect(audio.muted).toBe(true);
     expect(container.querySelector(".sound-red-slash")).toBeInTheDocument();
     expect(localStorage.getItem("savehaven-town-sound-enabled")).toBe("off");
-    fireEvent.click(screen.getByRole("button", { name: "Turn town sound on" }));
+    fireEvent.click(screen.getByRole("button", { name: "Play town music" }));
     expect(audio.muted).toBe(false);
     expect(container.querySelector(".sound-red-slash")).toBeNull();
     unmount(); expect(HTMLMediaElement.prototype.pause).toHaveBeenCalled();
@@ -39,8 +39,8 @@ describe("Town soundtrack", () => {
   it("starts directly from the button after autoplay is blocked", async () => {
     vi.mocked(HTMLMediaElement.prototype.play).mockRejectedValueOnce(new DOMException("Blocked", "NotAllowedError"));
     render(<TownMusic />);
-    fireEvent.click(screen.getByRole("button", { name: "Turn town sound on" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Mute town sound" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "Play town music" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Mute town music" })).toBeInTheDocument());
     expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(2);
   });
   it("honors a saved mute preference until the speaker button is pressed", () => {
@@ -49,7 +49,7 @@ describe("Town soundtrack", () => {
     expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
     fireEvent.pointerDown(document.body);
     expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: "Turn town sound on" }));
+    fireEvent.click(screen.getByRole("button", { name: "Play town music" }));
     expect(HTMLMediaElement.prototype.play).toHaveBeenCalled();
   });
 });

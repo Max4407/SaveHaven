@@ -150,12 +150,14 @@ export type TownCatalogItem = {
   name: string;
   category: string;
   asset: string;
-  shadow_asset: string;
+  shadow_asset: string | null;
   cost_coins: number;
   level_required: number;
   footprint: { width: number; height: number };
   pivot: { x: number; y: number };
   landmark: boolean;
+  render_kind?: "building" | "ground";
+  resident_count?: number;
 };
 
 export type TownCatalog = { items: TownCatalogItem[] };

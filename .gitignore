@@ -7,6 +7,10 @@ backend/.venv/
 
 /..venv
 
+*.db-shm
+*.db-wal
+*.db-journal
+
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -34,3 +38,6 @@ data/fixtures/nessie_demo_state.local.json
 *.db-wal
 *.db-shm
 *.db-journal
+
+# Local backend test output
+backend/.pytest-tmp*/
