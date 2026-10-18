@@ -350,7 +350,7 @@ describe("town economy", () => {
 
     fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
     expect(screen.getByText("sells for 60", { exact: false })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Move free" }));
+    fireEvent.click(screen.getByRole("button", { name: "Move" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
     await waitFor(() => expect(moveBuilding).toHaveBeenCalledWith(7, { grid_x: 4, grid_y: 4 }));
 
@@ -380,7 +380,7 @@ describe("town economy", () => {
     renderTown();
 
     fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
-    fireEvent.click(screen.getByRole("button", { name: "Move free" }));
+    fireEvent.click(screen.getByRole("button", { name: "Move" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Town roads must remain clear");

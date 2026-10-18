@@ -324,6 +324,9 @@ export class TownScene extends Phaser.Scene {
   }
 
   private configureInput() {
+    // Keep a click available for selection; Phaser otherwise starts dragging on pointerdown.
+    this.input.dragDistanceThreshold = 7;
+    this.input.keyboard?.on("keydown-ESC", () => this.cancelPlacement());
     this.input.on("pointerdown", (
       pointer: Phaser.Input.Pointer,
       gameObjects: Phaser.GameObjects.GameObject[],
@@ -372,6 +375,7 @@ export class TownScene extends Phaser.Scene {
       _pointer: Phaser.Input.Pointer,
       gameObject: Phaser.GameObjects.Image,
     ) => {
+      if (this.placement) return;
       const buildingId = gameObject.getData("buildingId") as number | undefined;
       const building = this.state.buildings.find((candidate) => candidate.id === buildingId);
       if (!building) return;

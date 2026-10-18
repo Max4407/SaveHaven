@@ -244,7 +244,7 @@ function TownPage() {
             </div>
             <button className="secondary-button" type="button" disabled={isMutating} onClick={() => {
               bridge.emit("startPlacement", { catalogItemId: selectedItem.id, buildingId: selectedBuilding.id });
-            }}>Move free</button>
+            }}>Move</button>
             <button className="sell-button" type="button" disabled={isMutating} onClick={() => sellMutation.mutate(selectedBuilding.id)}>Sell</button>
           </section>
         ) : (
