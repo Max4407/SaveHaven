@@ -2,6 +2,13 @@ import type { BuildingFacing, GameState } from "../../api/types";
 
 export const CATALOG_DRAG_TYPE = "application/x-savehaven-catalog-item";
 export const CATALOG_FACING_TYPE = "application/x-savehaven-building-facing";
+export const CATALOG_VARIANT_TYPE = "application/x-savehaven-visual-variant";
+
+export type CharacterDetails = {
+  key: string;
+  name: string;
+  happiness: number;
+};
 
 export type TownBridgeEvents = {
   interactionLocked: { locked: boolean };
@@ -13,6 +20,7 @@ export type TownBridgeEvents = {
   catalogDropped: {
     catalogItemId: string;
     facing: BuildingFacing;
+    visualVariant?: number;
     canvasX: number;
     canvasY: number;
   };
@@ -23,11 +31,13 @@ export type TownBridgeEvents = {
     gridX: number;
     gridY: number;
     facing: BuildingFacing;
+    visualVariant?: number;
   };
   startPlacement: {
     catalogItemId: string;
     buildingId?: number;
     facing: BuildingFacing;
+    visualVariant?: number;
   };
   cancelPlacement: Record<string, never>;
   stateChanged: { state: GameState };

@@ -156,7 +156,7 @@ export type TownCatalogItem = {
   footprint: { width: number; height: number };
   pivot: { x: number; y: number };
   landmark: boolean;
-  render_kind?: "building" | "ground";
+  render_kind?: "building" | "ground" | "food";
   resident_count?: number;
 };
 
@@ -179,6 +179,7 @@ export type PlacedBuilding = {
   grid_x: number;
   grid_y: number;
   facing?: BuildingFacing;
+  visual_variant?: number;
   purchase_price_coins: number;
   purchased_at: string;
   updated_at: string;

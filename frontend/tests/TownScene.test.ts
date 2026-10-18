@@ -9,7 +9,12 @@ import { buildingWorldPosition } from "../src/features/town/townGrid";
 vi.mock("phaser", () => ({
   default: {
     Scene: class {},
-    Math: { Vector2: class { set() {} } },
+    Math: {
+      Distance: { Between: (x1: number, y1: number, x2: number, y2: number) => (
+        Math.hypot(x2 - x1, y2 - y1)
+      ) },
+      Vector2: class { set() {} },
+    },
   },
 }));
 
@@ -27,7 +32,7 @@ function inputHarness(catalog: TownCatalogItem[] = []) {
   const internals = scene as unknown as {
     input: typeof input;
     configureInput(): void;
-    placement?: { mode: string; buildingId?: number; valid?: boolean; catalogItemId?: string; facing?: "left" | "right"; gridX?: number; gridY?: number };
+    placement?: { mode: string; buildingId?: number; valid?: boolean; catalogItemId?: string; facing?: "left" | "right"; visualVariant?: number; gridX?: number; gridY?: number };
     placementPointerDown: boolean;
     interactionLocked: boolean;
     cameras: { main: { scrollX: number; scrollY: number } };
@@ -73,7 +78,73 @@ describe("town scene input", () => {
     expect(setFlipX).toHaveBeenNthCalledWith(1, true);
     expect(setFlipX).toHaveBeenNthCalledWith(2, false);
     expect(setOrigin).toHaveBeenNthCalledWith(1, 0.7, 0.75);
-    expect(setOrigin).toHaveBeenNthCalledWith(2, 0.3, 0.75);
+    expect(setOrigin).toHaveBeenCalledTimes(1);
+  });
+
+  it("feeds every resident and emits one consume event when any resident reaches food", () => {
+    const foodItem = { id: "food_01", render_kind: "food" } as TownCatalogItem;
+    const foodBuilding = { id: 9, catalog_item_id: "food_01" };
+    const bridge = createTownBridge();
+    const scene = new TownScene(
+      bridge,
+      [foodItem],
+      { buildings: [foodBuilding] } as GameState,
+    );
+    const consumed = vi.fn();
+    bridge.subscribe("foodConsumed", consumed);
+    const foodSprite = {
+      x: 20,
+      y: 20,
+      setVisible: vi.fn().mockReturnThis(),
+      disableInteractive: vi.fn().mockReturnThis(),
+    };
+    const character = {
+      key: "7:0",
+      name: "Mira",
+      happiness: 50,
+      reportedHappiness: 50,
+      sprite: { x: 0, y: 0 },
+    };
+    const neighbor = {
+      key: "8:0",
+      name: "Theo",
+      happiness: 85,
+      reportedHappiness: 85,
+      sprite: { x: 200, y: 200 },
+    };
+    const internals = scene as unknown as {
+      ambientCharacters: Array<typeof character>;
+      buildingDisplays: Map<number, { sprite: typeof foodSprite }>;
+      consumeNearbyFood(resident: typeof character): void;
+    };
+    internals.ambientCharacters = [character, neighbor];
+    internals.buildingDisplays = new Map([[9, { sprite: foodSprite }]]);
+
+    internals.consumeNearbyFood(character);
+    internals.consumeNearbyFood(character);
+
+    expect(character.happiness).toBe(80);
+    expect(neighbor.happiness).toBe(100);
+    expect(foodSprite.setVisible).toHaveBeenCalledWith(false);
+    expect(consumed).toHaveBeenCalledOnce();
+    expect(consumed).toHaveBeenCalledWith({ buildingId: 9 });
+  });
+
+  it("caps group happiness gains at the maximum", () => {
+    const scene = new TownScene(createTownBridge(), [], { buildings: [] } as unknown as GameState);
+    const residents = [
+      { key: "7:0", happiness: 25, reportedHappiness: 25 },
+      { key: "8:0", happiness: 85, reportedHappiness: 85 },
+    ];
+    const internals = scene as unknown as {
+      ambientCharacters: typeof residents;
+      feedAllCharacters(): void;
+    };
+    internals.ambientCharacters = residents;
+
+    internals.feedAllCharacters();
+
+    expect(residents.map(({ happiness }) => happiness)).toEqual([55, 100]);
   });
 
   it("preserves existing resident positions while homes are moved or added", () => {

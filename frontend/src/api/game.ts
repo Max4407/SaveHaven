@@ -24,6 +24,7 @@ export function buyBuilding(input: {
   grid_x: number;
   grid_y: number;
   facing: BuildingFacing;
+  visual_variant?: number;
 }): Promise<GameState> {
   return apiRequest<GameState>("/api/game/buildings", {
     method: "POST",
@@ -43,6 +44,10 @@ export function moveBuilding(
 
 export function sellBuilding(buildingId: number): Promise<GameState> {
   return apiRequest<GameState>(`/api/game/buildings/${buildingId}`, { method: "DELETE" });
+}
+
+export function consumeFood(buildingId: number): Promise<GameState> {
+  return apiRequest<GameState>(`/api/game/food/${buildingId}`, { method: "DELETE" });
 }
 
 export function simulateWeek(

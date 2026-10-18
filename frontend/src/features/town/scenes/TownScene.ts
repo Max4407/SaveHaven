@@ -27,6 +27,9 @@ import type { TownBridge } from "../townBridge";
 import { generatePerimeterTrees } from "../perimeterTrees";
 import {
   AMBIENT_CHARACTER_VARIANTS,
+  decayCharacterHappiness,
+  feedCharacter,
+  MAX_CHARACTER_HAPPINESS,
   characterAnimationFrames,
   characterAnimationKey,
   characterAssetUrl,
@@ -35,6 +38,7 @@ import {
   createResidentAssignments,
   type AmbientCharacterVariant,
 } from "../objects/ambientCharacters";
+import { FOOD_FRAME_SIZE, randomFoodFrame } from "../objects/food";
 
 const MIN_CAMERA_ZOOM = 0.4;
 const MAX_CAMERA_ZOOM = 1.45;
@@ -50,6 +54,8 @@ const CHARACTER_HOME_OFFSET_Y = 18;
 const CHARACTER_WANDER_RADIUS = 520;
 const CHARACTER_MINIMUM_INDOOR_TIME = 3_000;
 const CHARACTER_MAXIMUM_INDOOR_TIME = 10_000;
+const FOOD_SCALE = 4;
+const FOOD_COLLISION_RADIUS = 48;
 
 type Placement = {
   catalogItemId: string;
@@ -60,6 +66,7 @@ type Placement = {
   reason: string | null;
   mode: TownPlacementMode;
   facing: BuildingFacing;
+  visualVariant?: number;
 };
 
 type BuildingDisplay = {
@@ -69,6 +76,9 @@ type BuildingDisplay = {
 
 type AmbientCharacter = {
   key: string;
+  name: string;
+  happiness: number;
+  reportedHappiness: number;
   sprite: Phaser.GameObjects.Sprite;
   home: Phaser.Math.Vector2;
   target: Phaser.Math.Vector2;
@@ -96,6 +106,8 @@ export class TownScene extends Phaser.Scene {
   private placement?: Placement;
   private buildingDisplays = new Map<number, BuildingDisplay>();
   private ambientCharacters: AmbientCharacter[] = [];
+  private selectedCharacterKey?: string;
+  private pendingFoodIds = new Set<number>();
   private unsubscribers: Array<() => void> = [];
 
   constructor(bridge: TownBridge, catalog: TownCatalogItem[], state: GameState) {
@@ -117,7 +129,14 @@ export class TownScene extends Phaser.Scene {
       });
     });
     this.catalog.forEach((item) => {
-      this.load.image(`building-${item.id}`, item.asset);
+      if (item.render_kind === "food") {
+        this.load.spritesheet(`building-${item.id}`, item.asset, {
+          frameWidth: FOOD_FRAME_SIZE,
+          frameHeight: FOOD_FRAME_SIZE,
+        });
+      } else {
+        this.load.image(`building-${item.id}`, item.asset);
+      }
       if (item.shadow_asset) {
         this.load.image(`shadow-${item.id}`, item.shadow_asset);
       }
@@ -147,8 +166,20 @@ export class TownScene extends Phaser.Scene {
       this.bridge.subscribe("catalogDropped", (detail) => {
         if (this.placement?.catalogItemId !== detail.catalogItemId) return;
         this.placement.facing = detail.facing;
+        this.placement.visualVariant = detail.visualVariant;
         this.updatePlacementAtScreen(detail.canvasX, detail.canvasY);
         this.confirmPlacement();
+      }),
+      this.bridge.subscribe("clearCharacterSelection", () => {
+        this.selectedCharacterKey = undefined;
+      }),
+      this.bridge.subscribe("foodConsumptionRejected", ({ buildingId }) => {
+        this.pendingFoodIds.delete(buildingId);
+        const sprite = this.buildingDisplays.get(buildingId)?.sprite;
+        if (sprite) {
+          sprite.setVisible(true).setInteractive({ useHandCursor: true });
+          this.input.setDraggable(sprite);
+        }
       }),
       this.bridge.subscribe("cancelPlacement", () => this.cancelPlacement()),
       this.bridge.subscribe("stateChanged", ({ state }) => {
@@ -170,6 +201,10 @@ export class TownScene extends Phaser.Scene {
   }
 
   private renderWorld() {
+    const placedIds = new Set(this.state.buildings.map(({ id }) => id));
+    this.pendingFoodIds.forEach((id) => {
+      if (!placedIds.has(id)) this.pendingFoodIds.delete(id);
+    });
     if (!this.mapLayer) {
       this.mapLayer = this.add.container(0, 0).setDepth(-100_000);
       this.drawMap();
@@ -190,6 +225,8 @@ export class TownScene extends Phaser.Scene {
     if (this.ambientCharacters.length === 0) return;
     const elapsedSeconds = Math.min(delta, 50) / 1_000;
     this.ambientCharacters.forEach((character) => {
+      character.happiness = decayCharacterHappiness(character.happiness, elapsedSeconds);
+      this.reportSelectedCharacter(character);
       if (character.mode === "inside") {
         if (time >= character.insideUntil) this.releaseCharacter(character);
         return;
@@ -212,6 +249,7 @@ export class TownScene extends Phaser.Scene {
         character.sprite.y += deltaY / distance * step;
       }
       character.sprite.setDepth(character.sprite.y);
+      this.consumeNearbyFood(character);
     });
     this.buildingLayer?.sort("depth");
   }
@@ -255,7 +293,13 @@ export class TownScene extends Phaser.Scene {
     );
     const desiredKeys = new Set(assignments.map((assignment) => assignment.key));
     this.ambientCharacters.forEach((character) => {
-      if (!desiredKeys.has(character.key)) character.sprite.destroy();
+      if (!desiredKeys.has(character.key)) {
+        character.sprite.destroy();
+        if (this.selectedCharacterKey === character.key) {
+          this.selectedCharacterKey = undefined;
+          this.bridge.emit("characterSelectionChanged", { character: null });
+        }
+      }
     });
 
     this.ambientCharacters = assignments.flatMap((assignment) => {
@@ -293,9 +337,14 @@ export class TownScene extends Phaser.Scene {
       0,
     )
       .setOrigin(0.5, 0.78)
-      .setScale(CHARACTER_SCALE);
+      .setScale(CHARACTER_SCALE)
+      .setInteractive({ useHandCursor: true })
+      .setData("isAmbientCharacter", true);
     const character: AmbientCharacter = {
       key: assignment.key,
+      name: assignment.name,
+      happiness: MAX_CHARACTER_HAPPINESS,
+      reportedHappiness: MAX_CHARACTER_HAPPINESS,
       sprite,
       home,
       target: new Phaser.Math.Vector2(sprite.x, sprite.y),
@@ -305,9 +354,63 @@ export class TownScene extends Phaser.Scene {
       remainingStops: Phaser.Math.Between(1, 3),
       insideUntil: 0,
     };
+    sprite.on("pointerup", (pointer: Phaser.Input.Pointer) => {
+      if (pointer.getDistance() >= 7 || this.placement) return;
+      this.selectedCharacterKey = character.key;
+      this.emitCharacterSelection(character);
+    });
     this.assignCharacterTarget(character);
     this.buildingLayer?.add(sprite);
     return character;
+  }
+
+  private emitCharacterSelection(character: AmbientCharacter) {
+    character.reportedHappiness = Math.round(character.happiness);
+    this.bridge.emit("characterSelectionChanged", {
+      character: {
+        key: character.key,
+        name: character.name,
+        happiness: character.reportedHappiness,
+      },
+    });
+  }
+
+  private reportSelectedCharacter(character: AmbientCharacter) {
+    const roundedHappiness = Math.round(character.happiness);
+    if (this.selectedCharacterKey === character.key
+      && roundedHappiness !== character.reportedHappiness) {
+      this.emitCharacterSelection(character);
+    }
+  }
+
+  private consumeNearbyFood(character: AmbientCharacter) {
+    if (character.happiness >= MAX_CHARACTER_HAPPINESS) return;
+    const food = this.state.buildings.find((building) => {
+      if (this.pendingFoodIds.has(building.id)) return false;
+      const item = this.catalog.find(({ id }) => id === building.catalog_item_id);
+      if (item?.render_kind !== "food") return false;
+      const display = this.buildingDisplays.get(building.id);
+      if (!display) return false;
+      return Phaser.Math.Distance.Between(
+        character.sprite.x,
+        character.sprite.y,
+        display.sprite.x,
+        display.sprite.y,
+      ) <= FOOD_COLLISION_RADIUS;
+    });
+    if (!food) return;
+    this.pendingFoodIds.add(food.id);
+    const sprite = this.buildingDisplays.get(food.id)?.sprite;
+    sprite?.setVisible(false).disableInteractive();
+    this.feedAllCharacters();
+    this.bridge.emit("foodConsumed", { buildingId: food.id });
+  }
+
+  private feedAllCharacters() {
+    this.ambientCharacters.forEach((character) => {
+      character.happiness = feedCharacter(character.happiness);
+      this.reportSelectedCharacter(character);
+    });
   }
 
   private assignCharacterTarget(character: AmbientCharacter) {
@@ -363,7 +466,12 @@ export class TownScene extends Phaser.Scene {
     const shadow = item.shadow_asset
       ? this.add.image(position.x + 5, position.y + 8, `shadow-${item.id}`)
       : undefined;
-    const sprite = this.add.image(position.x, position.y, `building-${item.id}`);
+    const sprite = this.add.image(
+      position.x,
+      position.y,
+      `building-${item.id}`,
+      item.render_kind === "food" ? building.visual_variant ?? 0 : undefined,
+    );
     if (shadow) {
       this.applyPresentation(shadow, item);
       this.applyFacing(shadow, item, building.facing ?? "left");
@@ -377,8 +485,11 @@ export class TownScene extends Phaser.Scene {
       .setData("isPlacedBuilding", true)
       .setData("buildingId", building.id);
     this.input.setDraggable(sprite);
+    if (this.pendingFoodIds.has(building.id)) sprite.setVisible(false).disableInteractive();
     sprite.on("pointerup", (pointer: Phaser.Input.Pointer) => {
       if (pointer.getDistance() < 7 && !this.placement) {
+        this.selectedCharacterKey = undefined;
+        this.bridge.emit("characterSelectionChanged", { character: null });
         this.bridge.emit("buildingSelected", { buildingId: building.id });
       }
     });
@@ -391,12 +502,17 @@ export class TownScene extends Phaser.Scene {
       catalogItemId: string;
       buildingId?: number;
       facing: BuildingFacing;
+      visualVariant?: number;
     },
     mode: TownPlacementMode,
   ) {
     if (this.interactionLocked) return;
     const item = this.catalog.find((candidate) => candidate.id === detail.catalogItemId);
     if (!item) return;
+    if (this.selectedCharacterKey) {
+      this.selectedCharacterKey = undefined;
+      this.bridge.emit("characterSelectionChanged", { character: null });
+    }
     const existing = detail.buildingId == null
       ? undefined
       : this.state.buildings.find((building) => building.id === detail.buildingId);
@@ -411,6 +527,9 @@ export class TownScene extends Phaser.Scene {
       reason: null,
       mode,
       facing: detail.facing,
+      visualVariant: item.render_kind === "food"
+        ? detail.visualVariant ?? randomFoodFrame()
+        : undefined,
     };
     if (detail.buildingId != null) this.setBuildingDimmed(detail.buildingId, true);
     this.refreshPreview();
@@ -500,7 +619,12 @@ export class TownScene extends Phaser.Scene {
       this.placement.gridX,
       this.placement.gridY,
     );
-    const ghost = this.add.image(position.x, position.y, `building-${item.id}`);
+    const ghost = this.add.image(
+      position.x,
+      position.y,
+      `building-${item.id}`,
+      item.render_kind === "food" ? this.placement.visualVariant ?? 0 : undefined,
+    );
     this.applyPresentation(ghost, item);
     this.applyFacing(ghost, item, this.placement.facing);
     ghost.setAlpha(0.72).setTint(result.valid ? 0xd8ffe0 : 0xffb4aa);
@@ -520,6 +644,7 @@ export class TownScene extends Phaser.Scene {
       gridX: this.placement.gridX,
       gridY: this.placement.gridY,
       facing: this.placement.facing,
+      visualVariant: this.placement.visualVariant,
     });
   }
 
@@ -621,6 +746,7 @@ export class TownScene extends Phaser.Scene {
         catalogItemId: building.catalog_item_id,
         buildingId: building.id,
         facing: building.facing ?? "left",
+        visualVariant: building.visual_variant,
       }, "building-drag");
     });
     this.input.on("drag", (
@@ -677,6 +803,11 @@ export class TownScene extends Phaser.Scene {
       );
       return;
     }
+    if (item.render_kind === "food") {
+      image.setOrigin(item.pivot.x / image.width, item.pivot.y / image.height);
+      image.setScale(FOOD_SCALE);
+      return;
+    }
     image.setOrigin(item.pivot.x / image.width, item.pivot.y / image.height);
     image.setScale(buildingDisplayWidth(item) / image.width);
   }
@@ -686,7 +817,11 @@ export class TownScene extends Phaser.Scene {
     item: TownCatalogItem,
     facing: BuildingFacing,
   ) {
-    const flipped = item.render_kind !== "ground" && facing === "right";
+    if (item.render_kind === "ground" || item.render_kind === "food") {
+      image.setFlipX(false);
+      return;
+    }
+    const flipped = facing === "right";
     image.setFlipX(flipped);
     image.setOrigin(
       (flipped ? image.width - item.pivot.x : item.pivot.x) / image.width,

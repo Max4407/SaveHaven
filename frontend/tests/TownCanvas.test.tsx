@@ -8,6 +8,7 @@ import { TownCanvas } from "../src/features/town/TownCanvas";
 import {
   CATALOG_DRAG_TYPE,
   CATALOG_FACING_TYPE,
+  CATALOG_VARIANT_TYPE,
   createTownBridge,
   type TownBridge,
 } from "../src/features/town/townBridge";
@@ -113,6 +114,7 @@ describe("town canvas", () => {
     const data = new Map([
       [CATALOG_DRAG_TYPE, "woodshed_01"],
       [CATALOG_FACING_TYPE, "right"],
+      [CATALOG_VARIANT_TYPE, "42"],
     ]);
     const dataTransfer = {
       dropEffect: "none",
@@ -121,7 +123,11 @@ describe("town canvas", () => {
       setData: (type: string, value: string) => data.set(type, value),
     } as unknown as DataTransfer;
 
-    bridge.emit("catalogDragStarted", { catalogItemId: "woodshed_01", facing: "right" });
+    bridge.emit("catalogDragStarted", {
+      catalogItemId: "woodshed_01",
+      facing: "right",
+      visualVariant: 42,
+    });
     const dragOver = new MouseEvent("dragover", {
       bubbles: true,
       cancelable: true,
@@ -147,6 +153,7 @@ describe("town canvas", () => {
     expect(dropped).toHaveBeenCalledWith({
       catalogItemId: "woodshed_01",
       facing: "right",
+      visualVariant: 42,
       canvasX: 44,
       canvasY: 51,
     });
