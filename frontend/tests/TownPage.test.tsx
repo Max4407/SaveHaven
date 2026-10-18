@@ -271,6 +271,38 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("town economy", () => {
+  it("returns to the catalog when a move is canceled without submitting or changing the saved position", async () => {
+    vi.mocked(getGameState).mockResolvedValue({ ...initialState, buildings: [{
+      id: 7, catalog_item_id: "woodshed_01", grid_x: 5, grid_y: 4,
+      purchase_price_coins: 100, purchased_at: "2026-10-17T12:00:00Z", updated_at: "2026-10-17T12:00:00Z",
+    }] });
+    renderTown();
+    fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
+    fireEvent.click(screen.getByRole("button", { name: "Move" }));
+    expect(screen.getByLabelText("Selected building")).toBeInTheDocument();
+    fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+    expect(screen.queryByLabelText("Selected building")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Building catalog" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Place Village Woodshed" })).toBeInTheDocument();
+    expect(screen.getByTestId("persisted-position")).toHaveTextContent("5,4");
+    expect(moveBuilding).not.toHaveBeenCalled();
+    expect(buyBuilding).not.toHaveBeenCalled();
+  });
+
+  it("uses short placement labels without hiding collision explanations", async () => {
+    renderTown();
+    fireEvent.click(await screen.findByRole("button", { name: "Place Village Woodshed" }));
+    expect(screen.getByRole("status")).toHaveTextContent("Ready!");
+    act(() => canvasBridge.current!.emit("placementChanged", {
+      active: true, valid: false, reason: "That footprint extends beyond the town map",
+    }));
+    expect(screen.getByRole("status")).toHaveTextContent("Too Far!");
+    act(() => canvasBridge.current!.emit("placementChanged", {
+      active: true, valid: false, reason: "Another building occupies that space",
+    }));
+    expect(screen.getByRole("status")).toHaveTextContent("Another building occupies that space");
+  });
+
   it.each(["Sell", "Simulate success", "Reset town demo"])("blocks canvas changes during %s and releases the lock on failure", async (action) => {
     const placed: GameState = { ...initialState, buildings: [{
       id: 7, catalog_item_id: "woodshed_01", grid_x: 5, grid_y: 4,
@@ -336,7 +368,7 @@ describe("town economy", () => {
 
     const sidebar = await screen.findByLabelText("Building catalog");
     expect(within(sidebar).getByText("300")).toBeInTheDocument();
-    expect(within(sidebar).getByText("Homestead")).toBeInTheDocument();
+    expect(within(sidebar).queryByLabelText("Town level progress")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Corner Bakery locked until level 2" })).toBeDisabled();
     expect(screen.getByText("Village Woodshed").closest("article")).toHaveAttribute("draggable", "true");
     expect(screen.getByText("Corner Bakery").closest("article")).toHaveAttribute("draggable", "false");

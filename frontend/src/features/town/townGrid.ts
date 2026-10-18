@@ -21,7 +21,7 @@ export type PlacementValidation = { valid: boolean; reason: string | null };
 export type TownPlacementMode = "click" | "catalog-drag" | "building-drag";
 
 export function shouldShowPlacementGrid(mode: TownPlacementMode): boolean {
-  return mode === "catalog-drag" || mode === "building-drag";
+  return mode === "click" || mode === "catalog-drag" || mode === "building-drag";
 }
 
 function isOffsetRow(row: number) {
