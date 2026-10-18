@@ -27,7 +27,7 @@ function inputHarness(catalog: TownCatalogItem[] = []) {
   const internals = scene as unknown as {
     input: typeof input;
     configureInput(): void;
-    placement?: { mode: string; buildingId?: number; valid?: boolean; catalogItemId?: string; gridX?: number; gridY?: number };
+    placement?: { mode: string; buildingId?: number; valid?: boolean; catalogItemId?: string; facing?: "left" | "right"; gridX?: number; gridY?: number };
     placementPointerDown: boolean;
     interactionLocked: boolean;
     scale: { width: number; height: number };
@@ -40,12 +40,91 @@ function inputHarness(catalog: TownCatalogItem[] = []) {
 }
 
 describe("town scene input", () => {
+  it("mirrors right-facing buildings but never mirrors ground tiles", () => {
+    const scene = new TownScene(createTownBridge(), [], { buildings: [] } as unknown as GameState);
+    const setFlipX = vi.fn();
+    const setOrigin = vi.fn();
+    const internals = scene as unknown as {
+      applyFacing(
+        image: {
+          width: number;
+          height: number;
+          setFlipX: (flipped: boolean) => void;
+          setOrigin: (x: number, y: number) => void;
+        },
+        item: TownCatalogItem,
+        facing: "left" | "right",
+      ): void;
+    };
+
+    const image = { width: 100, height: 80, setFlipX, setOrigin };
+    const building = {
+      render_kind: "building",
+      pivot: { x: 30, y: 60 },
+    } as TownCatalogItem;
+    const ground = {
+      render_kind: "ground",
+      pivot: { x: 30, y: 60 },
+    } as TownCatalogItem;
+    internals.applyFacing(image, building, "right");
+    internals.applyFacing(image, ground, "right");
+
+    expect(setFlipX).toHaveBeenNthCalledWith(1, true);
+    expect(setFlipX).toHaveBeenNthCalledWith(2, false);
+    expect(setOrigin).toHaveBeenNthCalledWith(1, 0.7, 0.75);
+    expect(setOrigin).toHaveBeenNthCalledWith(2, 0.3, 0.75);
+  });
+
+  it("preserves existing resident positions while homes are moved or added", () => {
+    const item = {
+      id: "hut_01",
+      footprint: { width: 2, height: 2 },
+      resident_count: 1,
+    } as TownCatalogItem;
+    const state = {
+      buildings: [{ id: 7, catalog_item_id: item.id, grid_x: 8, grid_y: 8 }],
+    } as GameState;
+    const scene = new TownScene(createTownBridge(), [item], state);
+    const sprite = {
+      x: 321,
+      y: 456,
+      destroy: vi.fn(),
+      setPosition: vi.fn(),
+    };
+    const home = { set: vi.fn() };
+    const resident = {
+      key: "7:0",
+      sprite,
+      home,
+      target: { copy: vi.fn() },
+      variant: 2,
+      speed: 72,
+      mode: "wandering",
+      remainingStops: 2,
+      insideUntil: 0,
+    };
+    const internals = scene as unknown as {
+      ambientCharacters: Array<typeof resident>;
+      state: GameState;
+      reconcileAmbientCharacters(): void;
+    };
+    internals.ambientCharacters = [resident];
+
+    internals.reconcileAmbientCharacters();
+
+    expect(sprite.x).toBe(321);
+    expect(sprite.y).toBe(456);
+    expect(sprite.setPosition).not.toHaveBeenCalled();
+    expect(sprite.destroy).not.toHaveBeenCalled();
+    expect(home.set).toHaveBeenCalledOnce();
+  });
+
   it.each([1, 2, 3])("submits the previewed cell for a valid building drag with side length %s", (size) => {
     const item = { id: "shed", footprint: { width: size, height: size } } as TownCatalogItem;
     const { bridge, handlers, internals } = inputHarness([item]);
     const confirmed = vi.fn();
     bridge.subscribe("placementConfirmed", confirmed);
-    internals.placement = { mode: "building-drag", buildingId: 7, catalogItemId: "shed", valid: true };
+    internals.placement = { mode: "building-drag", buildingId: 7, catalogItemId: "shed", facing: "right", valid: true };
     internals.refreshPreview = vi.fn();
     internals.scale = { width: 800, height: 600 };
     const canvas = {};
@@ -55,7 +134,13 @@ describe("town scene input", () => {
     handlers.get("drag")!({}, sprite, center.x, center.y);
     expect(internals.refreshPreview).toHaveBeenCalledOnce();
     handlers.get("dragend")!({ x: 100, y: 100, event: { target: canvas } }, sprite);
-    expect(confirmed).toHaveBeenCalledWith({ catalogItemId: "shed", buildingId: 7, gridX: 6, gridY: 5 });
+    expect(confirmed).toHaveBeenCalledWith({
+      catalogItemId: "shed",
+      buildingId: 7,
+      facing: "right",
+      gridX: 6,
+      gridY: 5,
+    });
   });
 
   it("does not start a building drag while a server action is pending", () => {

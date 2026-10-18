@@ -77,6 +77,7 @@ class PlacedBuilding(Base):
     catalog_item_id: Mapped[str] = mapped_column(String(80))
     grid_x: Mapped[int] = mapped_column(Integer)
     grid_y: Mapped[int] = mapped_column(Integer)
+    facing: Mapped[str] = mapped_column(String(5), default="left", server_default="left")
     purchase_price_coins: Mapped[int] = mapped_column(Integer)
     purchased_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

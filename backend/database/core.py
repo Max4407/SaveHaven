@@ -33,6 +33,22 @@ class Database:
         import models  # noqa: F401
 
         Base.metadata.create_all(self.engine)
+        if self.engine.dialect.name == "sqlite":
+            self._migrate_sqlite_schema()
+
+    def _migrate_sqlite_schema(self) -> None:
+        with self.engine.begin() as connection:
+            columns = {
+                row[1]
+                for row in connection.exec_driver_sql(
+                    "PRAGMA table_info(placed_buildings)"
+                )
+            }
+            if columns and "facing" not in columns:
+                connection.exec_driver_sql(
+                    "ALTER TABLE placed_buildings "
+                    "ADD COLUMN facing VARCHAR(5) NOT NULL DEFAULT 'left'"
+                )
 
     def session(self) -> Iterator[Session]:
         with self.session_factory() as session:

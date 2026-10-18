@@ -82,6 +82,7 @@ def move_building(
             building_id=building_id,
             grid_x=payload.grid_x,
             grid_y=payload.grid_y,
+            facing=payload.facing,
         )
     except PlacedBuildingNotFoundError as error:
         session.rollback()

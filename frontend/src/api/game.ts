@@ -1,5 +1,11 @@
 import { apiRequest } from "./client";
-import type { GameReward, GameState, SimulatedWeek, TownCatalog } from "./types";
+import type {
+  BuildingFacing,
+  GameReward,
+  GameState,
+  SimulatedWeek,
+  TownCatalog,
+} from "./types";
 
 export function getTownCatalog(): Promise<TownCatalog> {
   return apiRequest<TownCatalog>("/api/game/catalog");
@@ -17,6 +23,7 @@ export function buyBuilding(input: {
   catalog_item_id: string;
   grid_x: number;
   grid_y: number;
+  facing: BuildingFacing;
 }): Promise<GameState> {
   return apiRequest<GameState>("/api/game/buildings", {
     method: "POST",
@@ -26,7 +33,7 @@ export function buyBuilding(input: {
 
 export function moveBuilding(
   buildingId: number,
-  input: { grid_x: number; grid_y: number },
+  input: { grid_x: number; grid_y: number; facing?: BuildingFacing },
 ): Promise<GameState> {
   return apiRequest<GameState>(`/api/game/buildings/${buildingId}`, {
     method: "PATCH",

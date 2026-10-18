@@ -17,7 +17,7 @@ import {
   sellBuilding,
   simulateWeek,
 } from "../src/api/game";
-import type { GameState, SimulatedWeek, TownCatalog } from "../src/api/types";
+import type { BuildingFacing, GameState, SimulatedWeek, TownCatalog } from "../src/api/types";
 import TownPage from "../src/features/town/TownPage";
 import type { TownBridge } from "../src/features/town/townBridge";
 
@@ -47,9 +47,14 @@ vi.mock("../src/features/town/TownCanvas", async () => {
       const [request, setRequest] = React.useState<{
         catalogItemId: string;
         buildingId?: number;
+        facing: BuildingFacing;
       } | null>(null);
       React.useEffect(() => {
-        const beginPlacement = (detail: { catalogItemId: string; buildingId?: number }) => {
+        const beginPlacement = (detail: {
+          catalogItemId: string;
+          buildingId?: number;
+          facing: BuildingFacing;
+        }) => {
           setRequest(detail);
           bridge.emit("placementChanged", { active: true, valid: true, reason: null });
         };
@@ -233,7 +238,7 @@ describe("town economy", () => {
     fireEvent.click(await screen.findByRole("button", { name: action }));
     await waitFor(() => expect(reject).toBeDefined());
     act(() => canvasBridge.current!.emit("placementConfirmed", {
-      catalogItemId: "woodshed_01", buildingId: 7, gridX: 6, gridY: 4,
+      catalogItemId: "woodshed_01", buildingId: 7, facing: "left", gridX: 6, gridY: 4,
     }));
     expect(moveBuilding).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Reset town demo" })).toBeDisabled();
@@ -257,9 +262,9 @@ describe("town economy", () => {
     bridge.subscribe("stateChanged", () => events.push("state"));
     bridge.subscribe("interactionLocked", ({ locked }) => events.push(locked ? "lock" : "unlock"));
     act(() => {
-      bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", gridX: 4, gridY: 4 });
-      bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", gridX: 5, gridY: 4 });
-      bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", buildingId: 7, gridX: 6, gridY: 4 });
+      bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", facing: "left", gridX: 4, gridY: 4 });
+      bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", facing: "left", gridX: 5, gridY: 4 });
+      bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", buildingId: 7, facing: "left", gridX: 6, gridY: 4 });
     });
     await waitFor(() => expect(buyBuilding).toHaveBeenCalledTimes(1));
     expect(moveBuilding).not.toHaveBeenCalled();
@@ -272,7 +277,7 @@ describe("town economy", () => {
     expect(events).toEqual(["lock", "state", "unlock"]);
     if (outcome === "reject") expect(screen.getByRole("alert")).toHaveTextContent("Placement rejected");
     vi.mocked(buyBuilding).mockResolvedValue(initialState);
-    act(() => bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", gridX: 4, gridY: 4 }));
+    act(() => bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", facing: "left", gridX: 4, gridY: 4 }));
     await waitFor(() => expect(buyBuilding).toHaveBeenCalledTimes(2));
   });
 
@@ -327,9 +332,26 @@ describe("town economy", () => {
       catalog_item_id: "woodshed_01",
       grid_x: 4,
       grid_y: 4,
+      facing: "left",
     }, expect.anything()));
     expect(await screen.findByText("200")).toBeInTheDocument();
     expect(placementSound).toHaveBeenCalledTimes(1);
+  });
+
+  it("purchases a building with the facing selected in the catalog", async () => {
+    vi.mocked(buyBuilding).mockResolvedValue(initialState);
+    renderTown();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Right →" }));
+    fireEvent.click(screen.getByRole("button", { name: "Place Village Woodshed" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
+
+    await waitFor(() => expect(buyBuilding).toHaveBeenCalledWith({
+      catalog_item_id: "woodshed_01",
+      grid_x: 4,
+      grid_y: 4,
+      facing: "right",
+    }, expect.anything()));
   });
 
   it("starts catalog drag placement without charging before the snapped drop is confirmed", async () => {
@@ -360,6 +382,7 @@ describe("town economy", () => {
       catalog_item_id: "woodshed_01",
       grid_x: 4,
       grid_y: 4,
+      facing: "left",
     }, expect.anything()));
   });
 
@@ -441,12 +464,48 @@ describe("town economy", () => {
     expect(screen.getByText("sells for 60", { exact: false })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Move" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
-    await waitFor(() => expect(moveBuilding).toHaveBeenCalledWith(7, { grid_x: 4, grid_y: 4 }));
+    await waitFor(() => expect(moveBuilding).toHaveBeenCalledWith(7, {
+      grid_x: 4,
+      grid_y: 4,
+      facing: "left",
+    }));
 
     fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
     fireEvent.click(screen.getByRole("button", { name: "Sell" }));
     await waitFor(() => expect(sellBuilding).toHaveBeenCalledWith(7, expect.anything()));
     expect(await screen.findByText("260")).toBeInTheDocument();
+  });
+
+  it("flips a placed building in place without charging for it again", async () => {
+    const placedState: GameState = {
+      ...initialState,
+      buildings: [{
+        id: 7,
+        catalog_item_id: "woodshed_01",
+        grid_x: 5,
+        grid_y: 4,
+        facing: "left",
+        purchase_price_coins: 100,
+        purchased_at: "2026-10-17T12:00:00Z",
+        updated_at: "2026-10-17T12:00:00Z",
+      }],
+    };
+    vi.mocked(getGameState).mockResolvedValue(placedState);
+    vi.mocked(moveBuilding).mockResolvedValue({
+      ...placedState,
+      buildings: [{ ...placedState.buildings[0], facing: "right" }],
+    });
+    renderTown();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
+    fireEvent.click(screen.getByRole("button", { name: "Face right →" }));
+
+    await waitFor(() => expect(moveBuilding).toHaveBeenCalledWith(7, {
+      grid_x: 5,
+      grid_y: 4,
+      facing: "right",
+    }));
+    expect(buyBuilding).not.toHaveBeenCalled();
   });
 
   it("keeps the last server-confirmed position when an occupied move is rejected", async () => {

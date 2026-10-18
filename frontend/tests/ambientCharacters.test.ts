@@ -48,4 +48,24 @@ describe("ambient character sprites", () => {
       catalog,
     )).toHaveLength(2);
   });
+
+  it("keeps resident identities stable when unrelated buildings are added or sold", () => {
+    const catalog = [
+      { id: "hut_01", resident_count: 1 },
+      { id: "cottage_01", resident_count: 2 },
+    ] as TownCatalogItem[];
+    const hut = { id: 1, catalog_item_id: "hut_01" };
+    const cottage = { id: 8, catalog_item_id: "cottage_01" };
+    const withBoth = createResidentAssignments(
+      { buildings: [hut, cottage] } as GameState,
+      catalog,
+    ).filter(({ buildingId }) => buildingId === cottage.id);
+    const afterHutSale = createResidentAssignments(
+      { buildings: [cottage] } as GameState,
+      catalog,
+    );
+
+    expect(afterHutSale).toEqual(withBoth);
+    expect(afterHutSale.map(({ key }) => key)).toEqual(["8:0", "8:1"]);
+  });
 });

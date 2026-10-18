@@ -77,6 +77,7 @@ class GameService:
                 catalog_item_id=item.id,
                 grid_x=request.grid_x,
                 grid_y=request.grid_y,
+                facing=request.facing,
                 purchase_price_coins=item.cost_coins,
                 purchased_at=now,
                 updated_at=now,
@@ -93,6 +94,7 @@ class GameService:
         building_id: int,
         grid_x: int,
         grid_y: int,
+        facing: str | None = None,
     ) -> GameStateResponse:
         wallet = ensure_wallet(session, user_id)
         building = get_placed_building(session, user_id=user_id, building_id=building_id)
@@ -108,6 +110,8 @@ class GameService:
         )
         building.grid_x = grid_x
         building.grid_y = grid_y
+        if facing is not None:
+            building.facing = facing
         building.updated_at = datetime.now(UTC)
         session.commit()
         return self._state(session, user_id=user_id, wallet=wallet)
@@ -149,6 +153,7 @@ class GameService:
                     catalog_item_id=building.catalog_item_id,
                     grid_x=building.grid_x,
                     grid_y=building.grid_y,
+                    facing=building.facing,
                     purchase_price_coins=building.purchase_price_coins,
                     purchased_at=building.purchased_at,
                     updated_at=building.updated_at,

@@ -1,9 +1,13 @@
 import { useEffect, useRef } from "react";
 import type { DragEvent } from "react";
 import Phaser from "phaser";
-import type { GameState, TownCatalog } from "../../api/types";
+import type { BuildingFacing, GameState, TownCatalog } from "../../api/types";
 import { TownScene } from "./scenes/TownScene";
-import { CATALOG_DRAG_TYPE, type TownBridge } from "./townBridge";
+import {
+  CATALOG_DRAG_TYPE,
+  CATALOG_FACING_TYPE,
+  type TownBridge,
+} from "./townBridge";
 
 type TownCanvasProps = {
   bridge: TownBridge;
@@ -13,7 +17,10 @@ type TownCanvasProps = {
 
 export function TownCanvas({ bridge, catalog, state }: TownCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const activeCatalogItemId = useRef<string | null>(null);
+  const activeCatalogPlacement = useRef<{
+    catalogItemId: string;
+    facing: BuildingFacing;
+  } | null>(null);
   const initialSceneData = useRef({ catalogItems: catalog.items, state });
   const previousState = useRef(state);
 
@@ -26,28 +33,35 @@ export function TownCanvas({ bridge, catalog, state }: TownCanvasProps) {
   };
 
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
-    const catalogItemId = activeCatalogItemId.current;
-    if (!catalogItemId) return;
+    const placement = activeCatalogPlacement.current;
+    if (!placement) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = "copy";
-    bridge.emit("catalogDragMoved", { catalogItemId, ...canvasCoordinates(event) });
+    bridge.emit("catalogDragMoved", {
+      catalogItemId: placement.catalogItemId,
+      ...canvasCoordinates(event),
+    });
   };
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const catalogItemId = event.dataTransfer.getData(CATALOG_DRAG_TYPE)
       || event.dataTransfer.getData("text/plain")
-      || activeCatalogItemId.current;
+      || activeCatalogPlacement.current?.catalogItemId;
     if (!catalogItemId || !catalog.items.some((item) => item.id === catalogItemId)) return;
-    bridge.emit("catalogDropped", { catalogItemId, ...canvasCoordinates(event) });
-    activeCatalogItemId.current = null;
+    const transferredFacing = event.dataTransfer.getData(CATALOG_FACING_TYPE);
+    const facing = transferredFacing === "right" || transferredFacing === "left"
+      ? transferredFacing
+      : activeCatalogPlacement.current?.facing ?? "left";
+    bridge.emit("catalogDropped", { catalogItemId, facing, ...canvasCoordinates(event) });
+    activeCatalogPlacement.current = null;
   };
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const unsubscribeDragStart = bridge.subscribe("catalogDragStarted", ({ catalogItemId }) => {
-      activeCatalogItemId.current = catalogItemId;
+    const unsubscribeDragStart = bridge.subscribe("catalogDragStarted", (placement) => {
+      activeCatalogPlacement.current = placement;
     });
 
     const game = new Phaser.Game({

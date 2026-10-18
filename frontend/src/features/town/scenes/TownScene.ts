@@ -1,5 +1,10 @@
 import Phaser from "phaser";
-import type { GameState, PlacedBuilding, TownCatalogItem } from "../../../api/types";
+import type {
+  BuildingFacing,
+  GameState,
+  PlacedBuilding,
+  TownCatalogItem,
+} from "../../../api/types";
 import {
   buildingDisplayWidth,
   buildingGridPosition,
@@ -54,6 +59,7 @@ type Placement = {
   valid: boolean;
   reason: string | null;
   mode: TownPlacementMode;
+  facing: BuildingFacing;
 };
 
 type BuildingDisplay = {
@@ -62,6 +68,7 @@ type BuildingDisplay = {
 };
 
 type AmbientCharacter = {
+  key: string;
   sprite: Phaser.GameObjects.Sprite;
   home: Phaser.Math.Vector2;
   target: Phaser.Math.Vector2;
@@ -138,6 +145,7 @@ export class TownScene extends Phaser.Scene {
       }),
       this.bridge.subscribe("catalogDropped", (detail) => {
         if (this.placement?.catalogItemId !== detail.catalogItemId) return;
+        this.placement.facing = detail.facing;
         this.updatePlacementAtScreen(detail.canvasX, detail.canvasY);
         this.confirmPlacement();
       }),
@@ -161,16 +169,19 @@ export class TownScene extends Phaser.Scene {
   }
 
   private renderWorld() {
-    this.mapLayer?.destroy(true);
-    this.buildingLayer?.destroy(true);
+    if (!this.mapLayer) {
+      this.mapLayer = this.add.container(0, 0).setDepth(-100_000);
+      this.drawMap();
+    }
+    if (!this.buildingLayer) this.buildingLayer = this.add.container(0, 0);
+    this.buildingDisplays.forEach(({ sprite, shadow }) => {
+      sprite.destroy();
+      shadow?.destroy();
+    });
     this.buildingDisplays.clear();
-    this.ambientCharacters = [];
-    this.mapLayer = this.add.container(0, 0).setDepth(-100_000);
-    this.buildingLayer = this.add.container(0, 0);
-    this.drawMap();
     this.state.buildings.forEach((building) => this.drawBuilding(building));
     this.createCharacterAnimations();
-    this.spawnAmbientCharacters();
+    this.reconcileAmbientCharacters();
     this.buildingLayer.sort("depth");
   }
 
@@ -236,39 +247,66 @@ export class TownScene extends Phaser.Scene {
     });
   }
 
-  private spawnAmbientCharacters() {
+  private reconcileAmbientCharacters() {
     const assignments = createResidentAssignments(this.state, this.catalog);
-    assignments.forEach((assignment, index) => {
+    const existingCharacters = new Map(
+      this.ambientCharacters.map((character) => [character.key, character]),
+    );
+    const desiredKeys = new Set(assignments.map((assignment) => assignment.key));
+    this.ambientCharacters.forEach((character) => {
+      if (!desiredKeys.has(character.key)) character.sprite.destroy();
+    });
+
+    this.ambientCharacters = assignments.flatMap((assignment) => {
       const building = this.state.buildings.find(({ id }) => id === assignment.buildingId);
       const item = this.catalog.find(({ id }) => id === assignment.catalogItemId);
-      if (!building || !item) return;
+      if (!building || !item) return [];
       const buildingPosition = buildingWorldPosition(item, building.grid_x, building.grid_y);
-      const home = new Phaser.Math.Vector2(
-        buildingPosition.x,
-        buildingPosition.y + CHARACTER_HOME_OFFSET_Y,
-      );
-      const sprite = this.add.sprite(
-        home.x + (index % 2 === 0 ? -12 : 12),
-        home.y + 12,
-        characterTextureKey(assignment.variant),
-        0,
-      )
-        .setOrigin(0.5, 0.78)
-        .setScale(CHARACTER_SCALE);
-      const character: AmbientCharacter = {
-        sprite,
-        home,
-        target: new Phaser.Math.Vector2(sprite.x, sprite.y),
-        variant: assignment.variant,
-        speed: CHARACTER_WALK_SPEED + index % 6 * 3,
-        mode: "wandering",
-        remainingStops: Phaser.Math.Between(1, 3),
-        insideUntil: 0,
-      };
-      this.assignCharacterTarget(character);
-      this.ambientCharacters.push(character);
-      this.buildingLayer?.add(sprite);
+      const homeX = buildingPosition.x;
+      const homeY = buildingPosition.y + CHARACTER_HOME_OFFSET_Y;
+      const existing = existingCharacters.get(assignment.key);
+      if (existing) {
+        existing.home.set(homeX, homeY);
+        if (existing.mode === "returning") {
+          existing.target.copy(existing.home);
+          this.playCharacterDirection(existing);
+        } else if (existing.mode === "inside") {
+          existing.sprite.setPosition(homeX, homeY + 12);
+        }
+        return [existing];
+      }
+      return [this.spawnAmbientCharacter(assignment, homeX, homeY)];
     });
+  }
+
+  private spawnAmbientCharacter(
+    assignment: ReturnType<typeof createResidentAssignments>[number],
+    homeX: number,
+    homeY: number,
+  ): AmbientCharacter {
+    const home = new Phaser.Math.Vector2(homeX, homeY);
+    const sprite = this.add.sprite(
+      home.x + (assignment.residentIndex % 2 === 0 ? -12 : 12),
+      home.y + 12,
+      characterTextureKey(assignment.variant),
+      0,
+    )
+      .setOrigin(0.5, 0.78)
+      .setScale(CHARACTER_SCALE);
+    const character: AmbientCharacter = {
+      key: assignment.key,
+      sprite,
+      home,
+      target: new Phaser.Math.Vector2(sprite.x, sprite.y),
+      variant: assignment.variant,
+      speed: CHARACTER_WALK_SPEED + (assignment.variant - 1) * 3,
+      mode: "wandering",
+      remainingStops: Phaser.Math.Between(1, 3),
+      insideUntil: 0,
+    };
+    this.assignCharacterTarget(character);
+    this.buildingLayer?.add(sprite);
+    return character;
   }
 
   private assignCharacterTarget(character: AmbientCharacter) {
@@ -327,9 +365,11 @@ export class TownScene extends Phaser.Scene {
     const sprite = this.add.image(position.x, position.y, `building-${item.id}`);
     if (shadow) {
       this.applyPresentation(shadow, item);
+      this.applyFacing(shadow, item, building.facing ?? "left");
       shadow.setAlpha(0.4).setDepth(position.y - 1);
     }
     this.applyPresentation(sprite, item);
+    this.applyFacing(sprite, item, building.facing ?? "left");
     sprite
       .setDepth(item.render_kind === "ground" ? -50_000 + position.y : position.y)
       .setInteractive({ useHandCursor: true })
@@ -346,7 +386,11 @@ export class TownScene extends Phaser.Scene {
   }
 
   private startPlacement(
-    detail: { catalogItemId: string; buildingId?: number },
+    detail: {
+      catalogItemId: string;
+      buildingId?: number;
+      facing: BuildingFacing;
+    },
     mode: TownPlacementMode,
   ) {
     if (this.interactionLocked) return;
@@ -365,6 +409,7 @@ export class TownScene extends Phaser.Scene {
       valid: false,
       reason: null,
       mode,
+      facing: detail.facing,
     };
     if (detail.buildingId != null) this.setBuildingDimmed(detail.buildingId, true);
     this.refreshPreview();
@@ -456,6 +501,7 @@ export class TownScene extends Phaser.Scene {
     );
     const ghost = this.add.image(position.x, position.y, `building-${item.id}`);
     this.applyPresentation(ghost, item);
+    this.applyFacing(ghost, item, this.placement.facing);
     ghost.setAlpha(0.72).setTint(result.valid ? 0xd8ffe0 : 0xffb4aa);
     this.previewLayer.add([footprint, ghost]);
     this.bridge.emit("placementChanged", {
@@ -472,6 +518,7 @@ export class TownScene extends Phaser.Scene {
       buildingId: this.placement.buildingId,
       gridX: this.placement.gridX,
       gridY: this.placement.gridY,
+      facing: this.placement.facing,
     });
   }
 
@@ -561,6 +608,7 @@ export class TownScene extends Phaser.Scene {
       this.startPlacement({
         catalogItemId: building.catalog_item_id,
         buildingId: building.id,
+        facing: building.facing ?? "left",
       }, "building-drag");
     });
     this.input.on("drag", (
@@ -619,6 +667,19 @@ export class TownScene extends Phaser.Scene {
     }
     image.setOrigin(item.pivot.x / image.width, item.pivot.y / image.height);
     image.setScale(buildingDisplayWidth(item) / image.width);
+  }
+
+  private applyFacing(
+    image: Phaser.GameObjects.Image,
+    item: TownCatalogItem,
+    facing: BuildingFacing,
+  ) {
+    const flipped = item.render_kind !== "ground" && facing === "right";
+    image.setFlipX(flipped);
+    image.setOrigin(
+      (flipped ? image.width - item.pivot.x : item.pivot.x) / image.width,
+      item.pivot.y / image.height,
+    );
   }
 
   private diamond(x: number, y: number) {

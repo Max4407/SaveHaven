@@ -7,6 +7,7 @@ import type { GameState, TownCatalog } from "../src/api/types";
 import { TownCanvas } from "../src/features/town/TownCanvas";
 import {
   CATALOG_DRAG_TYPE,
+  CATALOG_FACING_TYPE,
   createTownBridge,
   type TownBridge,
 } from "../src/features/town/townBridge";
@@ -109,7 +110,10 @@ describe("town canvas", () => {
     bridge.subscribe("catalogDropped", dropped);
     render(<TownCanvas bridge={bridge} catalog={catalog} state={state} />);
     const canvas = screen.getByLabelText("Interactive town map and building drop area");
-    const data = new Map([[CATALOG_DRAG_TYPE, "woodshed_01"]]);
+    const data = new Map([
+      [CATALOG_DRAG_TYPE, "woodshed_01"],
+      [CATALOG_FACING_TYPE, "right"],
+    ]);
     const dataTransfer = {
       dropEffect: "none",
       effectAllowed: "copy",
@@ -117,7 +121,7 @@ describe("town canvas", () => {
       setData: (type: string, value: string) => data.set(type, value),
     } as unknown as DataTransfer;
 
-    bridge.emit("catalogDragStarted", { catalogItemId: "woodshed_01" });
+    bridge.emit("catalogDragStarted", { catalogItemId: "woodshed_01", facing: "right" });
     const dragOver = new MouseEvent("dragover", {
       bubbles: true,
       cancelable: true,
@@ -142,6 +146,7 @@ describe("town canvas", () => {
     });
     expect(dropped).toHaveBeenCalledWith({
       catalogItemId: "woodshed_01",
+      facing: "right",
       canvasX: 44,
       canvasY: 51,
     });

@@ -371,6 +371,11 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .coin-balance i { font-style: normal; }
 .preview-pill { padding: 6px 9px; color: #536158; background: #e7eae3; border-radius: 99px; font-size: 9px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .catalog-intro { margin: 5px 0 12px; color: #665a3d; font-size: 9px; line-height: 1.45; }
+.building-facing-picker { display: grid; grid-template-columns: auto 1fr 1fr; align-items: center; gap: 5px; margin: 0 0 12px; padding: 7px; background: #dfd19d; border: 2px solid var(--pixel-line); box-shadow: 2px 2px 0 rgba(94,72,34,.24); }
+.building-facing-picker span { padding: 0 5px; color: #594a2c; font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.building-facing-picker button, .building-facing-controls button { min-height: 30px; padding: 5px 7px; color: #665b3f; background: #f7edc6; border: 2px solid #927b46; border-radius: 0; font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.building-facing-picker button.active, .building-facing-controls button.active { color: #fff2bf; background: var(--pixel-forest); border-color: var(--pixel-forest-dark); box-shadow: 2px 2px 0 #263a25; }
+.building-facing-picker button:focus-visible, .building-facing-controls button:focus-visible { outline: 3px solid #d7a940; outline-offset: 2px; }
 .catalog-filters { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 15px; }
 .catalog-filters button { min-height: 36px; padding: 7px 8px; color: #665b3f; background: #dfd19d; border: 2px solid var(--pixel-line); border-radius: 0; box-shadow: 2px 2px 0 rgba(94,72,34,.24); font-size: 9px; font-weight: 800; text-transform: uppercase; }
 .catalog-filters button:hover { color: #31462d; background: #eadca7; }
@@ -383,6 +388,7 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .catalog-card[draggable="true"]:active { cursor: grabbing; }
 .catalog-art { flex: 1 1 auto; display: grid; place-items: center; min-height: 0; overflow: hidden; background: #d6dda0; border: 1px solid #b19a5c; border-radius: 0; }
 .catalog-art img { width: 112%; height: 112%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(4px 4px 0 rgba(65,57,33,.2)); transform: translateX(6%); }
+.catalog-art.facing-right img { transform: translateX(-6%) scaleX(-1); }
 .catalog-card-copy { min-width: 0; padding-top: 6px; }
 .level-pill { color: #55734c; font-size: 7px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .catalog-card h3 { margin: 2px 0 3px; overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
@@ -409,6 +415,8 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .building-actions h2 { margin: 0 0 6px; font-size: 17px; }
 .building-actions p:not(.eyebrow) { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
 .building-actions > button { min-height: 36px; }
+.building-facing-controls { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.building-facing-controls button:disabled { cursor: default; opacity: 1; }
 .sell-button { color: #8a3732; background: #faece9; border: 1px solid #edcfca; border-radius: 9px; font-size: 10px; font-weight: 800; }
 .sell-button:hover, .sell-button:focus-visible { background: #f4dcd8; outline: none; }
 .reward-explanation { margin-top: 14px; padding: 13px; color: #4a554e; background: #eef2e9; border-radius: 11px; }
