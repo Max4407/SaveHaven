@@ -22,7 +22,6 @@ import type { TownBridge } from "../townBridge";
 import { generatePerimeterTrees } from "../perimeterTrees";
 
 const MIN_CAMERA_ZOOM = 0.4;
-const DEFAULT_CAMERA_ZOOM = 1.1;
 const MAX_CAMERA_ZOOM = 1.45;
 const GRASS_BACKGROUND_URL = "/patches_bg.png";
 const TREE_VARIANTS = [1, 2, 3, 4] as const;
@@ -304,7 +303,7 @@ export class TownScene extends Phaser.Scene {
     const camera = this.cameras.main;
     camera.setBounds(TOWN_WORLD_LEFT, TOWN_WORLD_TOP, TOWN_WORLD_WIDTH, TOWN_WORLD_HEIGHT);
     camera.centerOn(0, 0);
-    camera.setZoom(Math.max(DEFAULT_CAMERA_ZOOM, this.getMinimumZoom()));
+    camera.setZoom(this.getMinimumZoom());
     camera.roundPixels = true;
     this.constrainCamera();
   }

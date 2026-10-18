@@ -113,3 +113,33 @@ describe("town scene input", () => {
     expect(changed).toHaveBeenCalledWith({ active: false, valid: false, reason: null });
   });
 });
+
+describe("town scene camera", () => {
+  it("starts at the minimum zoom so the town opens fully zoomed out", () => {
+    const bridge = createTownBridge();
+    const scene = new TownScene(bridge, [], { buildings: [] } as unknown as GameState);
+    const camera = {
+      zoom: 1.1,
+      scrollX: 0,
+      scrollY: 0,
+      roundPixels: false,
+      setBounds: vi.fn(),
+      centerOn: vi.fn(),
+      setZoom: vi.fn(),
+      clampX: vi.fn((value: number) => value),
+      clampY: vi.fn((value: number) => value),
+    };
+    const internals = scene as unknown as {
+      cameras: { main: typeof camera };
+      scale: { width: number; height: number };
+      configureCamera(): void;
+    };
+    internals.cameras = { main: camera };
+    internals.scale = { width: 800, height: 600 };
+
+    internals.configureCamera();
+
+    expect(camera.setZoom).toHaveBeenCalledWith(0.4);
+    expect(camera.centerOn).toHaveBeenCalledWith(0, 0);
+  });
+});

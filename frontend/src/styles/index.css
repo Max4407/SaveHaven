@@ -386,7 +386,7 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .catalog-card[draggable="true"]:hover { border-color: #2d6b3b; box-shadow: 4px 4px 0 #315f36; transform: translate(-1px, -1px); }
 .catalog-card[draggable="true"]:active { cursor: grabbing; }
 .catalog-art { flex: 1 1 auto; display: grid; place-items: center; min-height: 0; overflow: hidden; background: #d6dda0; border: 1px solid #b19a5c; border-radius: 0; }
-.catalog-art img { width: 112%; height: 112%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(4px 4px 0 rgba(65,57,33,.2)); }
+.catalog-art img { width: 112%; height: 112%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(4px 4px 0 rgba(65,57,33,.2)); transform: translateX(6%); }
 .catalog-card-copy { min-width: 0; padding-top: 6px; }
 .level-pill { color: #55734c; font-size: 7px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .catalog-card h3 { margin: 2px 0 3px; overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
