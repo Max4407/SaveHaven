@@ -21,6 +21,13 @@ import { CATALOG_DRAG_TYPE, createTownBridge } from "./townBridge";
 
 type PlacementStatus = { active: boolean; valid: boolean; reason: string | null };
 
+function formatDollars(cents: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(cents / 100);
+}
+
 function mutationMessage(error: unknown): string {
   if (error instanceof ApiError) return error.message;
   return "The town could not be updated. Please try again.";
@@ -333,6 +340,11 @@ function TownPage() {
         {healthQuery.data?.demo_controls_enabled && (
           <section className="demo-week-controls" aria-label="Demo week controls">
             <p className="eyebrow">Protected demo controls</p>
+            <p className="demo-week-note">
+              {healthQuery.data.data_mode === "live" && healthQuery.data.nessie_configured
+                ? "Writes to a live Nessie sandbox connection, syncs it, then evaluates the imported transactions. Fixture fallback is labeled in the result."
+                : "Fixture mode creates local bank-shaped transactions, then evaluates the week."}
+            </p>
             <div>
               <button className="primary-button" type="button" disabled={isMutating} onClick={() => startAction(() => simulateMutation.mutate("successful"))}>Simulate success</button>
               <button className="secondary-button" type="button" disabled={isMutating} onClick={() => startAction(() => simulateMutation.mutate("off-plan"))}>Try off-plan</button>
@@ -353,6 +365,12 @@ function TownPage() {
               <strong>+{celebration.reward.coins_awarded} Coins</strong>
               <strong>+{celebration.reward.xp_awarded} XP</strong>
             </div>
+            <div className="celebration-finance" aria-label="Verified weekly finances">
+              <span><small>Saved from bank activity</small><strong>{formatDollars(celebration.evaluation.actual_net_savings_cents)}</strong></span>
+              <span><small>Weekly target</small><strong>{formatDollars(celebration.evaluation.planned_savings_cents)}</strong></span>
+              <span><small>Discretionary spending</small><strong>{formatDollars(celebration.evaluation.actual_discretionary_spending_cents)}</strong></span>
+            </div>
+            <p>{celebration.evaluation.explanation}</p>
             <p>{celebration.reward.explanation}</p>
             {celebration.reward.new_level > celebration.reward.previous_level && <p>New buildings are ready in the catalog.</p>}
             {celebration.unlocks.catalog_items.length > 0 && (

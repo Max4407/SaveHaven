@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from types import SimpleNamespace
 
 from sqlalchemy import update
@@ -60,6 +60,76 @@ def test_sparse_history_uses_low_confidence_recent_income() -> None:
     assert forecast.income_cadence == "irregular"
     assert forecast.weekly_income_cents == 74_667
     assert "sparse" in forecast.evidence[0].lower()
+
+
+def test_variable_income_combines_recent_deposits_from_multiple_clients() -> None:
+    today = date.today()
+    forecast = build_forecast(
+        [
+            tx(today, 95_000, merchant="Client A", description="Project payment"),
+            tx(
+                today - timedelta(days=13),
+                145_000,
+                merchant="Client B",
+                description="Project payment",
+            ),
+            tx(
+                today - timedelta(days=26),
+                70_000,
+                merchant="Client A",
+                description="Project payment",
+            ),
+            tx(today - timedelta(days=14), -110_000, kind="bill", merchant="Rent"),
+            tx(today - timedelta(days=10), -7_200, kind="bill", merchant="Software"),
+        ]
+    )  # type: ignore[arg-type]
+    goal = SimpleNamespace(
+        id=1,
+        target_amount_cents=156_000,
+        amount_already_saved_cents=0,
+        target_date=today + timedelta(weeks=52),
+    )
+
+    plan = build_draft_plan(goal, forecast)  # type: ignore[arg-type]
+
+    assert forecast.weekly_income_cents == 72_333
+    assert forecast.detected_deposit_count == 3
+    assert "spread across 2 sources" in forecast.evidence[0]
+    assert plan.weekly_savings_cents == 3_000
+    assert plan.feasible is True
+
+
+def test_freelancer_fixture_can_support_a_thirty_dollar_weekly_goal() -> None:
+    settings = Settings(
+        _env_file=None,
+        app_env="test",
+        database_url="sqlite:///:memory:",
+        session_secret="test-only-session-secret",
+        nessie_data_mode="fixture",
+    )
+    database = Database(settings.database_url)
+    database.create_schema()
+    with database.session_factory() as session:
+        seed_demo_users(session)
+        BankSyncService(
+            settings=settings,
+            fixture_store=FixtureProfileStore(settings.nessie_fixture_path),
+            nessie_client=None,
+        ).connect(session, user_id="demo-player", profile_id="variable-income")
+        goal = replace_active_goal(
+            session,
+            user_id="demo-player",
+            name="Freelancer reserve",
+            target_amount_cents=156_000,
+            amount_already_saved_cents=0,
+            target_date=date.today() + timedelta(weeks=52),
+        )
+        session.commit()
+        result = build_goal_plan(session, user_id="demo-player", goal=goal)
+
+    assert result.forecast.weekly_income_cents == 72_333
+    assert result.plan.weekly_savings_cents == 3_000
+    assert result.plan.feasible is True
 
 
 def test_one_off_demo_paycheck_does_not_erase_biweekly_signal() -> None:

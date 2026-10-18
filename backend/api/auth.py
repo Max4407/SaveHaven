@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Request, Response, status
 
 from auth import CurrentDemoUser
 from database.dependencies import DatabaseSession
-from repository import get_user
+from repository import authenticate_demo_user
 from schemas import DemoLoginRequest, SessionUserResponse
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -15,11 +15,11 @@ def demo_login(
     response: Response,
     session: DatabaseSession,
 ) -> SessionUserResponse:
-    user = get_user(session, payload.user_id)
+    user = authenticate_demo_user(session, payload.email, payload.password)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unknown demo user",
+            detail="Email or password is incorrect",
         )
 
     settings = request.app.state.settings

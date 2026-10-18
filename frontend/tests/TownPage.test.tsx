@@ -386,6 +386,8 @@ describe("town economy", () => {
 
     expect(await screen.findByRole("dialog")).toHaveTextContent("Welcome to Village");
     expect(screen.getByRole("dialog")).toHaveTextContent("+420 Coins");
+    expect(screen.getByRole("dialog")).toHaveTextContent("Saved from bank activity$100.00");
+    expect(screen.getByRole("dialog")).toHaveTextContent("Saved the full weekly target.");
     expect(screen.getByRole("dialog")).toHaveTextContent("Unlocked: Corner Bakery");
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["game-rewards"] });
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["dashboard"] });

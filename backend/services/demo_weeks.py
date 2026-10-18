@@ -284,8 +284,6 @@ class DemoWeekService:
             for transaction in transactions
             if transaction.source_account_id in savings_accounts
         )
-        if source == "live" and abs(actual_savings - plan.weekly_savings_cents) < 100:
-            actual_savings = plan.weekly_savings_cents
         actual_discretionary = -sum(
             transaction.signed_amount_cents
             for transaction in transactions

@@ -92,7 +92,10 @@ def test_buildings_are_not_accessible_across_users(logged_in_client: TestClient)
         json={"catalog_item_id": "woodshed_01", "grid_x": 4, "grid_y": 4},
     )
     building_id = purchase.json()["buildings"][0]["id"]
-    logged_in_client.post("/api/auth/demo-login", json={"user_id": "demo-reviewer"})
+    logged_in_client.post(
+        "/api/auth/demo-login",
+        json={"email": "alex.morgan@savehaven.demo", "password": "savehaven-demo"},
+    )
 
     move = logged_in_client.patch(
         f"/api/game/buildings/{building_id}",

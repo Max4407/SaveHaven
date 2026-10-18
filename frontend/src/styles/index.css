@@ -68,17 +68,13 @@ a { color: inherit; }
 .auth-card h1, .status-card h1, .onboarding-heading h1 { margin: 0; font-size: clamp(27px, 4vw, 40px); line-height: 1.08; letter-spacing: -.045em; }
 .auth-card > p:not(.eyebrow, .error-banner), .status-card > p:not(.eyebrow), .onboarding-heading p:last-child { color: var(--muted); font-size: 13px; line-height: 1.65; }
 .auth-card .primary-button, .status-card .primary-button { width: 100%; margin-top: 8px; }
-.auth-user-list { display: grid; gap: 10px; margin-top: 22px; }
-.auth-user-option { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; padding: 13px; color: var(--ink); background: #f8faf4; border: 1px solid var(--line); border-radius: 12px; text-align: left; transition: background .15s ease, border-color .15s ease, transform .15s ease; }
-.auth-user-option:hover { background: #eef4e3; border-color: #8cab78; transform: translateY(-1px); }
-.auth-user-option:focus-visible { outline: 3px solid rgba(65,123,90,.28); outline-offset: 2px; }
-.auth-user-option:disabled { cursor: wait; opacity: .62; transform: none; }
-.auth-user-avatar { display: grid; place-items: center; width: 40px; height: 40px; color: #304c3d; background: #dce7cd; border-radius: 11px; font-size: 11px; font-weight: 800; }
-.auth-user-option strong, .auth-user-option small { display: block; }
-.auth-user-option strong { font-size: 13px; }
-.auth-user-option small { margin-top: 4px; color: var(--muted); font-size: 10px; }
-.auth-user-arrow { color: var(--forest); font-size: 20px; line-height: 1; }
-.auth-login-status { margin: 12px 0 0; text-align: center; }
+.auth-login-form { display: grid; gap: 15px; margin-top: 22px; }
+.auth-login-form label { display: grid; gap: 7px; color: #59645d; font-size: 10px; font-weight: 750; }
+.auth-login-form input, .auth-login-form select { width: 100%; min-height: 44px; padding: 10px 12px; color: var(--ink); background: #f8faf4; border: 1px solid #d6ddd3; border-radius: 10px; font: inherit; }
+.auth-login-form input:focus, .auth-login-form select:focus { border-color: #71967d; outline: 3px solid rgba(65,123,90,.16); }
+.auth-login-form input:disabled, .auth-login-form select:disabled { cursor: wait; opacity: .62; }
+.demo-credential-note { margin: -2px 0 0; color: var(--muted); font-size: 11px; }
+.demo-credential-note code { color: var(--forest-dark); font-family: inherit; font-weight: 800; }
 
 .onboarding-page { width: min(1080px, 100%); margin: 0 auto; padding: 84px clamp(24px, 5vw, 72px); }
 .onboarding-heading { display: flex; align-items: flex-start; gap: 17px; max-width: 730px; }
@@ -420,6 +416,7 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .reward-explanation strong { color: #35694d; }
 .reward-explanation p { margin: 7px 0 0; color: #68736b; font-size: 8px; line-height: 1.5; }
 .demo-week-controls { margin-top: 14px; padding: 14px; background: #f8f1df; border: 1px solid #eadbb6; border-radius: 12px; }
+.demo-week-note { margin: 0 0 10px; color: #806f4c; font-size: 8px; line-height: 1.5; }
 .demo-week-controls > div { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
 .demo-week-controls button { min-height: 34px; padding: 7px 9px; font-size: 9px; }
 .demo-week-controls > .text-button { width: 100%; margin-top: 6px; color: #80622d; }
@@ -434,6 +431,11 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .town-celebration > p:not(.eyebrow) { color: var(--muted); font-size: 11px; line-height: 1.6; }
 .celebration-rewards { display: flex; justify-content: center; gap: 9px; }
 .celebration-rewards strong { padding: 9px 12px; color: #35694d; background: #e6f0dc; border-radius: 9px; font-size: 11px; }
+.celebration-finance { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 15px 0; }
+.celebration-finance span { padding: 10px 7px; background: #f1ead7; border-radius: 8px; }
+.celebration-finance small, .celebration-finance strong { display: block; }
+.celebration-finance small { min-height: 24px; color: #7b7057; font-size: 8px; line-height: 1.4; }
+.celebration-finance strong { margin-top: 5px; color: #2f5f42; font-size: 13px; }
 .town-celebration .primary-button { margin-top: 10px; }
 
 @media (max-width: 1050px) {

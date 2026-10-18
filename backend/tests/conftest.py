@@ -24,7 +24,10 @@ def client() -> Iterator[TestClient]:
 def logged_in_client(client: TestClient) -> TestClient:
     response = client.post(
         "/api/auth/demo-login",
-        json={"user_id": "demo-player"},
+        json={
+            "email": "jordan.lee@savehaven.demo",
+            "password": "savehaven-demo",
+        },
     )
     assert response.status_code == 200
     return client

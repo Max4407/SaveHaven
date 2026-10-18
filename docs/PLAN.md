@@ -35,7 +35,7 @@ The team is Max, Kevin, Phuc, and Ray. The target is a reliable, polished vertic
 
 The target presentation flow is:
 
-1. Sign in as a pre-seeded demo user.
+1. Sign in through a normal email-and-password form using a pre-seeded fictional account.
 2. Choose one of several curated fictional Nessie profiles.
 3. View accounts, balances, recurring income, bills, and spending categories.
 4. Create a goal such as “Save $800 for a bike by December.”
@@ -52,7 +52,8 @@ The presentation should take 2–3 minutes. Every step must work from a fresh br
 
 ### Onboarding
 
-- Demo login with a signed server session.
+- Credential-style login limited to pre-seeded fictional accounts, backed by a signed server session.
+- No public registration, password recovery, email delivery, or acceptance of non-demo accounts.
 - A “Connect a demo bank” screen.
 - Several preselected fictional Nessie customers with useful histories.
 - A clear sandbox notice.
@@ -103,7 +104,7 @@ Suggested notice:
 - Real bank connections or real money movement.
 - Collection of banking credentials or sensitive identity information.
 - Production financial advice or identity verification.
-- Production-scale authentication and account recovery.
+- Public self-registration, production-scale authentication, and account recovery.
 - Multiplayer, trading, visits, leaderboards, or chat.
 - Citizens, combat, pathfinding, production chains, or complex building simulation.
 - A large machine-learning model.
@@ -396,6 +397,7 @@ The exact schemas are frozen during the first three hours.
 GET    /health
 POST   /api/auth/demo-login
 POST   /api/auth/logout
+GET    /api/auth/session
 GET    /api/demo/nessie-profiles
 POST   /api/bank-connections
 POST   /api/bank-connections/sync
@@ -442,7 +444,7 @@ Demo controls must be removed or separately protected if the application moves b
 
 Minimum persisted entities:
 
-- `users`: demo identity.
+- `users`: stable demo identity used to scope all persisted account data.
 - `bank_connections`: SaveHaven user to Nessie customer mapping.
 - `normalized_transactions`: cached domain transactions.
 - `savings_goals`: amount, current progress, date, and status.
@@ -486,7 +488,7 @@ Both frontend owners begin from agreed fixtures rather than waiting for the back
 - Deploy a hello-world build.
 - Render one real building asset.
 - Fetch one Nessie account through the backend.
-- Complete navigation, demo login, and profile selection.
+- Complete navigation, fictional email/password login, and profile selection.
 
 Time-box the initial Phaser asset spike to 90 minutes. If the art cannot be rendered and positioned reliably, use a simpler React or Canvas grid while preserving catalog and backend contracts.
 
@@ -529,7 +531,7 @@ Time-box the initial Phaser asset spike to 90 minutes. If the art cannot be rend
 | Risk | Mitigation |
 |---|---|
 | Nessie is unavailable or sparse | Curated normalized fixtures and automatic fallback |
-| Authentication consumes the schedule | Pre-seeded demo sessions and a two-hour time box |
+| Authentication consumes the schedule | Pre-seeded fictional credentials, signed sessions, and a two-hour time box |
 | Asset scale or anchors are inconsistent | Normalize five representative assets before expanding |
 | Phaser integration blocks progress | 90-minute spike and simpler rendering fallback |
 | Frontend waits on backend | Freeze schemas and build against fixtures |
@@ -547,7 +549,9 @@ The MVP is complete when:
 - A fresh user can complete the target demo from the deployed URL.
 - The Nessie key never reaches the browser or repository.
 - No screen accepts real bank credentials.
+- Only the documented fictional SaveHaven accounts can sign in; public registration is unavailable.
 - Dashboard, goal, forecast, plan, reward, wallet, and town share one user state.
+- Goals, wallet progress, and town layouts persist independently for each demo account in SQLite.
 - A successful period creates an explainable reward exactly once.
 - An off-plan period creates a bounded, explainable consequence.
 - A user can purchase, place, move, and persist multiple decorative buildings.

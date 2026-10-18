@@ -2,7 +2,7 @@
 
 SaveHaven is a hackathon prototype that turns progress toward a fictional savings plan into
 rewards for a decorative town-building game. The current backend first pass provides signed demo
-sessions, selectable fictional Nessie profiles, normalized financial data, explainable savings
+sessions for pre-seeded fictional accounts, selectable fictional Nessie profiles, normalized financial data, explainable savings
 plans, a controlled Nessie event lab, and SQLite persistence. Rewards and town state remain
 server-authoritative and separate from the financial-planning flow.
 
@@ -66,6 +66,16 @@ Only `/health` and `/api/auth/demo-login` are public API routes. The built front
 all other API routes require the signed demo session. The app never accepts bank credentials or
 real account information.
 
+The login form accepts only these fictional SaveHaven accounts. Both use the demo-only password
+`savehaven-demo`:
+
+- `jordan.lee@savehaven.demo`
+- `alex.morgan@savehaven.demo`
+
+These credentials do not represent real email inboxes or bank accounts. There is no public
+registration or password recovery. Each account's goals, plan, wallet, and town are scoped by its
+stable user ID and persisted independently in SQLite.
+
 ## Railway hackathon deployment
 
 The root `Dockerfile` builds the Vite application and packages its static output, the FastAPI
@@ -123,7 +133,7 @@ successful live sync.
 After a successful deploy, check the generated HTTPS URL and verify:
 
 - `GET /health` returns `status: ok`.
-- Demo login creates a `Secure`, `HttpOnly`, `SameSite=Lax` cookie and authenticated API requests
+- Fictional email/password login creates a `Secure`, `HttpOnly`, `SameSite=Lax` cookie and authenticated API requests
   succeed.
 - Refreshing a React route such as `/town` loads the application instead of returning 404.
 - Town assets load and the SQLite state survives a redeploy.
