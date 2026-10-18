@@ -26,6 +26,7 @@ class CatalogItemResponse(BaseModel):
     pivot: SpritePivot
     landmark: bool
     render_kind: Literal["building", "ground"] = "building"
+    resident_count: int = Field(default=0, ge=0, le=20)
 
 
 class CatalogResponse(BaseModel):

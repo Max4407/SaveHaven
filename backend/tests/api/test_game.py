@@ -11,7 +11,26 @@ def test_catalog_and_starter_wallet_are_server_authoritative(
     assert catalog.status_code == 200
     assert len(catalog.json()["items"]) == 13
     dirt_road = next(item for item in catalog.json()["items"] if item["id"] == "dirt_road_01")
+    assert dirt_road["asset"] == "/full_dirt.png"
     assert (dirt_road["cost_coins"], dirt_road["render_kind"]) == (1, "ground")
+    resident_counts = {
+        item["id"]: item["resident_count"] for item in catalog.json()["items"]
+    }
+    assert resident_counts == {
+        "dirt_road_01": 0,
+        "woodshed_01": 0,
+        "hut_01": 1,
+        "cottage_01": 2,
+        "well_01": 0,
+        "townhouse_01": 3,
+        "bakery_01": 1,
+        "smithy_01": 1,
+        "windmill_01": 1,
+        "chapel_01": 2,
+        "manor_01": 5,
+        "gatehouse_01": 3,
+        "keep_01": 2,
+    }
     assert state.status_code == 200
     assert state.json()["wallet"] == {
         "coin_balance": 300,

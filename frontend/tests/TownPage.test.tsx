@@ -111,7 +111,7 @@ const catalog: TownCatalog = {
       id: "dirt_road_01",
       name: "Dirt Road",
       category: "roads",
-      asset: "/dirt_square.png",
+      asset: "/full_dirt.png",
       shadow_asset: null,
       cost_coins: 1,
       level_required: 1,

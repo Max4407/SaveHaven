@@ -1,0 +1,68 @@
+import type { GameState, TownCatalogItem } from "../../../api/types";
+
+export const AMBIENT_CHARACTER_VARIANTS = [1, 2, 3, 4, 5, 6] as const;
+
+export type AmbientCharacterVariant = typeof AMBIENT_CHARACTER_VARIANTS[number];
+export type CharacterDirection = "down" | "left" | "right" | "up";
+export type ResidentAssignment = {
+  buildingId: number;
+  catalogItemId: string;
+  variant: AmbientCharacterVariant;
+};
+
+const CHARACTER_ASSET_DIRECTORY = "/Free%20Character%20Sprites%20-%20Fantasy%20Dreamland/16x16";
+const DIRECTION_ROWS: Record<CharacterDirection, number> = {
+  down: 0,
+  left: 1,
+  right: 2,
+  up: 3,
+};
+
+export function characterAssetUrl(variant: AmbientCharacterVariant): string {
+  return `${CHARACTER_ASSET_DIRECTORY}/Char_${String(variant).padStart(3, "0")}.png`;
+}
+
+export function characterTextureKey(variant: AmbientCharacterVariant): string {
+  return `ambient-character-${variant}`;
+}
+
+export function characterAnimationKey(
+  variant: AmbientCharacterVariant,
+  direction: CharacterDirection,
+): string {
+  return `${characterTextureKey(variant)}-${direction}`;
+}
+
+export function characterAnimationFrames(direction: CharacterDirection): {
+  start: number;
+  end: number;
+} {
+  const start = DIRECTION_ROWS[direction] * 4;
+  return { start, end: start + 3 };
+}
+
+export function characterDirection(deltaX: number, deltaY: number): CharacterDirection {
+  if (Math.abs(deltaX) > Math.abs(deltaY)) return deltaX < 0 ? "left" : "right";
+  return deltaY < 0 ? "up" : "down";
+}
+
+export function createResidentAssignments(
+  state: GameState,
+  catalog: TownCatalogItem[],
+): ResidentAssignment[] {
+  const catalogById = new Map(catalog.map((item) => [item.id, item]));
+  const residents: ResidentAssignment[] = [];
+  state.buildings.forEach((building) => {
+    const residentCount = catalogById.get(building.catalog_item_id)?.resident_count ?? 0;
+    for (let residentIndex = 0; residentIndex < residentCount; residentIndex += 1) {
+      residents.push({
+        buildingId: building.id,
+        catalogItemId: building.catalog_item_id,
+        variant: AMBIENT_CHARACTER_VARIANTS[
+          residents.length % AMBIENT_CHARACTER_VARIANTS.length
+        ],
+      });
+    }
+  });
+  return residents;
+}

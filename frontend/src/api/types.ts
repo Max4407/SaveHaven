@@ -156,6 +156,7 @@ export type TownCatalogItem = {
   pivot: { x: number; y: number };
   landmark: boolean;
   render_kind?: "building" | "ground";
+  resident_count?: number;
 };
 
 export type TownCatalog = { items: TownCatalogItem[] };

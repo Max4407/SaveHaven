@@ -3,14 +3,15 @@
     "id": "dirt_road_01",
     "name": "Dirt Road",
     "category": "roads",
-    "asset": "/dirt_square.png",
+    "asset": "/full_dirt.png",
     "shadow_asset": null,
     "cost_coins": 1,
     "level_required": 1,
     "footprint": { "width": 1, "height": 1 },
     "pivot": { "x": 44, "y": 23 },
     "landmark": false,
-    "render_kind": "ground"
+    "render_kind": "ground",
+    "resident_count": 0
   },
   {
     "id": "woodshed_01",
@@ -22,7 +23,8 @@
     "level_required": 1,
     "footprint": { "width": 1, "height": 1 },
     "pivot": { "x": 26, "y": 29 },
-    "landmark": false
+    "landmark": false,
+    "resident_count": 0
   },
   {
     "id": "hut_01",
@@ -34,7 +36,8 @@
     "level_required": 1,
     "footprint": { "width": 2, "height": 2 },
     "pivot": { "x": 34, "y": 53 },
-    "landmark": false
+    "landmark": false,
+    "resident_count": 1
   },
   {
     "id": "cottage_01",
@@ -46,7 +49,8 @@
     "level_required": 1,
     "footprint": { "width": 2, "height": 2 },
     "pivot": { "x": 40, "y": 59 },
-    "landmark": false
+    "landmark": false,
+    "resident_count": 2
   },
   {
     "id": "well_01",
@@ -58,7 +62,8 @@
     "level_required": 1,
     "footprint": { "width": 1, "height": 1 },
     "pivot": { "x": 23, "y": 30 },
-    "landmark": true
+    "landmark": true,
+    "resident_count": 0
   },
   {
     "id": "townhouse_01",
@@ -70,7 +75,8 @@
     "level_required": 2,
     "footprint": { "width": 2, "height": 2 },
     "pivot": { "x": 37, "y": 80 },
-    "landmark": false
+    "landmark": false,
+    "resident_count": 3
   },
   {
     "id": "bakery_01",
@@ -82,7 +88,8 @@
     "level_required": 2,
     "footprint": { "width": 2, "height": 2 },
     "pivot": { "x": 50, "y": 75 },
-    "landmark": false
+    "landmark": false,
+    "resident_count": 1
   },
   {
     "id": "smithy_01",
@@ -94,7 +101,8 @@
     "level_required": 2,
     "footprint": { "width": 2, "height": 2 },
     "pivot": { "x": 36, "y": 56 },
-    "landmark": false
+    "landmark": false,
+    "resident_count": 1
   },
   {
     "id": "windmill_01",
@@ -106,7 +114,8 @@
     "level_required": 2,
     "footprint": { "width": 2, "height": 2 },
     "pivot": { "x": 39, "y": 89 },
-    "landmark": true
+    "landmark": true,
+    "resident_count": 1
   },
   {
     "id": "chapel_01",
@@ -118,7 +127,8 @@
     "level_required": 3,
     "footprint": { "width": 2, "height": 2 },
     "pivot": { "x": 47, "y": 82 },
-    "landmark": false
+    "landmark": false,
+    "resident_count": 2
   },
   {
     "id": "manor_01",
@@ -130,7 +140,8 @@
     "level_required": 3,
     "footprint": { "width": 3, "height": 3 },
     "pivot": { "x": 71, "y": 94 },
-    "landmark": false
+    "landmark": false,
+    "resident_count": 5
   },
   {
     "id": "gatehouse_01",
@@ -142,7 +153,8 @@
     "level_required": 3,
     "footprint": { "width": 2, "height": 2 },
     "pivot": { "x": 44, "y": 79 },
-    "landmark": false
+    "landmark": false,
+    "resident_count": 3
   },
   {
     "id": "keep_01",
@@ -154,6 +166,7 @@
     "level_required": 3,
     "footprint": { "width": 3, "height": 3 },
     "pivot": { "x": 55, "y": 113 },
-    "landmark": true
+    "landmark": true,
+    "resident_count": 2
   }
 ]
