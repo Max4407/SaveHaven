@@ -35,6 +35,7 @@ function inputHarness(catalog: TownCatalogItem[] = []) {
     placement?: { mode: string; buildingId?: number; valid?: boolean; catalogItemId?: string; facing?: "left" | "right"; visualVariant?: number; gridX?: number; gridY?: number };
     placementPointerDown: boolean;
     interactionLocked: boolean;
+    cameras: { main: { scrollX: number; scrollY: number } };
     scale: { width: number; height: number };
     game: { canvas: unknown };
     refreshPreview(): void;
@@ -242,6 +243,32 @@ describe("town scene input", () => {
     const { input } = inputHarness();
     // Phaser's zero default consumes pointerdown as dragstart, hiding Move/Sell selection.
     expect(input.dragDistanceThreshold).toBe(7);
+  });
+
+  it("deselects a building when the user clicks empty map space", () => {
+    const { bridge, handlers, internals } = inputHarness();
+    const deselected = vi.fn();
+    bridge.subscribe("buildingDeselected", deselected);
+    internals.cameras = { main: { scrollX: 0, scrollY: 0 } };
+
+    handlers.get("pointerdown")!({ x: 20, y: 30 }, []);
+    handlers.get("pointerup")!({ getDistance: () => 0 });
+
+    expect(deselected).toHaveBeenCalledOnce();
+  });
+
+  it("keeps the selection while panning the map or clicking a building", () => {
+    const { bridge, handlers, internals } = inputHarness();
+    const deselected = vi.fn();
+    bridge.subscribe("buildingDeselected", deselected);
+    internals.cameras = { main: { scrollX: 0, scrollY: 0 } };
+
+    handlers.get("pointerdown")!({ x: 20, y: 30 }, []);
+    handlers.get("pointerup")!({ getDistance: () => 12 });
+    handlers.get("pointerdown")!({}, [{ getData: () => true }]);
+    handlers.get("pointerup")!({ getDistance: () => 0 });
+
+    expect(deselected).not.toHaveBeenCalled();
   });
 
   it("does not replace a catalog preview when dragging across an owned building", () => {

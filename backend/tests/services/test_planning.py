@@ -14,6 +14,7 @@ from services.planning import (
     build_draft_plan,
     build_forecast,
     build_goal_plan,
+    current_goal_progress_cents,
 )
 
 
@@ -97,6 +98,17 @@ def test_variable_income_combines_recent_deposits_from_multiple_clients() -> Non
     assert "spread across 2 sources" in forecast.evidence[0]
     assert plan.weekly_savings_cents == 3_000
     assert plan.feasible is True
+
+
+def test_goal_progress_excludes_starting_savings_not_assigned_to_the_goal() -> None:
+    goal = SimpleNamespace(
+        starting_savings_balance_cents=625_000,
+        amount_already_saved_cents=50_000,
+    )
+
+    assert current_goal_progress_cents(goal, 625_000) == 50_000  # type: ignore[arg-type]
+    assert current_goal_progress_cents(goal, 645_000) == 70_000  # type: ignore[arg-type]
+    assert current_goal_progress_cents(goal, 600_000) == 25_000  # type: ignore[arg-type]
 
 
 def test_freelancer_fixture_can_support_a_thirty_dollar_weekly_goal() -> None:

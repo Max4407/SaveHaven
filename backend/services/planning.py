@@ -7,7 +7,7 @@ from statistics import median
 from sqlalchemy.orm import Session
 
 from models import AcceptedSavingsPlan, NormalizedTransaction, SavingsGoal
-from repository import get_accepted_plan, list_transactions, save_accepted_plan
+from repository import get_accepted_plan, list_accounts, list_transactions, save_accepted_plan
 from schemas import ForecastResponse, GoalPlanResponse, GoalResponse, SavingsPlanResponse
 
 
@@ -15,12 +15,32 @@ class GoalNotFoundError(LookupError):
     pass
 
 
-def goal_response(goal: SavingsGoal) -> GoalResponse:
+def current_goal_progress_cents(
+    goal: SavingsGoal,
+    current_savings_balance_cents: int,
+) -> int:
+    non_goal_starting_savings = max(
+        0,
+        goal.starting_savings_balance_cents - goal.amount_already_saved_cents,
+    )
+    return max(0, current_savings_balance_cents - non_goal_starting_savings)
+
+
+def goal_response(
+    goal: SavingsGoal,
+    *,
+    current_savings_balance_cents: int | None = None,
+) -> GoalResponse:
+    amount_saved = (
+        goal.amount_already_saved_cents
+        if current_savings_balance_cents is None
+        else current_goal_progress_cents(goal, current_savings_balance_cents)
+    )
     return GoalResponse(
         id=goal.id,
         name=goal.name,
         target_amount_cents=goal.target_amount_cents,
-        amount_already_saved_cents=goal.amount_already_saved_cents,
+        amount_already_saved_cents=amount_saved,
         target_date=goal.target_date,
     )
 
@@ -168,11 +188,21 @@ def _cadence(
     return cadence, annual_payments
 
 
-def build_draft_plan(goal: SavingsGoal, forecast: ForecastResponse) -> SavingsPlanResponse:
+def build_draft_plan(
+    goal: SavingsGoal,
+    forecast: ForecastResponse,
+    *,
+    current_goal_progress_cents: int | None = None,
+) -> SavingsPlanResponse:
     today = date.today()
     days_remaining = max(1, (goal.target_date - today).days)
     weeks_remaining = max(1, math.ceil(days_remaining / 7))
-    remaining = max(0, goal.target_amount_cents - goal.amount_already_saved_cents)
+    amount_saved = (
+        goal.amount_already_saved_cents
+        if current_goal_progress_cents is None
+        else current_goal_progress_cents
+    )
+    remaining = max(0, goal.target_amount_cents - amount_saved)
     weekly_savings = math.ceil(remaining / weeks_remaining)
     available_before_goal = max(
         0,
@@ -238,13 +268,27 @@ def build_goal_plan(
     session: Session, *, user_id: str, goal: SavingsGoal, use_accepted: bool = False
 ) -> GoalPlanResponse:
     forecast = build_forecast(list_transactions(session, user_id))
+    current_savings_balance = sum(
+        account.balance_cents
+        for account in list_accounts(session, user_id)
+        if account.account_type == "savings"
+    )
+    current_progress = current_goal_progress_cents(goal, current_savings_balance)
     accepted = get_accepted_plan(session, user_id=user_id, goal_id=goal.id)
     plan = (
         accepted_plan_response(accepted)
         if use_accepted and accepted
-        else build_draft_plan(goal, forecast)
+        else build_draft_plan(
+            goal,
+            forecast,
+            current_goal_progress_cents=current_progress,
+        )
     )
-    return GoalPlanResponse(goal=goal_response(goal), forecast=forecast, plan=plan)
+    return GoalPlanResponse(
+        goal=goal_response(goal, current_savings_balance_cents=current_savings_balance),
+        forecast=forecast,
+        plan=plan,
+    )
 
 
 def accept_goal_plan(session: Session, *, user_id: str, goal: SavingsGoal) -> GoalPlanResponse:
@@ -272,7 +316,7 @@ def accept_goal_plan(session: Session, *, user_id: str, goal: SavingsGoal) -> Go
     )
     session.commit()
     return GoalPlanResponse(
-        goal=goal_response(goal),
+        goal=result.goal,
         forecast=result.forecast,
         plan=accepted_plan_response(accepted),
     )

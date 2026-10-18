@@ -141,10 +141,15 @@ class CreateGoalRequest(BaseModel):
 
 class NessieEventRequest(BaseModel):
     event_type: Literal[
-        "paycheck", "planned_purchase", "unplanned_purchase", "move_to_savings"
+        "paycheck",
+        "recurring_bill",
+        "planned_purchase",
+        "unplanned_purchase",
+        "move_to_savings",
     ]
     amount_cents: int = Field(ge=100, le=1_000_000)
     idempotency_key: str = Field(pattern=r"^[a-z0-9_-]{8,80}$")
+    occurred_at: date | None = None
 
     @field_validator("amount_cents")
     @classmethod

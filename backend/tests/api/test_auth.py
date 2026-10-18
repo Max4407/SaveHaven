@@ -1,6 +1,9 @@
 from datetime import date
 
 from fastapi.testclient import TestClient
+from sqlalchemy import delete
+
+from models import BankConnection, FinancialAccount, NormalizedTransaction
 
 
 def test_protected_routes_require_a_signed_demo_session(client: TestClient) -> None:
@@ -53,7 +56,61 @@ def test_demo_login_grants_access_for_a_preseeded_fictional_account(
         "id": "demo-player",
         "display_name": "Jordan Lee",
     }
+    dashboard = client.get("/api/dashboard")
+    assert dashboard.status_code == 200
+    assert dashboard.json()["connection"]["profile_id"] == "steady-paycheck"
     assert client.get("/api/demo/nessie-profiles").status_code == 200
+
+
+def test_taylor_login_automatically_loads_the_monthly_profile(client: TestClient) -> None:
+    login_response = client.post(
+        "/api/auth/demo-login",
+        json={
+            "email": "taylor.kim@savehaven.demo",
+            "password": "savehaven-demo",
+        },
+    )
+
+    assert login_response.status_code == 200
+    assert login_response.json() == {
+        "id": "demo-taylor",
+        "display_name": "Taylor Kim",
+    }
+    dashboard = client.get("/api/dashboard")
+    assert dashboard.status_code == 200
+    assert dashboard.json()["connection"]["profile_id"] == "tight-budget"
+
+
+def test_existing_session_restores_its_bank_profile_after_local_data_is_wiped(
+    client: TestClient,
+) -> None:
+    client.post(
+        "/api/auth/demo-login",
+        json={
+            "email": "jordan.lee@savehaven.demo",
+            "password": "savehaven-demo",
+        },
+    )
+    with client.app.state.database.session_factory() as session:
+        session.execute(
+            delete(NormalizedTransaction).where(
+                NormalizedTransaction.user_id == "demo-player"
+            )
+        )
+        session.execute(
+            delete(FinancialAccount).where(FinancialAccount.user_id == "demo-player")
+        )
+        session.execute(
+            delete(BankConnection).where(BankConnection.user_id == "demo-player")
+        )
+        session.commit()
+
+    session_response = client.get("/api/auth/session")
+    dashboard = client.get("/api/dashboard")
+
+    assert session_response.status_code == 200
+    assert dashboard.status_code == 200
+    assert dashboard.json()["connection"]["profile_id"] == "steady-paycheck"
 
 
 def test_demo_login_rejects_unseeded_or_incorrect_credentials(client: TestClient) -> None:

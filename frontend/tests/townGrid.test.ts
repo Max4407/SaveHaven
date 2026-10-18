@@ -95,10 +95,10 @@ describe("town grid", () => {
     expect(buildingDisplayWidth(threeCellItem)).toBe(510);
   });
 
-  it("shows placement guides only during drag-and-drop", () => {
+  it("shows placement guides for Move and catalog plus clicks as well as dragging", () => {
     expect(shouldShowPlacementGrid("catalog-drag")).toBe(true);
     expect(shouldShowPlacementGrid("building-drag")).toBe(true);
-    expect(shouldShowPlacementGrid("click")).toBe(false);
+    expect(shouldShowPlacementGrid("click")).toBe(true);
   });
 
   it("keeps map bounds and collision rules without district or road restrictions", () => {

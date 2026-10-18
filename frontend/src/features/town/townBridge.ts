@@ -14,15 +14,8 @@ export type TownBridgeEvents = {
   interactionLocked: { locked: boolean };
   cameraChanged: { zoom: number };
   buildingSelected: { buildingId: number };
-  characterSelectionChanged: { character: CharacterDetails | null };
-  clearCharacterSelection: Record<string, never>;
-  foodConsumed: { buildingId: number };
-  foodConsumptionRejected: { buildingId: number };
-  catalogDragStarted: {
-    catalogItemId: string;
-    facing: BuildingFacing;
-    visualVariant?: number;
-  };
+  catalogDragStarted: { catalogItemId: string; facing: BuildingFacing };
+  buildingDeselected: Record<string, never>;
   catalogDragMoved: { catalogItemId: string; canvasX: number; canvasY: number };
   catalogDropped: {
     catalogItemId: string;

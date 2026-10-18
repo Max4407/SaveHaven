@@ -3,6 +3,7 @@ from repository.finance import list_accounts, list_transactions, replace_financi
 from repository.game import (
     ensure_wallet,
     get_evaluation_by_key,
+    get_latest_evaluation,
     get_placed_building,
     get_reward_by_source,
     list_placed_buildings,
@@ -15,7 +16,13 @@ from repository.goals import (
     replace_active_goal,
     save_accepted_plan,
 )
-from repository.users import DEMO_USERS, authenticate_demo_user, get_user, seed_demo_users
+from repository.users import (
+    DEMO_USERS,
+    authenticate_demo_user,
+    get_demo_profile_id,
+    get_user,
+    seed_demo_users,
+)
 
 __all__ = [
     "DEMO_USERS",
@@ -25,7 +32,9 @@ __all__ = [
     "get_accepted_plan",
     "get_active_goal",
     "get_evaluation_by_key",
+    "get_latest_evaluation",
     "get_goal",
+    "get_demo_profile_id",
     "get_placed_building",
     "get_reward_by_source",
     "get_user",

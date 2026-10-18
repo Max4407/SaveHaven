@@ -152,7 +152,7 @@ def test_dirt_road_uses_the_standard_purchase_and_placement_flow() -> None:
             ),
         )
 
-        assert state.wallet.coin_balance == 9_999
+        assert state.wallet.coin_balance == 299
         assert state.buildings[0].catalog_item_id == "dirt_road_01"
         assert (state.buildings[0].grid_x, state.buildings[0].grid_y) == (12, 20)
 

@@ -14,8 +14,6 @@ export function usePlacementSound() {
   }, []);
 
   return useCallback(() => {
-    try { if (localStorage.getItem("savehaven-town-sound-enabled") === "off") return; }
-    catch { /* Sound still works when storage is unavailable. */ }
     const audio = effect.current;
     if (!audio) return;
     audio.currentTime = 0;

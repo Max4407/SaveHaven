@@ -6,6 +6,7 @@ import { isApiError } from "../../api/client";
 const DEMO_ACCOUNTS = [
   { email: "jordan.lee@savehaven.demo", displayName: "Jordan Lee" },
   { email: "alex.morgan@savehaven.demo", displayName: "Alex Morgan" },
+  { email: "taylor.kim@savehaven.demo", displayName: "Taylor Kim" },
 ] as const;
 
 export function LoginPage() {

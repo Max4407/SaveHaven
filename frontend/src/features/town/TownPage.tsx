@@ -24,7 +24,7 @@ import type {
 import { usePlacementSound } from "./usePlacementSound";
 import { TownMusic } from "./TownMusic";
 import { TownCanvas } from "./TownCanvas";
-import { foodFramePosition, randomFoodFrame } from "./objects/food";
+import { TownName } from "./TownName";
 import {
   CATALOG_DRAG_TYPE,
   CATALOG_FACING_TYPE,
@@ -88,6 +88,7 @@ function TownPage() {
   const playPlacementSound = usePlacementSound();
   const bridge = useMemo(() => createTownBridge(), []);
   const queryClient = useQueryClient();
+  const userId = queryClient.getQueryData<{ id: string }>(["session"])?.id ?? "guest";
   const actionPending = useRef(false);
   const placementSoundPending = useRef(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -181,9 +182,9 @@ function TownPage() {
     ),
     onSuccess: (result) => {
       applyConfirmedState(result.game_state);
+      queryClient.setQueryData(["dashboard"], result.dashboard);
       setCelebration(result);
       void queryClient.invalidateQueries({ queryKey: ["game-rewards"] });
-      void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => setActionError(mutationMessage(error)),
     onSettled: finishAction,
@@ -209,20 +210,13 @@ function TownPage() {
       setSelectedCharacter(null);
       setIsSidebarOpen(true);
     });
-    const unsubscribeCharacter = bridge.subscribe(
-      "characterSelectionChanged",
-      ({ character }) => {
-        setSelectedCharacter(character);
-        if (character) {
-          setSelectedBuildingId(null);
-          setIsSidebarOpen(true);
-        }
-      },
-    );
-    const unsubscribeFood = bridge.subscribe("foodConsumed", ({ buildingId }) => {
-      consumeFoodMutation.mutate(buildingId);
+    const unsubscribeDeselection = bridge.subscribe("buildingDeselected", () => {
+      setSelectedBuildingId(null);
     });
-    const unsubscribePlacement = bridge.subscribe("placementChanged", setPlacement);
+    const unsubscribePlacement = bridge.subscribe("placementChanged", (status) => {
+      setPlacement(status);
+      if (!status.active) setSelectedBuildingId(null);
+    });
     const unsubscribeConfirmation = bridge.subscribe("placementConfirmed", (detail) => {
       startAction(() => {
         setActionError(null);
@@ -246,8 +240,7 @@ function TownPage() {
     });
     return () => {
       unsubscribeSelection();
-      unsubscribeCharacter();
-      unsubscribeFood();
+      unsubscribeDeselection();
       unsubscribePlacement();
       unsubscribeConfirmation();
     };
@@ -341,7 +334,7 @@ function TownPage() {
 
       {placement.active && (
         <div className={`placement-banner ${placement.valid ? "valid" : "invalid"}`} role="status">
-          <strong>{placement.valid ? "Ready to place" : placement.reason}</strong>
+          <strong>{placement.valid ? "Ready!" : placement.reason === "That footprint extends beyond the town map" ? "Too Far!" : placement.reason}</strong>
           <span>Drop or click a highlighted cell to confirm.</span>
           <button type="button" onClick={() => bridge.emit("cancelPlacement", {})}>Cancel</button>
         </div>
@@ -361,9 +354,7 @@ function TownPage() {
       <aside className={`town-sidebar${isSidebarOpen ? " open" : ""}`} id="town-sidebar" aria-label="Building catalog">
         <header className="town-sidebar-header">
           <div>
-            <p className="eyebrow">Level {state.wallet.level} · {state.wallet.level_name}</p>
-            <h1>Your future haven</h1>
-            <p>Saving progress unlocks buildings. Make this town yours.</p>
+            <TownName key={userId} userId={userId} />
           </div>
           <Link className="route-arrow" to="/dashboard" aria-label="Open bank and goals">
             <span aria-hidden="true">→</span>
@@ -377,11 +368,6 @@ function TownPage() {
         </div>
 
         <div className="town-catalog-body">
-        <section className="town-level-card" aria-label="Town level progress">
-          <div><strong>{state.wallet.level_name}</strong><span>{state.progression.next_level_xp == null ? "Future XP banked" : `${state.wallet.xp} / ${state.progression.next_level_xp} XP`}</span></div>
-          <div className="level-track"><span style={{ width: `${state.progression.progress_percent}%` }} /></div>
-          <p>XP comes only from verified savings</p>
-        </section>
 
         {actionError && <p className="error-banner town-action-error" role="alert">{actionError}</p>}
 
@@ -456,10 +442,10 @@ function TownPage() {
         ) : (
           <>
             <div className="catalog-heading">
-              <div><p className="eyebrow">Building catalog</p><h2>Build your haven</h2></div>
+              <h2>Building catalog</h2>
               <span className="preview-pill">Server verified</span>
             </div>
-            <p className="catalog-intro">Drag an unlocked item onto the grass, or use its place button.</p>
+            <p className="catalog-intro">Drag a building onto the grid, or click + and then click a green highlighted cell to place it.</p>
 
             <div className="building-facing-picker" aria-label="New building facing">
               <span>Facing</span>
@@ -539,8 +525,8 @@ function TownPage() {
             <p className="eyebrow">Protected demo controls</p>
             <p className="demo-week-note">
               {healthQuery.data.data_mode === "live" && healthQuery.data.nessie_configured
-                ? "Writes to a live Nessie sandbox connection, syncs it, then evaluates the imported transactions. Fixture fallback is labeled in the result."
-                : "Fixture mode creates local bank-shaped transactions, then evaluates the week."}
+                ? "Advances one week, writes that week's activity to the live Nessie sandbox, syncs it, then evaluates the imported transactions."
+                : "Advances one week and creates local bank-shaped income, bills, spending, and savings transactions before evaluating it."}
             </p>
             <div>
               <button className="primary-button" type="button" disabled={isMutating} onClick={() => startAction(() => simulateMutation.mutate("successful"))}>Simulate success</button>

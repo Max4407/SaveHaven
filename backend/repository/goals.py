@@ -1,9 +1,9 @@
 from datetime import UTC, date, datetime
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
-from models import AcceptedSavingsPlan, SavingsGoal
+from models import AcceptedSavingsPlan, FinancialAccount, SavingsGoal
 
 
 def replace_active_goal(
@@ -14,7 +14,17 @@ def replace_active_goal(
     target_amount_cents: int,
     amount_already_saved_cents: int,
     target_date: date,
+    starting_savings_balance_cents: int | None = None,
 ) -> SavingsGoal:
+    if starting_savings_balance_cents is None:
+        starting_savings_balance_cents = session.scalar(
+            select(func.sum(FinancialAccount.balance_cents)).where(
+                FinancialAccount.user_id == user_id,
+                FinancialAccount.account_type == "savings",
+            )
+        )
+    if starting_savings_balance_cents is None:
+        starting_savings_balance_cents = amount_already_saved_cents
     session.execute(
         update(SavingsGoal)
         .where(SavingsGoal.user_id == user_id, SavingsGoal.is_active.is_(True))
@@ -25,6 +35,7 @@ def replace_active_goal(
         name=name,
         target_amount_cents=target_amount_cents,
         amount_already_saved_cents=amount_already_saved_cents,
+        starting_savings_balance_cents=starting_savings_balance_cents,
         target_date=target_date,
         is_active=True,
         created_at=datetime.now(UTC),
