@@ -33,7 +33,7 @@ class Database:
         import models  # noqa: F401
 
         Base.metadata.create_all(self.engine)
-  self._migrate_sqlite_schema()
+        self._migrate_sqlite_schema()
 
     def _migrate_sqlite_schema(self) -> None:
         if self.engine.dialect.name != "sqlite":
