@@ -214,7 +214,7 @@ function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
   return (
     <section className="panel planner-panel" aria-labelledby="planner-heading">
       <div className="panel-heading">
-        <div><p className="eyebrow">Nessie-powered recommendation</p><h2 id="planner-heading">Savings plan</h2></div>
+        <h2 id="planner-heading">Savings plan</h2>
         {goal && !showForm ? (
           <button className="text-button" type="button" onClick={() => setShowForm(true)}>Replace goal</button>
         ) : null}
@@ -337,7 +337,6 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
       <header className="topbar bank-topbar">
         <div className="page-heading">
           <div>
-            <p className="eyebrow">SaveHaven finances</p>
             <h1>Bank</h1>
             <p>Updated {formatDate(dashboard.summary.as_of)}</p>
           </div>
@@ -398,7 +397,7 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
 
       <section className="panel spending-pie-panel" aria-labelledby="spending-pie-heading">
         <div className="panel-heading">
-          <div><p className="eyebrow">Last 30 days</p><h2 id="spending-pie-heading">Where your money goes</h2></div>
+          <h2 id="spending-pie-heading">Where your money goes</h2>
           {transactionFilter === "spending" && spendingCategory ? (
             <button className="secondary-button" type="button" onClick={() => openTransactions("spending", null, false)}>Show total</button>
           ) : null}
@@ -451,10 +450,7 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
 
       <section className="bank-goals-section" aria-labelledby="savings-goals-heading">
         <div className="bank-section-heading">
-          <div>
-            <p className="eyebrow">Milestones</p>
-            <h2 id="savings-goals-heading">Savings goals</h2>
-          </div>
+          <h2 id="savings-goals-heading">Savings goals</h2>
           <span>{activeGoal ? "1 active goal" : "No active goal"}</span>
         </div>
         <div className="bank-goal-grid">
@@ -481,17 +477,14 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
               <small>{activeGoalProgress}% complete · Target {formatDate(activeGoal.target_date)}</small>
             </article>
           ) : (
-            <p className="empty-state">Create a savings goal below to track a real milestone here.</p>
+            <p className="empty-state">Create a savings goal below.</p>
           )}
         </div>
       </section>
 
       <section className="panel money-history-panel" aria-label="Money over time">
         <div className="panel-heading money-history-heading">
-          <div>
-            <p className="eyebrow">Recent activity</p>
-            <h2>Money over time</h2>
-          </div>
+          <h2>Money over time</h2>
           <div className="balance-change">
             <strong>{formatDollars(dashboard.summary.savings_balance_cents)}</strong>
             <span>in savings</span>
@@ -538,10 +531,7 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
 
       <section id="bank-transactions" className="panel transactions-panel bank-transactions-panel" aria-labelledby="transactions-heading">
         <div className="panel-heading">
-          <div>
-            <p className="eyebrow">Past activity</p>
-            <h2 id="transactions-heading" ref={transactionHeading} tabIndex={-1}>{transactionFilter === "all" ? "Transactions" : transactionFilter === "income" ? "Income transactions" : spendingCategory ? `${titleCase(spendingCategory)} transactions` : "Spending transactions"}</h2>
-          </div>
+          <h2 id="transactions-heading" ref={transactionHeading} tabIndex={-1}>{transactionFilter === "all" ? "Transactions" : transactionFilter === "income" ? "Income transactions" : spendingCategory ? `${titleCase(spendingCategory)} transactions` : "Spending transactions"}</h2>
           <div className="transaction-actions">
             <span className="record-count">{filteredTransactions.length} records</span>
             {filteredTransactions.length > 5 ? (

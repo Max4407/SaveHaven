@@ -57,6 +57,43 @@ function itemSupportsFacing(item: TownCatalogItem): boolean {
   return (item.render_kind ?? "building") === "building";
 }
 
+function PixelResourceIcon({ kind }: { kind: "coin" | "xp" | "streak" }) {
+  return (
+    <svg
+      className="pixel-resource-icon"
+      viewBox="0 0 16 16"
+      shapeRendering="crispEdges"
+      focusable="false"
+      aria-hidden="true"
+    >
+      {kind === "coin" && (
+        <>
+          <path fill="#5b3517" d="M4 1h8v1h2v2h1v8h-1v2h-2v1H4v-1H2v-2H1V4h1V2h2z" />
+          <path fill="#d78d25" d="M4 3h8v1h1v8h-1v1H4v-1H3V4h1z" />
+          <path fill="#ffd866" d="M5 3h5v2h2v5h-2v2H5V10H4V5h1z" />
+          <path fill="#fff0a1" d="M5 4h2v5H5z" />
+        </>
+      )}
+      {kind === "xp" && (
+        <>
+          <path fill="#33275e" d="M6 1h4v2h2v2h2v6h-2v2h-2v2H6v-2H4v-2H2V5h2V3h2z" />
+          <path fill="#6c5ac5" d="M6 3h4v2h2v6h-2v2H6v-2H4V5h2z" />
+          <path fill="#b5a7ff" d="M6 4h2v2h2v2H8v2H6V8H5V6h1z" />
+          <path fill="#e4deff" d="M6 4h2v2H6z" />
+        </>
+      )}
+      {kind === "streak" && (
+        <>
+          <path fill="#5b261b" d="M8 1h2v3h2v2h2v6h-2v2H4v-2H2V8h2V5h2v2h1V3h1z" />
+          <path fill="#d84b28" d="M9 3h1v3h2v2h1v4h-2v1H5v-1H4V8h2v2h2V5h1z" />
+          <path fill="#ffb52e" d="M8 7h2v2h1v3h-1v1H6v-1H5v-2h2V8h1z" />
+          <path fill="#ffe56a" d="M8 9h2v3H7v-2h1z" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 function CatalogArt({
   item,
   facing,
@@ -371,9 +408,9 @@ function TownPage() {
         </header>
 
         <div className="town-resources" aria-label="Town resources">
-          <span><i aria-hidden="true">◆</i><strong>{state.wallet.coin_balance}</strong><small>Coins</small></span>
-          <span><i aria-hidden="true">✦</i><strong>{state.wallet.xp}</strong><small>XP</small></span>
-          <span><i aria-hidden="true">↗</i><strong>{state.wallet.streak_weeks}</strong><small>Streak</small></span>
+          <span><PixelResourceIcon kind="coin" /><strong>{state.wallet.coin_balance}</strong><small>Coins</small></span>
+          <span><PixelResourceIcon kind="xp" /><strong>{state.wallet.xp}</strong><small>XP</small></span>
+          <span><PixelResourceIcon kind="streak" /><strong>{state.wallet.streak_weeks}</strong><small>Streak</small></span>
         </div>
 
         <div className="town-catalog-body">
