@@ -7,6 +7,10 @@ backend/.venv/
 
 /..venv
 
+*.db-shm
+*.db-wal
+*.db-journal
+
 __pycache__/
 *.py[cod]
 .pytest_cache/
