@@ -320,7 +320,8 @@ describe("town economy", () => {
   it("uses short placement labels without hiding collision explanations", async () => {
     renderTown();
     fireEvent.click(await screen.findByRole("button", { name: "Place Village Woodshed" }));
-    expect(screen.getByRole("status")).toHaveTextContent("Ready!");
+    expect(screen.getByRole("status")).toHaveTextContent("Ready to place");
+    expect(screen.getByRole("status")).not.toHaveTextContent("Drop or click");
     act(() => canvasBridge.current!.emit("placementChanged", {
       active: true, valid: false, reason: "That footprint extends beyond the town map",
     }));
@@ -396,7 +397,8 @@ describe("town economy", () => {
 
     const sidebar = await screen.findByLabelText("Building catalog");
     expect(within(sidebar).getByText("300")).toBeInTheDocument();
-    expect(within(sidebar).queryByLabelText("Town level progress")).not.toBeInTheDocument();
+    expect(within(sidebar).getByLabelText("Town level progress")).toHaveTextContent("LEVEL 1 · HOMESTEAD");
+    expect(within(sidebar).getByRole("progressbar", { name: "Town XP" })).toHaveAttribute("aria-valuenow", "0");
     expect(screen.getByRole("button", { name: "Corner Bakery locked until level 2" })).toBeDisabled();
     expect(screen.getByText("Village Woodshed").closest("article")).toHaveAttribute("draggable", "true");
     expect(screen.getByText("Corner Bakery").closest("article")).toHaveAttribute("draggable", "false");

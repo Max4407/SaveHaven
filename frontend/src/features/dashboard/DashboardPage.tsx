@@ -264,7 +264,6 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
           <div>
             <p className="eyebrow">SaveHaven finances</p>
             <h1>Bank</h1>
-            <p>Updated {formatDate(dashboard.summary.as_of)}</p>
           </div>
         </div>
         <div className="topbar-actions">
@@ -310,17 +309,14 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
         <article className="stat-card">
           <p>Total balance</p>
           <h2>{formatDollars(dashboard.summary.total_balance_cents)}</h2>
-          <small>{formatDollars(dashboard.summary.savings_balance_cents)} in savings · transfers stay inside this total</small>
         </article>
-        <button className="stat-card finance-summary-button" type="button" onClick={() => openTransactions("income")} aria-controls="bank-transactions">
+        <button className="stat-card finance-summary-button" type="button" onClick={() => openTransactions("income")} aria-controls="bank-transactions" aria-label="Income · 30 days — view transactions">
           <p>Income · 30 days</p>
           <h2>{formatDollars(dashboard.summary.income_last_30_days_cents)}</h2>
-          <small>View income <span aria-hidden="true">→</span></small>
         </button>
-        <button className="stat-card finance-summary-button" type="button" onClick={() => openTransactions("spending")} aria-controls="bank-transactions">
+        <button className="stat-card finance-summary-button" type="button" onClick={() => openTransactions("spending")} aria-controls="bank-transactions" aria-label="Spending · 30 days — view transactions">
           <p>Spending · 30 days</p>
           <h2>{formatDollars(dashboard.summary.spending_last_30_days_cents)}</h2>
-          <small>View spending <span aria-hidden="true">→</span></small>
         </button>
       </section>
 
@@ -331,7 +327,6 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
             <button className="secondary-button" type="button" onClick={() => openTransactions("spending", null, false)}>Show total</button>
           ) : null}
         </div>
-        <p className="spending-pie-hint">Choose a slice or category to see its transactions.</p>
         {spendingSlices.length > 0 ? (
           <div className="spending-pie-layout">
             <div className="spending-pie-chart" role="img" aria-label="Spending by category. Use the category buttons to explore transactions.">
@@ -367,12 +362,9 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
             </div>
           </div>
         ) : <p className="empty-state">No spending recorded in the last 30 days.</p>}
-        {spendingSlices.length > 0 ? (
-          <div className="pie-selection-summary">
-            <div><small>{selectedSlice ? selectedSlice.name : "Total spending"}</small><strong>{formatDollars(selectedSlice?.amount_cents ?? spendingTotal, { maximumFractionDigits: 2 })}</strong><span>{selectedSlice ? `${Math.round(selectedSlice.amount_cents / spendingTotal * 100)}% of your spending` : "Explore a category above"}</span></div>
-            {transactionFilter === "spending" && spendingCategory ? (
-              <button className="secondary-button" type="button" onClick={() => openTransactions("spending", spendingCategory, true)}>View {titleCase(spendingCategory)} transactions →</button>
-            ) : null}
+        {transactionFilter === "spending" && spendingCategory ? (
+          <div className="pie-selection-actions">
+            <button className="secondary-button" type="button" onClick={() => openTransactions("spending", spendingCategory, true)}>View {titleCase(spendingCategory)} transactions</button>
           </div>
         ) : null}
       </section>
@@ -380,7 +372,6 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
       <section className="bank-goals-section" aria-labelledby="savings-goals-heading">
         <div className="bank-section-heading">
           <div>
-            <p className="eyebrow">Milestones</p>
             <h2 id="savings-goals-heading">Savings goals</h2>
           </div>
           <span>{activeGoal ? "1 active goal" : "No active goal"}</span>
@@ -418,7 +409,6 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
       <section className="panel money-history-panel" aria-label="Money over time">
         <div className="panel-heading money-history-heading">
           <div>
-            <p className="eyebrow">Recent activity</p>
             <h2>Money over time</h2>
           </div>
           <div className="balance-change">
@@ -468,7 +458,6 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
       <section id="bank-transactions" className="panel transactions-panel bank-transactions-panel" aria-labelledby="transactions-heading">
         <div className="panel-heading">
           <div>
-            <p className="eyebrow">Past activity</p>
             <h2 id="transactions-heading" ref={transactionHeading} tabIndex={-1}>{transactionFilter === "all" ? "Transactions" : transactionFilter === "income" ? "Income transactions" : spendingCategory ? `${titleCase(spendingCategory)} transactions` : "Spending transactions"}</h2>
           </div>
           <div className="transaction-actions">

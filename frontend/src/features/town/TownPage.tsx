@@ -373,8 +373,8 @@ function TownPage() {
 
       {placement.active && (
         <div className={`placement-banner ${placement.valid ? "valid" : "invalid"}`} role="status">
-          <strong>{placement.valid ? "Ready!" : placement.reason === "That footprint extends beyond the town map" ? "Too Far!" : placement.reason}</strong>
-          <span>Drop or click a highlighted cell to confirm.</span>
+          <span className="pixel-placement-icon" aria-hidden="true">{placement.valid ? "OK" : "!"}</span>
+          <strong>{placement.valid ? "Ready to place" : placement.reason === "That footprint extends beyond the town map" ? "Too Far!" : placement.reason}</strong>
           <button type="button" onClick={() => bridge.emit("cancelPlacement", {})}>Cancel</button>
         </div>
       )}
@@ -401,10 +401,20 @@ function TownPage() {
         </header>
 
         <div className="town-resources" aria-label="Town resources">
-          <span><i aria-hidden="true">◆</i><strong>{state.wallet.coin_balance}</strong><small>Coins</small></span>
-          <span><i aria-hidden="true">✦</i><strong>{state.wallet.xp}</strong><small>XP</small></span>
-          <span><i aria-hidden="true">↗</i><strong>{state.wallet.streak_weeks}</strong><small>Streak</small></span>
+          <span><i className="pixel-resource-icon resource-coin" aria-hidden="true" /><strong>{state.wallet.coin_balance}</strong><small>Coins</small></span>
+          <span><i className="pixel-resource-icon resource-xp" aria-hidden="true" /><strong>{state.wallet.xp}</strong><small>XP</small></span>
+          <span><i className="pixel-resource-icon resource-streak" aria-hidden="true" /><strong>{state.wallet.streak_weeks}</strong><small>Streak</small></span>
         </div>
+
+        <section className="town-level-card" aria-label="Town level progress">
+          <div>
+            <strong>LEVEL {state.wallet.level} · {state.wallet.level_name.toUpperCase()}</strong>
+            <span>{state.progression.next_level_xp == null ? "MAX LEVEL" : `${state.wallet.xp} / ${state.progression.next_level_xp} XP`}</span>
+          </div>
+          <div className="level-track" role="progressbar" aria-label="Town XP" aria-valuemin={0} aria-valuemax={100} aria-valuenow={state.progression.progress_percent}>
+            <span style={{ width: `${state.progression.progress_percent}%` }} />
+          </div>
+        </section>
 
         <div className="town-catalog-body">
 

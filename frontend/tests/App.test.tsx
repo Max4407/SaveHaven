@@ -219,7 +219,7 @@ describe("application API integration", () => {
     await user.click(await screen.findByRole("button", { name: "Slice groceries" }));
     expect(screen.getByRole("heading", { name: "Groceries transactions" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Groceries.*of spending/ })).toHaveAttribute("aria-pressed", "true");
-    const viewCategory = screen.getByRole("button", { name: "View Groceries transactions →" });
+    const viewCategory = screen.getByRole("button", { name: "View Groceries transactions" });
     await user.click(viewCategory);
     expect(screen.getByRole("heading", { name: "Groceries transactions" })).toHaveFocus();
     expect(screen.getByText("Market")).toBeInTheDocument();
