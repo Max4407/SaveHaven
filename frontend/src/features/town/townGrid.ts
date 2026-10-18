@@ -4,7 +4,7 @@ export const TOWN_WORLD_WIDTH = 3650;
 export const TOWN_WORLD_HEIGHT = 2296;
 export const TOWN_WORLD_LEFT = -TOWN_WORLD_WIDTH / 2;
 export const TOWN_WORLD_TOP = -TOWN_WORLD_HEIGHT / 2;
-export const TOWN_GRID_SIZE = 16;
+export const TOWN_GRID_SIZE = 15;
 export const TOWN_GRID_CELL_WIDTH = 96;
 export const TOWN_GRID_CELL_HEIGHT = 48;
 export const TOWN_GRID_ROW_STEP = TOWN_GRID_CELL_HEIGHT / 2;
@@ -18,10 +18,6 @@ const TOWN_GRID_TOP = -GRID_CENTER_SPAN_Y / 2;
 export type GridPosition = { x: number; y: number };
 export type PlacementValidation = { valid: boolean; reason: string | null };
 export type TownPlacementMode = "click" | "catalog-drag" | "building-drag";
-
-export function shouldShowPlacementGrid(mode: TownPlacementMode): boolean {
-  return mode === "catalog-drag" || mode === "building-drag";
-}
 
 function isOffsetRow(row: number) {
   return Math.abs(row % 2) === 1;

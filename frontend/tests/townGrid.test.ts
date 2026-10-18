@@ -6,7 +6,6 @@ import {
   buildingWorldPosition,
   clampGridPosition,
   gridToWorld,
-  shouldShowPlacementGrid,
   TOWN_GRID_SIZE,
   validateTownPlacement,
   worldToGrid,
@@ -62,10 +61,11 @@ describe("town grid", () => {
     expect(buildingGridPosition(item, outside.x, outside.y)).toEqual({ x: -1, y: -1 });
   });
 
-  it("centers the 16 by 16 staggered grid and offsets odd rows", () => {
-    expect(gridToWorld(0, 0)).toEqual({ x: -744, y: -180 });
-    expect(gridToWorld(0, 1)).toEqual({ x: -696, y: -156 });
-    expect(gridToWorld(15, 15)).toEqual({ x: 744, y: 180 });
+  it("centers the 15 by 15 staggered grid and offsets odd rows", () => {
+    expect(gridToWorld(0, 0)).toEqual({ x: -696, y: -168 });
+    expect(gridToWorld(0, 1)).toEqual({ x: -648, y: -144 });
+    expect(gridToWorld(14, 13)).toEqual({ x: 696, y: 144 });
+    expect(gridToWorld(14, 14)).toEqual({ x: 648, y: 168 });
   });
 
   it("round trips every persisted backend coordinate", () => {
@@ -78,31 +78,29 @@ describe("town grid", () => {
   });
 
   it("clamps pointer positions to backend grid bounds when requested", () => {
-    expect(clampGridPosition({ x: -3, y: 20 })).toEqual({ x: 0, y: 15 });
+    expect(clampGridPosition({ x: -3, y: 20 })).toEqual({ x: 0, y: 14 });
     expect(worldToGrid(-10_000, -10_000, true)).toEqual({ x: 0, y: 0 });
-    expect(worldToGrid(10_000, 10_000, true)).toEqual({ x: 15, y: 15 });
+    expect(worldToGrid(10_000, 10_000, true)).toEqual({ x: 14, y: 14 });
   });
 
   it("centers multi-cell buildings and uses Kevin's large display scale", () => {
     const twoCellItem = { ...oneCellItem, footprint: { width: 2, height: 2 } };
     const threeCellItem = { ...oneCellItem, footprint: { width: 3, height: 2 } };
 
-    expect(buildingWorldPosition(twoCellItem, 4, 4)).toEqual({ x: -288, y: -72 });
+    expect(buildingWorldPosition(twoCellItem, 4, 4)).toEqual({ x: -240, y: -60 });
     expect(buildingDisplayWidth(oneCellItem)).toBe(210);
     expect(buildingDisplayWidth(twoCellItem)).toBe(360);
     expect(buildingDisplayWidth(threeCellItem)).toBe(510);
-  });
-
-  it("shows the placement grid only during drag-and-drop", () => {
-    expect(shouldShowPlacementGrid("catalog-drag")).toBe(true);
-    expect(shouldShowPlacementGrid("building-drag")).toBe(true);
-    expect(shouldShowPlacementGrid("click")).toBe(false);
   });
 
   it("keeps map bounds and collision rules without district or road restrictions", () => {
     const catalog = [oneCellItem];
 
     expect(validateTownPlacement(initialState, catalog, oneCellItem, -1, 4)).toEqual({
+      valid: false,
+      reason: "That footprint extends beyond the town map",
+    });
+    expect(validateTownPlacement(initialState, catalog, oneCellItem, 15, 14)).toEqual({
       valid: false,
       reason: "That footprint extends beyond the town map",
     });

@@ -132,7 +132,7 @@ def test_three_successful_periods_unlock_haven_without_rewriting_history() -> No
         assert [result.reward.coins_awarded for result in results] == [420, 440, 460]
         assert results[-1].game_state.wallet.xp == 300
         assert results[-1].game_state.wallet.level_name == "Haven"
-        assert results[-1].game_state.district.max_x == 15
+        assert results[-1].game_state.district.max_x == 14
         assert results[-1].game_state.infrastructure.tier == "stone"
 
 

@@ -1,6 +1,6 @@
 from schemas import DistrictResponse, InfrastructureResponse, ProgressionResponse
 
-MAP_SIZE = 16
+MAP_SIZE = 15
 LEVEL_THRESHOLDS = {1: 0, 2: 100, 3: 300}
 LEVEL_NAMES = {1: "Homestead", 2: "Village", 3: "Haven"}
 

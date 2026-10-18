@@ -18,7 +18,7 @@ from services.progression import (
     progression_for_xp,
 )
 
-TOWN_GRID_SIZE = 16
+TOWN_GRID_SIZE = 15
 
 
 class GameRuleError(RuntimeError):

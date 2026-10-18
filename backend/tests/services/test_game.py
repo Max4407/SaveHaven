@@ -54,7 +54,7 @@ def test_starter_grant_purchase_move_and_original_price_refund() -> None:
     ("item_id", "grid_x", "grid_y", "code"),
     [
         ("bakery_01", 4, 4, "level_locked"),
-        ("hut_01", 15, 15, "outside_unlocked_district"),
+        ("hut_01", 15, 15, "outside_town_map"),
     ],
 )
 def test_failed_purchase_is_atomic(item_id: str, grid_x: int, grid_y: int, code: str) -> None:
@@ -172,7 +172,7 @@ def test_all_levels_can_build_at_map_edges_and_on_former_routes(level: int) -> N
             session, user_id="demo-player",
             request=PlaceBuildingRequest(catalog_item_id="woodshed_01", grid_x=0, grid_y=0),
         )
-        assert state.district.model_dump() == dict(min_x=0, max_x=15, min_y=0, max_y=15)
+        assert state.district.model_dump() == dict(min_x=0, max_x=14, min_y=0, max_y=14)
         assert state.infrastructure.reserved_cells == []
         moved = game.move_building(
             session, user_id="demo-player", building_id=state.buildings[0].id,

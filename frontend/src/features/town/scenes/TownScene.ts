@@ -5,7 +5,6 @@ import {
   buildingGridPosition,
   buildingWorldPosition,
   gridToWorld,
-  shouldShowPlacementGrid,
   TOWN_GRID_CELL_HEIGHT,
   TOWN_GRID_CELL_WIDTH,
   TOWN_GRID_SIZE,
@@ -164,14 +163,13 @@ export class TownScene extends Phaser.Scene {
         terrain.strokePoints(this.diamond(x, y), true);
       }
     }
-    this.mapLayer?.add([background, terrain]);
     const trees = generatePerimeterTrees(TOWN_WORLD_WIDTH, TOWN_WORLD_HEIGHT).map((tree) => (
       this.add.image(tree.x, tree.y, `tree-${tree.variant}`)
         .setScale(tree.scale)
         .setFlipX(tree.flipX)
         .setDepth(tree.y)
     ));
-    this.mapLayer?.add([background, ...trees]);
+    this.mapLayer?.add([background, terrain, ...trees]);
     this.mapLayer?.sort("depth");
   }
 
@@ -280,18 +278,6 @@ export class TownScene extends Phaser.Scene {
     this.placement.reason = result.reason;
     this.previewLayer?.destroy(true);
     this.previewLayer = this.add.container(0, 0).setDepth(100_000);
-
-    if (shouldShowPlacementGrid(this.placement.mode)) {
-      const grid = this.add.graphics();
-      grid.lineStyle(2, 0x143f26, 0.72);
-      for (let row = 0; row < TOWN_GRID_SIZE; row += 1) {
-        for (let column = 0; column < TOWN_GRID_SIZE; column += 1) {
-          const position = gridToWorld(column, row);
-          grid.strokePoints(this.diamond(position.x, position.y), true);
-        }
-      }
-      this.previewLayer.add(grid);
-    }
 
     const footprint = this.add.graphics();
     for (let x = this.placement.gridX; x < this.placement.gridX + item.footprint.width; x += 1) {
