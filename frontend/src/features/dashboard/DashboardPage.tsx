@@ -17,15 +17,14 @@ import type { PieSectorShapeProps } from "recharts";
 import { isApiError } from "../../api/client";
 import {
   acceptGoalPlan,
-  connectBank,
   createGoal,
   getDashboard,
-  getDemoProfiles,
   regenerateGoalPlan,
   syncBank,
 } from "../../api/finance";
 import { LastRefreshed } from "../../components/LastRefreshed";
 import type { Dashboard, Transaction } from "../../api/types";
+import { buildBalanceHistory } from "./balanceHistory";
 
 function formatDollars(cents: number, options?: Intl.NumberFormatOptions) {
   return new Intl.NumberFormat("en-US", {
@@ -56,141 +55,12 @@ function titleCase(value: string) {
   return value.replace(/[-_]/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function buildBalanceHistory(dashboard: Dashboard) {
-  const totalsByDate = new Map<string, number>();
-  for (const transaction of dashboard.recent_transactions) {
-    totalsByDate.set(
-      transaction.occurred_at,
-      (totalsByDate.get(transaction.occurred_at) ?? 0) + transaction.signed_amount_cents,
-    );
-  }
-
-  const datedChanges = [...totalsByDate.entries()].sort(([left], [right]) =>
-    left.localeCompare(right),
-  );
-  let balance = dashboard.summary.total_balance_cents
-    - datedChanges.reduce((total, [, change]) => total + change, 0);
-
-  return datedChanges.map(([date, change]) => {
-    balance += change;
-    return { date, label: formatDate(date), balance };
-  });
-}
-
-function ConnectBankPanel() {
-  const queryClient = useQueryClient();
-  const [selectedProfileId, setSelectedProfileId] = useState("");
-  const [consented, setConsented] = useState(false);
-  const profilesQuery = useQuery({
-    queryKey: ["demo-profiles"],
-    queryFn: getDemoProfiles,
-  });
-  const connectMutation = useMutation({
-    mutationFn: connectBank,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["dashboard"] }),
-  });
-
-  if (profilesQuery.isPending) {
-    return <div className="route-loading inline-loading" role="status">Loading demo profiles…</div>;
-  }
-
-  if (profilesQuery.isError) {
-    return (
-      <section className="status-card embedded-status" role="alert">
-        <h1>Demo profiles could not be loaded.</h1>
-        <button className="secondary-button" type="button" onClick={() => profilesQuery.refetch()}>
-          Try again
-        </button>
-      </section>
-    );
-  }
-
-  const selectedId = selectedProfileId || profilesQuery.data[0]?.id || "";
-  const selectedProfile = profilesQuery.data.find((profile) => profile.id === selectedId);
-  const demoUsername = selectedProfile ? `${selectedProfile.id}@sandbox.demo` : "";
-
-  return (
-    <main className="onboarding-page">
-      <header className="onboarding-heading">
-        <span className="page-mark" aria-hidden="true">S</span>
-        <div>
-          <p className="eyebrow">Capital One Nessie sandbox</p>
-          <h1>Connect a fictional bank profile.</h1>
-          <p>These read-only credentials are presentation props. Only the selected profile ID is sent.</p>
-        </div>
-      </header>
-
-      <form
-        className="profile-grid"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (selectedId) connectMutation.mutate(selectedId);
-        }}
-      >
-        {profilesQuery.data.map((profile) => (
-          <label
-            className={`profile-card${selectedId === profile.id ? " selected" : ""}`}
-            key={profile.id}
-          >
-            <input
-              type="radio"
-              name="demo-profile"
-              value={profile.id}
-              checked={selectedId === profile.id}
-              onChange={() => setSelectedProfileId(profile.id)}
-            />
-            <span className="profile-check" aria-hidden="true">✓</span>
-            <strong>{profile.display_name}</strong>
-            <small>{profile.income_pattern}</small>
-            <p>{profile.description}</p>
-          </label>
-        ))}
-
-        <section className="sandbox-login" aria-label="Fictional sandbox credentials">
-          <div>
-            <label htmlFor="sandbox-username">Fictional username</label>
-            <input id="sandbox-username" value={demoUsername} readOnly />
-          </div>
-          <div>
-            <label htmlFor="sandbox-password">Fictional password</label>
-            <input id="sandbox-password" value="savehaven-demo" type="password" readOnly />
-          </div>
-          <label className="consent-check">
-            <input
-              type="checkbox"
-              checked={consented}
-              onChange={(event) => setConsented(event.target.checked)}
-            />
-            I understand this connects only fictional Capital One Nessie sandbox data.
-          </label>
-        </section>
-
-        {connectMutation.error ? (
-          <p className="error-banner profile-error" role="alert">
-            {isApiError(connectMutation.error)
-              ? connectMutation.error.message
-              : "The demo bank could not be connected."}
-          </p>
-        ) : null}
-
-        <button
-          className="primary-button connect-button"
-          type="submit"
-          disabled={!selectedId || !consented || connectMutation.isPending}
-        >
-          {connectMutation.isPending ? "Connecting…" : "Connect selected profile"}
-        </button>
-      </form>
-    </main>
-  );
-}
-
 function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(!dashboard.active_goal);
   const [name, setName] = useState("Emergency fund");
   const [targetAmount, setTargetAmount] = useState("3000");
-  const [savedAmount, setSavedAmount] = useState("0");
+  const [amountAlreadySaved, setAmountAlreadySaved] = useState("0");
   const defaultTarget = useMemo(() => {
     const target = new Date();
     target.setMonth(target.getMonth() + 6);
@@ -228,14 +98,27 @@ function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
             createMutation.mutate({
               name,
               target_amount_cents: Math.round(Number(targetAmount) * 100),
-              amount_already_saved_cents: Math.round(Number(savedAmount) * 100),
+              amount_already_saved_cents: Math.round(Number(amountAlreadySaved) * 100),
               target_date: targetDate,
             });
           }}
         >
           <label>Goal name<input required value={name} onChange={(event) => setName(event.target.value)} /></label>
           <label>Target amount<input required min="1" step="1" type="number" value={targetAmount} onChange={(event) => setTargetAmount(event.target.value)} /></label>
-          <label>Already saved<input required min="0" step="1" type="number" value={savedAmount} onChange={(event) => setSavedAmount(event.target.value)} /></label>
+          <label>
+            Already saved toward goal
+            <input
+              required
+              min="0"
+              max={dashboard.summary.savings_balance_cents / 100}
+              step="1"
+              type="number"
+              aria-label="Already saved toward goal"
+              value={amountAlreadySaved}
+              onChange={(event) => setAmountAlreadySaved(event.target.value)}
+            />
+            <small>{formatDollars(dashboard.summary.savings_balance_cents)} currently in savings</small>
+          </label>
           <label>Target date<input required type="date" value={targetDate} onChange={(event) => setTargetDate(event.target.value)} /></label>
           <button className="primary-button" disabled={createMutation.isPending} type="submit">
             {createMutation.isPending ? "Calculating…" : "Generate recommendation"}
@@ -316,7 +199,10 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
     }
   };
   const queryClient = useQueryClient();
-  const balanceHistory = useMemo(() => buildBalanceHistory(dashboard), [dashboard]);
+  const balanceHistory = useMemo(
+    () => buildBalanceHistory(dashboard, formatDate),
+    [dashboard],
+  );
   const activeGoal = dashboard.active_goal;
   const activeGoalProgress = activeGoal
     ? Math.min(100, Math.round(
@@ -381,7 +267,7 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
         <article className="stat-card">
           <p>Total balance</p>
           <h2>{formatDollars(dashboard.summary.total_balance_cents)}</h2>
-          <small>Across connected accounts</small>
+          <small>{formatDollars(dashboard.summary.savings_balance_cents)} in savings · transfers stay inside this total</small>
         </article>
         <button className="stat-card finance-summary-button" type="button" onClick={() => openTransactions("income")} aria-controls="bank-transactions">
           <p>Income · 30 days</p>
@@ -577,10 +463,6 @@ export function DashboardPage() {
 
   if (dashboardQuery.isPending) {
     return <div className="route-loading" role="status">Loading your financial snapshot…</div>;
-  }
-
-  if (dashboardQuery.isError && isApiError(dashboardQuery.error, 409)) {
-    return <ConnectBankPanel />;
   }
 
   if (dashboardQuery.isError) {

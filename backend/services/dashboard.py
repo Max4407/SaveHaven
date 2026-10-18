@@ -24,6 +24,7 @@ from services.planning import (
     accepted_plan_response,
     build_draft_plan,
     build_forecast,
+    current_goal_progress_cents,
     goal_response,
 )
 
@@ -68,12 +69,18 @@ def build_dashboard(session: Session, *, user_id: str) -> DashboardResponse:
     forecast = build_forecast(transactions)
     active_goal = get_active_goal(session, user_id)
     current_plan = None
+    active_goal_progress = None
     if active_goal is not None:
+        active_goal_progress = current_goal_progress_cents(active_goal, savings_balance)
         accepted_plan = get_accepted_plan(session, user_id=user_id, goal_id=active_goal.id)
         current_plan = (
             accepted_plan_response(accepted_plan)
             if accepted_plan is not None
-            else build_draft_plan(active_goal, forecast)
+            else build_draft_plan(
+                active_goal,
+                forecast,
+                current_goal_progress_cents=active_goal_progress,
+            )
         )
 
     return DashboardResponse(
@@ -129,6 +136,10 @@ def build_dashboard(session: Session, *, user_id: str) -> DashboardResponse:
             transaction_types=sorted({transaction.kind for transaction in transactions}),
         ),
         forecast=forecast,
-        active_goal=goal_response(active_goal) if active_goal is not None else None,
+        active_goal=(
+            goal_response(active_goal, current_savings_balance_cents=savings_balance)
+            if active_goal is not None
+            else None
+        ),
         current_plan=current_plan,
     )

@@ -1,6 +1,6 @@
 from collections.abc import Iterator
 
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -33,21 +33,51 @@ class Database:
         import models  # noqa: F401
 
         Base.metadata.create_all(self.engine)
-        if self.engine.dialect.name == "sqlite":
-            self._migrate_sqlite_schema()
+        self._migrate_sqlite_schema()
 
     def _migrate_sqlite_schema(self) -> None:
+        if self.engine.dialect.name != "sqlite":
+            return
+
         with self.engine.begin() as connection:
-            columns = {
-                row[1]
-                for row in connection.exec_driver_sql(
-                    "PRAGMA table_info(placed_buildings)"
-                )
+            placed_building_columns = {
+                column["name"]
+                for column in inspect(connection).get_columns("placed_buildings")
             }
-            if columns and "facing" not in columns:
-                connection.exec_driver_sql(
-                    "ALTER TABLE placed_buildings "
-                    "ADD COLUMN facing VARCHAR(5) NOT NULL DEFAULT 'left'"
+            if "facing" not in placed_building_columns:
+                connection.execute(
+                    text(
+                        "ALTER TABLE placed_buildings "
+                        "ADD COLUMN facing VARCHAR(5) NOT NULL DEFAULT 'left'"
+                    )
+                )
+
+            savings_goal_columns = {
+                column["name"]
+                for column in inspect(connection).get_columns("savings_goals")
+            }
+            if "starting_savings_balance_cents" not in savings_goal_columns:
+                connection.execute(
+                    text(
+                        "ALTER TABLE savings_goals ADD COLUMN "
+                        "starting_savings_balance_cents INTEGER NOT NULL DEFAULT 0"
+                    )
+                )
+                connection.execute(
+                    text(
+                        """
+                        UPDATE savings_goals
+                        SET starting_savings_balance_cents = COALESCE(
+                            (
+                                SELECT SUM(financial_accounts.balance_cents)
+                                FROM financial_accounts
+                                WHERE financial_accounts.user_id = savings_goals.user_id
+                                  AND financial_accounts.account_type = 'savings'
+                            ),
+                            amount_already_saved_cents
+                        )
+                        """
+                    )
                 )
             if columns and "visual_variant" not in columns:
                 connection.exec_driver_sql(

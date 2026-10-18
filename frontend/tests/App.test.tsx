@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { act, cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
@@ -11,11 +11,9 @@ import App from "../src/App";
 
 const mocks = vi.hoisted(() => ({
   acceptGoalPlan: vi.fn(),
-  connectBank: vi.fn(),
   createGoal: vi.fn(),
   demoLogin: vi.fn(),
   getDashboard: vi.fn(),
-  getDemoProfiles: vi.fn(),
   getHealth: vi.fn(),
   getSession: vi.fn(),
   logout: vi.fn(),
@@ -32,10 +30,8 @@ vi.mock("../src/api/auth", () => ({
 
 vi.mock("../src/api/finance", () => ({
   acceptGoalPlan: mocks.acceptGoalPlan,
-  connectBank: mocks.connectBank,
   createGoal: mocks.createGoal,
   getDashboard: mocks.getDashboard,
-  getDemoProfiles: mocks.getDemoProfiles,
   getHealth: mocks.getHealth,
   regenerateGoalPlan: mocks.regenerateGoalPlan,
   runNessieEvent: mocks.runNessieEvent,
@@ -133,9 +129,7 @@ describe("application API integration", () => {
     vi.resetAllMocks();
     mocks.getSession.mockResolvedValue({ id: "demo-player", display_name: "Jordan Lee" });
     mocks.getDashboard.mockResolvedValue(dashboard);
-    mocks.getDemoProfiles.mockResolvedValue([]);
     mocks.getHealth.mockResolvedValue({ status: "ok", data_mode: "fixture", nessie_configured: false, demo_controls_enabled: false });
-    mocks.connectBank.mockResolvedValue(dashboard.connection);
     mocks.syncBank.mockResolvedValue(dashboard.connection);
     mocks.demoLogin.mockResolvedValue({ id: "demo-player", display_name: "Jordan Lee" });
     mocks.logout.mockResolvedValue(undefined);
@@ -248,8 +242,30 @@ describe("application API integration", () => {
 
     expect(await screen.findByRole("heading", { name: "Welcome back." })).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /Taylor Kim/ })).toHaveValue(
+      "taylor.kim@savehaven.demo",
+    );
     expect(screen.getByLabelText("Password")).toHaveAttribute("type", "password");
     expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Build your town/ })).not.toBeInTheDocument();
+  });
+
+  it("keeps the Town button hidden until sign-in is confirmed", async () => {
+    const user = userEvent.setup();
+    let finishSession!: (value: null) => void;
+    mocks.getSession.mockImplementation(() => new Promise((resolve) => { finishSession = resolve; }));
+    let finishLogin!: (value: { id: string; display_name: string }) => void;
+    mocks.demoLogin.mockImplementation(() => new Promise((resolve) => { finishLogin = resolve; }));
+    renderApp();
+    expect(screen.getByText("Checking your demo session…")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Build your town/ })).not.toBeInTheDocument();
+    await act(async () => finishSession(null));
+    await user.type(await screen.findByLabelText("Password"), "savehaven-demo");
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
+    expect(screen.getByRole("button", { name: "Signing in…" })).toBeDisabled();
+    expect(screen.queryByRole("link", { name: /Build your town/ })).not.toBeInTheDocument();
+    await act(async () => finishLogin({ id: "demo-player", display_name: "Jordan Lee" }));
+    expect(await screen.findByRole("link", { name: /Build your town/ })).toBeInTheDocument();
   });
 
   it("signs in as a selected demo user and lets that user sign out", async () => {
@@ -271,37 +287,25 @@ describe("application API integration", () => {
     );
     expect(await screen.findByRole("heading", { name: "Bank" })).toBeInTheDocument();
     expect(screen.getByLabelText("Demo session")).toHaveTextContent("Alex Morgan");
+    expect(screen.getByRole("link", { name: /Build your town/ })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Sign out" }));
 
     expect(mocks.logout).toHaveBeenCalledOnce();
     expect(await screen.findByRole("heading", { name: "Welcome back." })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Build your town/ })).not.toBeInTheDocument();
   });
 
-  it("connects a selected profile when the dashboard reports no bank connection", async () => {
-    const user = userEvent.setup();
-    mocks.getDashboard
-      .mockRejectedValueOnce(new ApiError(409, "Connect a demo bank before opening the dashboard"))
-      .mockResolvedValue(dashboard);
-    mocks.getDemoProfiles.mockResolvedValue([
-      {
-        id: "steady-paycheck",
-        display_name: "Jordan Lee",
-        description: "A predictable twice-monthly income.",
-        income_pattern: "Steady paycheck",
-      },
-    ]);
+  it("does not show a second profile-selection page when the dashboard is unavailable", async () => {
+    mocks.getDashboard.mockRejectedValue(
+      new ApiError(409, "This demo account has no connected bank profile"),
+    );
     renderApp();
 
-    expect(await screen.findByRole("heading", { name: "Connect a fictional bank profile." })).toBeInTheDocument();
-    expect(screen.getByLabelText("Fictional username")).toHaveAttribute("readonly");
-    expect(screen.getByLabelText("Fictional password")).toHaveAttribute("readonly");
-    await user.click(screen.getByRole("checkbox"));
-    await user.click(screen.getByRole("button", { name: "Connect selected profile" }));
-
-    expect(mocks.connectBank).toHaveBeenCalled();
-    expect(mocks.connectBank.mock.calls[0][0]).toBe("steady-paycheck");
-    expect(await screen.findByRole("heading", { name: "Bank" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Your financial snapshot could not be loaded." }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Connect a fictional bank profile.")).not.toBeInTheDocument();
   });
 
   it("submits a savings goal in integer cents for a data-driven recommendation", async () => {
@@ -311,16 +315,17 @@ describe("application API integration", () => {
 
     await screen.findByRole("heading", { name: "Savings plan" });
     await user.clear(screen.getByLabelText("Target amount"));
-    await user.type(screen.getByLabelText("Target amount"), "4250");
-    await user.clear(screen.getByLabelText("Already saved"));
-    await user.type(screen.getByLabelText("Already saved"), "250");
+    await user.type(screen.getByLabelText("Target amount"), "8250");
+    await user.clear(screen.getByLabelText("Already saved toward goal"));
+    await user.type(screen.getByLabelText("Already saved toward goal"), "1250");
+    expect(screen.getByText("$6,250 currently in savings")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Generate recommendation" }));
 
     expect(mocks.createGoal).toHaveBeenCalledWith(
       expect.objectContaining({
         name: "Emergency fund",
-        target_amount_cents: 425000,
-        amount_already_saved_cents: 25000,
+        target_amount_cents: 825000,
+        amount_already_saved_cents: 125000,
       }),
       expect.anything(),
     );
