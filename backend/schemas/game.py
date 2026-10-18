@@ -27,7 +27,7 @@ class CatalogItemResponse(BaseModel):
     footprint: GridSize
     pivot: SpritePivot
     landmark: bool
-    render_kind: Literal["building", "ground"] = "building"
+    render_kind: Literal["building", "ground", "food"] = "building"
     resident_count: int = Field(default=0, ge=0, le=20)
 
 
@@ -73,6 +73,7 @@ class PlacedBuildingResponse(BaseModel):
     grid_x: int
     grid_y: int
     facing: Literal["left", "right"]
+    visual_variant: int = Field(ge=0, le=63)
     purchase_price_coins: int
     purchased_at: datetime
     updated_at: datetime
@@ -91,6 +92,7 @@ class PlaceBuildingRequest(BaseModel):
     grid_x: int = Field(ge=0, le=31)
     grid_y: int = Field(ge=0, le=69)
     facing: Literal["left", "right"] = "left"
+    visual_variant: int = Field(default=0, ge=0, le=63)
 
 
 class MoveBuildingRequest(BaseModel):

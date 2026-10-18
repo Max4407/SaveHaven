@@ -9,7 +9,7 @@ def test_catalog_and_starter_wallet_are_server_authoritative(
     rewards = logged_in_client.get("/api/game/rewards")
 
     assert catalog.status_code == 200
-    assert len(catalog.json()["items"]) == 13
+    assert len(catalog.json()["items"]) == 14
     dirt_road = next(item for item in catalog.json()["items"] if item["id"] == "dirt_road_01")
     assert dirt_road["asset"] == "/full_dirt.png"
     assert (dirt_road["cost_coins"], dirt_road["render_kind"]) == (1, "ground")
@@ -17,6 +17,7 @@ def test_catalog_and_starter_wallet_are_server_authoritative(
         item["id"]: item["resident_count"] for item in catalog.json()["items"]
     }
     assert resident_counts == {
+        "food_01": 0,
         "dirt_road_01": 0,
         "woodshed_01": 0,
         "hut_01": 1,
@@ -53,6 +54,7 @@ def test_purchase_move_and_sale_return_confirmed_state(
             "grid_x": 4,
             "grid_y": 4,
             "facing": "right",
+            "visual_variant": 27,
         },
     )
     building_id = purchase.json()["buildings"][0]["id"]
@@ -65,6 +67,7 @@ def test_purchase_move_and_sale_return_confirmed_state(
     assert purchase.status_code == 201
     assert purchase.json()["wallet"]["coin_balance"] == 200
     assert purchase.json()["buildings"][0]["facing"] == "right"
+    assert purchase.json()["buildings"][0]["visual_variant"] == 27
     assert move.status_code == 200
     assert move.json()["wallet"]["coin_balance"] == 200
     assert move.json()["buildings"][0]["facing"] == "left"
@@ -75,6 +78,27 @@ def test_purchase_move_and_sale_return_confirmed_state(
     assert sale.status_code == 200
     assert sale.json()["wallet"]["coin_balance"] == 260
     assert sale.json()["buildings"] == []
+
+
+def test_placed_food_can_be_consumed_without_refunding_its_coin(
+    logged_in_client: TestClient,
+) -> None:
+    purchase = logged_in_client.post(
+        "/api/game/buildings",
+        json={
+            "catalog_item_id": "food_01",
+            "grid_x": 4,
+            "grid_y": 4,
+            "visual_variant": 42,
+        },
+    )
+    food_id = purchase.json()["buildings"][0]["id"]
+
+    consumed = logged_in_client.delete(f"/api/game/food/{food_id}")
+
+    assert consumed.status_code == 200
+    assert consumed.json()["wallet"]["coin_balance"] == 299
+    assert consumed.json()["buildings"] == []
 
 
 def test_failed_mutations_return_structured_conflicts_without_charging(

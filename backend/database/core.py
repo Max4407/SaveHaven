@@ -79,6 +79,11 @@ class Database:
                         """
                     )
                 )
+            if "visual_variant" not in placed_building_columns:
+                connection.exec_driver_sql(
+                    "ALTER TABLE placed_buildings "
+                    "ADD COLUMN visual_variant INTEGER NOT NULL DEFAULT 0"
+                )
 
     def session(self) -> Iterator[Session]:
         with self.session_factory() as session:

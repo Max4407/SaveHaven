@@ -23,7 +23,9 @@ def test_file_database_enforces_integrity_and_waits_for_short_writes(tmp_path: P
         database.engine.dispose()
 
 
-def test_create_schema_adds_facing_to_an_existing_sqlite_town(tmp_path: Path) -> None:
+def test_create_schema_adds_building_presentation_to_an_existing_sqlite_town(
+    tmp_path: Path,
+) -> None:
     database = Database(f"sqlite:///{tmp_path / 'legacy-town.db'}")
     with database.engine.begin() as connection:
         connection.exec_driver_sql(
@@ -42,9 +44,16 @@ def test_create_schema_adds_facing_to_an_existing_sqlite_town(tmp_path: Path) ->
         facing = connection.exec_driver_sql(
             "SELECT facing FROM placed_buildings WHERE id = 1"
         ).scalar_one()
+        visual_variant = connection.exec_driver_sql(
+            "SELECT visual_variant FROM placed_buildings WHERE id = 1"
+        ).scalar_one()
 
     assert columns["facing"][3] == 1
+    assert columns["visual_variant"][3] == 1
     assert facing == "left"
+    assert visual_variant == 0
+
+
 def test_schema_upgrade_preserves_existing_goal_and_records_its_savings_baseline(
     tmp_path: Path,
 ) -> None:

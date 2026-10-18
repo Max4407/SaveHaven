@@ -6,6 +6,7 @@ import { TownScene } from "./scenes/TownScene";
 import {
   CATALOG_DRAG_TYPE,
   CATALOG_FACING_TYPE,
+  CATALOG_VARIANT_TYPE,
   type TownBridge,
 } from "./townBridge";
 
@@ -20,6 +21,7 @@ export function TownCanvas({ bridge, catalog, state }: TownCanvasProps) {
   const activeCatalogPlacement = useRef<{
     catalogItemId: string;
     facing: BuildingFacing;
+    visualVariant?: number;
   } | null>(null);
   const initialSceneData = useRef({ catalogItems: catalog.items, state });
   const previousState = useRef(state);
@@ -53,7 +55,17 @@ export function TownCanvas({ bridge, catalog, state }: TownCanvasProps) {
     const facing = transferredFacing === "right" || transferredFacing === "left"
       ? transferredFacing
       : activeCatalogPlacement.current?.facing ?? "left";
-    bridge.emit("catalogDropped", { catalogItemId, facing, ...canvasCoordinates(event) });
+    const transferredVariant = event.dataTransfer.getData(CATALOG_VARIANT_TYPE);
+    const parsedVariant = Number(transferredVariant);
+    const visualVariant = transferredVariant && Number.isInteger(parsedVariant)
+      ? parsedVariant
+      : activeCatalogPlacement.current?.visualVariant;
+    bridge.emit("catalogDropped", {
+      catalogItemId,
+      facing,
+      visualVariant,
+      ...canvasCoordinates(event),
+    });
     activeCatalogPlacement.current = null;
   };
 

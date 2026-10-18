@@ -78,6 +78,7 @@ class GameService:
                 grid_x=request.grid_x,
                 grid_y=request.grid_y,
                 facing=request.facing,
+                visual_variant=request.visual_variant,
                 purchase_price_coins=item.cost_coins,
                 purchased_at=now,
                 updated_at=now,
@@ -134,6 +135,24 @@ class GameService:
         session.commit()
         return self._state(session, user_id=user_id, wallet=wallet)
 
+    def consume_food(
+        self,
+        session: Session,
+        *,
+        user_id: str,
+        building_id: int,
+    ) -> GameStateResponse:
+        wallet = ensure_wallet(session, user_id)
+        food = get_placed_building(session, user_id=user_id, building_id=building_id)
+        if food is None:
+            raise PlacedBuildingNotFoundError(building_id)
+        item = self.catalog.get(food.catalog_item_id)
+        if item is None or item.render_kind != "food":
+            raise GameRuleError("not_food", "Only placed food can be consumed.")
+        session.delete(food)
+        session.commit()
+        return self._state(session, user_id=user_id, wallet=wallet)
+
     def _state(self, session: Session, *, user_id: str, wallet) -> GameStateResponse:
         return GameStateResponse(
             wallet=WalletResponse(
@@ -154,6 +173,7 @@ class GameService:
                     grid_x=building.grid_x,
                     grid_y=building.grid_y,
                     facing=building.facing,
+                    visual_variant=building.visual_variant,
                     purchase_price_coins=building.purchase_price_coins,
                     purchased_at=building.purchased_at,
                     updated_at=building.updated_at,

@@ -66,7 +66,6 @@ def buy_building(
         session.rollback()
         raise _rule_conflict(error) from error
 
-
 @router.patch("/buildings/{building_id}", response_model=GameStateResponse)
 def move_building(
     building_id: int,
@@ -93,8 +92,6 @@ def move_building(
     except GameRuleError as error:
         session.rollback()
         raise _rule_conflict(error) from error
-
-
 @router.delete("/buildings/{building_id}", response_model=GameStateResponse)
 def sell_building(
     building_id: int,
@@ -114,3 +111,27 @@ def sell_building(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Placed building not found",
         ) from error
+
+
+@router.delete("/food/{building_id}", response_model=GameStateResponse)
+def consume_food(
+    building_id: int,
+    request: Request,
+    user: CurrentDemoUser,
+    session: DatabaseSession,
+) -> GameStateResponse:
+    try:
+        return _game_service(request).consume_food(
+            session,
+            user_id=user.id,
+            building_id=building_id,
+        )
+    except PlacedBuildingNotFoundError as error:
+        session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Placed food not found",
+        ) from error
+    except GameRuleError as error:
+        session.rollback()
+        raise _rule_conflict(error) from error

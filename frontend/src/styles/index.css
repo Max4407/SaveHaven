@@ -367,6 +367,7 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .catalog-art { flex: 1 1 auto; display: grid; place-items: center; min-height: 0; overflow: hidden; background: #d6dda0; border: 1px solid #b19a5c; border-radius: 0; }
 .catalog-art img { width: 112%; height: 112%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(4px 4px 0 rgba(65,57,33,.2)); transform: translateX(6%); }
 .catalog-art.facing-right img { transform: translateX(-6%) scaleX(-1); }
+.catalog-art.food-art span { width: 64px; height: 64px; background-repeat: no-repeat; background-size: 512px 512px; image-rendering: pixelated; filter: drop-shadow(4px 4px 0 rgba(65,57,33,.2)); }
 .catalog-card-copy { min-width: 0; padding-top: 6px; }
 .level-pill { color: #55734c; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .catalog-card h3 { margin: 2px 0 3px; overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
@@ -396,6 +397,16 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .building-actions > button { min-height: 36px; }
 .building-facing-controls { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .building-facing-controls button:disabled { cursor: default; opacity: 1; }
+.character-details { display: grid; grid-template-columns: 64px 1fr; gap: 12px; padding: 15px; color: #fff4cb; background: var(--pixel-forest); border: 3px solid var(--pixel-forest-dark); box-shadow: 4px 4px 0 rgba(70,50,25,.32); }
+.character-details h2 { margin: 1px 0 0; color: #fff8dc; font-size: 20px; text-transform: uppercase; text-shadow: 2px 2px 0 #283522; }
+.character-details .eyebrow { color: #cfdaa4; }
+.character-portrait { display: grid; place-items: center; width: 58px; height: 58px; color: #3f5531; background: #e4cf83; border: 3px solid #9a783b; box-shadow: inset -4px -4px 0 rgba(88,63,29,.2); font-size: 29px; }
+.happiness-summary { grid-column: 1 / -1; }
+.happiness-summary > div:first-child { display: flex; justify-content: space-between; margin-bottom: 6px; color: #f7e7a7; font-size: 9px; text-transform: uppercase; }
+.happiness-track { height: 15px; padding: 2px; background: #182b1d; border: 2px solid #0f2015; }
+.happiness-track span { display: block; height: 100%; background: #e6c553; transition: width .25s linear; }
+.happiness-summary p { margin: 7px 0 0; color: #c9d4a7; font-size: 8px; }
+.character-details > button { grid-column: 1 / -1; min-height: 36px; border-radius: 0; }
 .sell-button { color: #8a3732; background: #faece9; border: 1px solid #edcfca; border-radius: 9px; font-size: 10px; font-weight: 800; }
 .sell-button:hover, .sell-button:focus-visible { background: #f4dcd8; outline: none; }
 .reward-explanation { margin-top: 14px; padding: 13px; color: #4a554e; background: #eef2e9; border-radius: 11px; }
@@ -426,6 +437,7 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .celebration-finance small { min-height: 24px; color: #7b7057; font-size: 8px; line-height: 1.4; }
 .celebration-finance strong { margin-top: 5px; color: #2f5f42; font-size: 13px; }
 .town-celebration .primary-button { margin-top: 10px; }
+.feeding-encouragement .celebration-mark { color: #8a3732; background: #f5ded4; }
 
 @media (max-width: 1050px) {
   .content-grid, .lower-grid, .dashboard-detail-grid { grid-template-columns: 1fr; }
