@@ -17,7 +17,15 @@ import {
   sellBuilding,
   simulateWeek,
 } from "../src/api/game";
-import type { BuildingFacing, GameState, SimulatedWeek, TownCatalog } from "../src/api/types";
+
+import type {
+  BuildingFacing,
+  Dashboard,
+  GameState,
+  SimulatedWeek,
+  TownCatalog,
+} from "../src/api/types";
+
 import TownPage from "../src/features/town/TownPage";
 import type { TownBridge } from "../src/features/town/townBridge";
 
@@ -78,6 +86,9 @@ vi.mock("../src/features/town/TownCanvas", async () => {
               buildingId: state.buildings[0].id,
             })}>Select building</button>
           ) : null}
+          <button type="button" onClick={() => bridge.emit("buildingDeselected", {})}>
+            Click empty map
+          </button>
           {request ? (
             <button type="button" onClick={() => bridge.emit("placementConfirmed", {
               ...request,
@@ -148,6 +159,44 @@ const initialState: GameState = {
   buildings: [],
 };
 
+const simulatedDashboard: Dashboard = {
+  connection: {
+    profile_id: "steady-paycheck",
+    nessie_customer_id: "customer-1",
+    display_name: "Jordan Lee",
+    data_source: "fixture",
+    last_synced_at: "2026-10-18T12:00:00Z",
+  },
+  summary: {
+    as_of: "2026-10-25",
+    total_balance_cents: 1_007_650,
+    checking_balance_cents: 362_650,
+    savings_balance_cents: 645_000,
+    income_last_30_days_cents: 470_000,
+    spending_last_30_days_cents: 214_750,
+  },
+  accounts: [],
+  recent_transactions: [],
+  spending_by_category: [],
+  import_summary: {
+    account_count: 2,
+    transaction_count: 12,
+    transaction_types: ["bill", "deposit", "purchase", "transfer"],
+  },
+  forecast: {
+    weekly_income_cents: 100_000,
+    weekly_recurring_bills_cents: 40_000,
+    weekly_variable_spending_cents: 20_000,
+    safety_buffer_cents: 10_000,
+    income_cadence: "weekly",
+    confidence: "high",
+    detected_deposit_count: 3,
+    evidence: ["Includes the simulated week."],
+  },
+  active_goal: null,
+  current_plan: null,
+};
+
 const simulatedWeek = (gameState: GameState): SimulatedWeek => ({
   source: "fixture_fallback",
   replayed: false,
@@ -184,6 +233,7 @@ const simulatedWeek = (gameState: GameState): SimulatedWeek => ({
     infrastructure: gameState.infrastructure,
   },
   game_state: gameState,
+  dashboard: simulatedDashboard,
 });
 
 function renderTown() {
@@ -198,7 +248,7 @@ function renderTown() {
       </MemoryRouter>
     </QueryClientProvider>,
   );
-  return { ...rendered, invalidateQueries };
+  return { ...rendered, invalidateQueries, queryClient };
 }
 
 beforeEach(() => {
@@ -425,7 +475,7 @@ describe("town economy", () => {
       demo_controls_enabled: true,
     });
     vi.mocked(simulateWeek).mockResolvedValue(simulatedWeek(villageState));
-    const { invalidateQueries } = renderTown();
+    const { invalidateQueries, queryClient } = renderTown();
 
     fireEvent.click(await screen.findByRole("button", { name: "Simulate success" }));
 
@@ -435,7 +485,7 @@ describe("town economy", () => {
     expect(screen.getByRole("dialog")).toHaveTextContent("Saved the full weekly target.");
     expect(screen.getByRole("dialog")).toHaveTextContent("Unlocked: Corner Bakery");
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["game-rewards"] });
-    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["dashboard"] });
+    expect(queryClient.getQueryData(["dashboard"])).toEqual(simulatedDashboard);
   });
 
   it("moves for free and shows the original-price sale refund", async () => {
@@ -476,7 +526,7 @@ describe("town economy", () => {
     expect(await screen.findByText("260")).toBeInTheDocument();
   });
 
-  it("flips a placed building in place without charging for it again", async () => {
+   it("flips a placed building in place without charging for it again", async () => {
     const placedState: GameState = {
       ...initialState,
       buildings: [{
@@ -493,19 +543,48 @@ describe("town economy", () => {
     vi.mocked(getGameState).mockResolvedValue(placedState);
     vi.mocked(moveBuilding).mockResolvedValue({
       ...placedState,
-      buildings: [{ ...placedState.buildings[0], facing: "right" }],
+      buildings: [{
+        ...placedState.buildings[0],
+        facing: "right",
+      }],
     });
     renderTown();
 
     fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
     fireEvent.click(screen.getByRole("button", { name: "Face right →" }));
 
-    await waitFor(() => expect(moveBuilding).toHaveBeenCalledWith(7, {
-      grid_x: 5,
-      grid_y: 4,
-      facing: "right",
-    }));
+    await waitFor(() =>
+      expect(moveBuilding).toHaveBeenCalledWith(7, {
+        grid_x: 5,
+        grid_y: 4,
+        facing: "right",
+      }),
+    );
     expect(buyBuilding).not.toHaveBeenCalled();
+  });
+
+  it("hides building actions after clicking empty map space", async () => {
+    vi.mocked(getGameState).mockResolvedValue({
+      ...initialState,
+      buildings: [{
+        id: 7,
+        catalog_item_id: "woodshed_01",
+        grid_x: 5,
+        grid_y: 4,
+        facing: "left",
+        purchase_price_coins: 100,
+        purchased_at: "2026-10-17T12:00:00Z",
+        updated_at: "2026-10-17T12:00:00Z",
+      }],
+    });
+    renderTown();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
+    expect(screen.getByLabelText("Selected building")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Click empty map" }));
+
+    expect(screen.queryByLabelText("Selected building")).not.toBeInTheDocument();
   });
 
   it("keeps the last server-confirmed position when an occupied move is rejected", async () => {

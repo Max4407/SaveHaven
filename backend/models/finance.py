@@ -47,6 +47,11 @@ class SavingsGoal(Base):
     name: Mapped[str] = mapped_column(String(80))
     target_amount_cents: Mapped[int] = mapped_column(Integer)
     amount_already_saved_cents: Mapped[int] = mapped_column(Integer)
+    starting_savings_balance_cents: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        server_default="0",
+    )
     target_date: Mapped[date] = mapped_column(Date)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

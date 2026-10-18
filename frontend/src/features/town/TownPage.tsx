@@ -133,9 +133,9 @@ function TownPage() {
     ),
     onSuccess: (result) => {
       applyConfirmedState(result.game_state);
+      queryClient.setQueryData(["dashboard"], result.dashboard);
       setCelebration(result);
       void queryClient.invalidateQueries({ queryKey: ["game-rewards"] });
-      void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => setActionError(mutationMessage(error)),
     onSettled: finishAction,
@@ -160,6 +160,9 @@ function TownPage() {
       setSelectedBuildingId(buildingId);
       setIsSidebarOpen(true);
     });
+    const unsubscribeDeselection = bridge.subscribe("buildingDeselected", () => {
+      setSelectedBuildingId(null);
+    });
     const unsubscribePlacement = bridge.subscribe("placementChanged", setPlacement);
     const unsubscribeConfirmation = bridge.subscribe("placementConfirmed", (detail) => {
       startAction(() => {
@@ -183,6 +186,7 @@ function TownPage() {
     });
     return () => {
       unsubscribeSelection();
+      unsubscribeDeselection();
       unsubscribePlacement();
       unsubscribeConfirmation();
     };
@@ -411,8 +415,8 @@ function TownPage() {
             <p className="eyebrow">Protected demo controls</p>
             <p className="demo-week-note">
               {healthQuery.data.data_mode === "live" && healthQuery.data.nessie_configured
-                ? "Writes to a live Nessie sandbox connection, syncs it, then evaluates the imported transactions. Fixture fallback is labeled in the result."
-                : "Fixture mode creates local bank-shaped transactions, then evaluates the week."}
+                ? "Advances one week, writes that week's activity to the live Nessie sandbox, syncs it, then evaluates the imported transactions."
+                : "Advances one week and creates local bank-shaped income, bills, spending, and savings transactions before evaluating it."}
             </p>
             <div>
               <button className="primary-button" type="button" disabled={isMutating} onClick={() => startAction(() => simulateMutation.mutate("successful"))}>Simulate success</button>

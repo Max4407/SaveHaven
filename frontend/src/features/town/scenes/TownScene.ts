@@ -86,6 +86,7 @@ export class TownScene extends Phaser.Scene {
   private isDraggingCamera = false;
   private interactionLocked = false;
   private placementPointerDown = false;
+  private emptyPointerDown = false;
   private dragStart = new Phaser.Math.Vector2();
   private cameraStart = new Phaser.Math.Vector2();
   private mapLayer?: Phaser.GameObjects.Container;
@@ -557,13 +558,18 @@ export class TownScene extends Phaser.Scene {
       gameObjects: Phaser.GameObjects.GameObject[],
     ) => {
       if (this.placement) {
+        this.emptyPointerDown = false;
         if (this.placement.mode === "click") {
           this.placementPointerDown = true;
           this.updatePlacementAtPointer(pointer);
         }
         return;
       }
-      if (gameObjects.some((gameObject) => gameObject.getData("isPlacedBuilding"))) return;
+      if (gameObjects.some((gameObject) => gameObject.getData("isPlacedBuilding"))) {
+        this.emptyPointerDown = false;
+        return;
+      }
+      this.emptyPointerDown = true;
       this.isDraggingCamera = true;
       this.dragStart.set(pointer.x, pointer.y);
       this.cameraStart.set(this.cameras.main.scrollX, this.cameras.main.scrollY);
@@ -584,16 +590,22 @@ export class TownScene extends Phaser.Scene {
     });
     this.input.on("pointerup", (pointer: Phaser.Input.Pointer) => {
       this.isDraggingCamera = false;
+      const shouldDeselect = this.emptyPointerDown && pointer.getDistance() < 7;
       const shouldConfirm = this.placement?.mode === "click"
         && this.placementPointerDown
         && pointer.getDistance() < 7;
+      this.emptyPointerDown = false;
       this.placementPointerDown = false;
+      if (shouldDeselect) {
+        this.bridge.emit("buildingDeselected", {});
+      }
       if (shouldConfirm) {
         this.confirmPlacement();
       }
     });
     this.input.on("pointerupoutside", () => {
       this.isDraggingCamera = false;
+      this.emptyPointerDown = false;
       this.placementPointerDown = false;
       if (this.placement?.mode === "building-drag") this.cancelPlacement();
     });

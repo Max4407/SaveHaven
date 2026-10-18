@@ -26,6 +26,7 @@ import {
 } from "../../api/finance";
 import { LastRefreshed } from "../../components/LastRefreshed";
 import type { Dashboard, Transaction } from "../../api/types";
+import { buildBalanceHistory } from "./balanceHistory";
 
 function formatDollars(cents: number, options?: Intl.NumberFormatOptions) {
   return new Intl.NumberFormat("en-US", {
@@ -54,27 +55,6 @@ function formatDateTime(value: string | null) {
 
 function titleCase(value: string) {
   return value.replace(/[-_]/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
-function buildBalanceHistory(dashboard: Dashboard) {
-  const totalsByDate = new Map<string, number>();
-  for (const transaction of dashboard.recent_transactions) {
-    totalsByDate.set(
-      transaction.occurred_at,
-      (totalsByDate.get(transaction.occurred_at) ?? 0) + transaction.signed_amount_cents,
-    );
-  }
-
-  const datedChanges = [...totalsByDate.entries()].sort(([left], [right]) =>
-    left.localeCompare(right),
-  );
-  let balance = dashboard.summary.total_balance_cents
-    - datedChanges.reduce((total, [, change]) => total + change, 0);
-
-  return datedChanges.map(([date, change]) => {
-    balance += change;
-    return { date, label: formatDate(date), balance };
-  });
 }
 
 function ConnectBankPanel() {
@@ -190,7 +170,7 @@ function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
   const [showForm, setShowForm] = useState(!dashboard.active_goal);
   const [name, setName] = useState("Emergency fund");
   const [targetAmount, setTargetAmount] = useState("3000");
-  const [savedAmount, setSavedAmount] = useState("0");
+  const [amountAlreadySaved, setAmountAlreadySaved] = useState("0");
   const defaultTarget = useMemo(() => {
     const target = new Date();
     target.setMonth(target.getMonth() + 6);
@@ -228,14 +208,27 @@ function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
             createMutation.mutate({
               name,
               target_amount_cents: Math.round(Number(targetAmount) * 100),
-              amount_already_saved_cents: Math.round(Number(savedAmount) * 100),
+              amount_already_saved_cents: Math.round(Number(amountAlreadySaved) * 100),
               target_date: targetDate,
             });
           }}
         >
           <label>Goal name<input required value={name} onChange={(event) => setName(event.target.value)} /></label>
           <label>Target amount<input required min="1" step="1" type="number" value={targetAmount} onChange={(event) => setTargetAmount(event.target.value)} /></label>
-          <label>Already saved<input required min="0" step="1" type="number" value={savedAmount} onChange={(event) => setSavedAmount(event.target.value)} /></label>
+          <label>
+            Already saved toward goal
+            <input
+              required
+              min="0"
+              max={dashboard.summary.savings_balance_cents / 100}
+              step="1"
+              type="number"
+              aria-label="Already saved toward goal"
+              value={amountAlreadySaved}
+              onChange={(event) => setAmountAlreadySaved(event.target.value)}
+            />
+            <small>{formatDollars(dashboard.summary.savings_balance_cents)} currently in savings</small>
+          </label>
           <label>Target date<input required type="date" value={targetDate} onChange={(event) => setTargetDate(event.target.value)} /></label>
           <button className="primary-button" disabled={createMutation.isPending} type="submit">
             {createMutation.isPending ? "Calculating…" : "Generate recommendation"}
@@ -316,7 +309,10 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
     }
   };
   const queryClient = useQueryClient();
-  const balanceHistory = useMemo(() => buildBalanceHistory(dashboard), [dashboard]);
+  const balanceHistory = useMemo(
+    () => buildBalanceHistory(dashboard, formatDate),
+    [dashboard],
+  );
   const activeGoal = dashboard.active_goal;
   const activeGoalProgress = activeGoal
     ? Math.min(100, Math.round(
@@ -382,7 +378,7 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
         <article className="stat-card">
           <p>Total balance</p>
           <h2>{formatDollars(dashboard.summary.total_balance_cents)}</h2>
-          <small>Across connected accounts</small>
+          <small>{formatDollars(dashboard.summary.savings_balance_cents)} in savings · transfers stay inside this total</small>
         </article>
         <button className="stat-card finance-summary-button" type="button" onClick={() => openTransactions("income")} aria-controls="bank-transactions">
           <p>Income · 30 days</p>
