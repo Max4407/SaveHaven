@@ -585,3 +585,54 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .catalog-card > button { flex-shrink: 0; min-height: 36px; font-size: 24px; font-weight: 900; line-height: 1; }
 
 .catalog-card .catalog-art { flex: 0 0 auto; height: clamp(100px, 12vw, 150px); }
+
+.sync-details { margin-top: 16px; color: #675938; font-family: inherit; font-size: 11px; }
+.sync-details summary { width: fit-content; padding: 8px 0; cursor: pointer; font-weight: 700; }
+.sync-details summary:focus-visible { outline: 2px solid #175c32; outline-offset: 3px; }
+.sync-details .import-strip { margin-top: 6px; }
+
+.plan-header-actions { display: flex; align-items: center; gap: 14px; }
+.plan-info-button { display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 32px; padding: 0; color: #356b4d; background: #eef2e9; border: 1px solid #c9d3c2; border-radius: 50%; font-family: Georgia, serif; font-size: 18px; font-weight: 700; }
+.plan-info-button:hover, .plan-info-button[aria-expanded="true"] { color: #fff3c0; background: #356b4d; }
+.plan-info-button:focus-visible { outline: 2px solid #175c32; outline-offset: 3px; }
+.simple-plan-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.simple-plan-metrics > span { padding: 18px; }.simple-plan-metrics strong { font-size: 25px; }
+.plan-info-details { margin-top: 18px; padding: 18px; background: #f5f6ef; border: 1px solid #dfe4d6; border-radius: 8px; }
+.plan-info-details h3 { margin: 0 0 14px; font-size: 13px; }
+.plan-info-breakdown { display: grid; gap: 8px; margin: 0; font-size: 11px; }
+.plan-info-breakdown > div { display: flex; justify-content: space-between; gap: 18px; }.plan-info-breakdown dt { color: #717a72; }.plan-info-breakdown dd { margin: 0; font-weight: 650; text-align: right; }
+.plan-info-details > button { margin-top: 14px; }
+@media (max-width: 480px) { .simple-plan-metrics > span { padding: 12px; }.simple-plan-metrics strong { font-size: 22px; }.plan-header-actions { gap: 8px; } }
+
+/* Goal entry stays familiar and legible inside the existing dashboard. */
+.goal-form.goal-entry-form { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 22px 24px; max-width: 720px; margin-top: 24px; font-family: Inter, "Segoe UI", system-ui, sans-serif; }
+.goal-form-intro { grid-column: 1 / -1; margin: 0 0 2px; color: #68746a; font-size: 13px; font-weight: 400; line-height: 1.6; }
+.goal-entry-field { display: grid; gap: 8px; min-width: 0; }
+.goal-name-field { grid-column: 1 / -1; }
+.goal-entry-form .goal-entry-field label { display: block; color: #425347; font-size: 12px; font-weight: 600; }
+.goal-entry-form .goal-entry-field input { display: block; width: 100%; min-height: 46px; padding: 11px 13px; color: #273d2e; background: #fff; border: 1px solid #cbd5c9; border-radius: 5px; box-shadow: none; font-family: inherit; font-size: 14px; font-weight: 400; line-height: 1.4; }
+.goal-entry-field input:focus { border-color: #59846a; outline: 2px solid #dce9de; outline-offset: 1px; }
+.goal-entry-field input::placeholder { color: #97a095; }
+.goal-currency-field { position: relative; }
+.goal-currency-field > span { position: absolute; top: 50%; left: 13px; transform: translateY(-50%); color: #798776; font-size: 14px; pointer-events: none; }
+.goal-entry-form .goal-currency-field input { padding-left: 30px; font-variant-numeric: tabular-nums; }
+.goal-entry-field > small { margin-top: -2px; color: #7f8a7c; font-size: 11px; line-height: 1.5; }
+.goal-entry-footer { grid-column: 1 / -1; display: flex; align-items: center; justify-content: flex-end; gap: 20px; padding-top: 18px; border-top: 1px solid #e0e6dc; }
+.goal-entry-footer .primary-button { min-height: 42px; padding: 10px 22px; border-radius: 5px; box-shadow: none; font-family: inherit; font-size: 13px; font-weight: 600; }
+.goal-entry-footer .text-button { font-family: inherit; font-size: 12px; }
+@media (max-width: 540px) { .goal-form.goal-entry-form { grid-template-columns: 1fr; gap: 18px; }.goal-entry-footer .primary-button { flex: 1; }.goal-date-field { grid-column: 1 / -1; } }
+
+.goal-entry-form .emphasized-date { grid-column: 1 / -1; gap: 16px; padding: 20px; background: #f0f5eb; border: 1px solid #b9cbb0; border-left: 4px solid #487653; border-radius: 6px; }
+.goal-date-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 6px 16px; }
+.goal-entry-form .goal-date-heading label { color: #315c3c; font-size: 17px; font-weight: 650; }
+.goal-date-heading > span { color: #7a8972; font-size: 11px; }
+.goal-date-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.goal-date-options button { min-height: 38px; padding: 8px 16px; color: #607556; background: #fff; border: 1px solid #c9d6c0; border-radius: 5px; font: 12px Inter, "Segoe UI", system-ui, sans-serif; }
+.goal-date-options button:hover { border-color: #638559; background: #e6eddf; }
+.goal-date-options button[aria-pressed="true"] { color: #fff; background: #487653; border-color: #487653; }
+.goal-date-options button:focus-visible { outline: 2px solid #487653; outline-offset: 3px; }
+.goal-date-selection { display: grid; grid-template-columns: minmax(180px, 1fr) 1fr; align-items: center; gap: 22px; }
+.goal-entry-form .goal-date-selection input { min-height: 48px; border-color: #adbea4; font-size: 15px; cursor: pointer; }
+.goal-date-preview { margin: 0; color: #7a8972; font-size: 11px; line-height: 1.6; }
+.goal-date-preview strong, .goal-date-preview span { display: block; }.goal-date-preview strong { color: #3a6544; font-size: 21px; font-weight: 600; }
+@media (max-width: 540px) { .goal-date-selection { grid-template-columns: 1fr; gap: 12px; }.goal-date-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }.goal-date-options button { padding: 8px 5px; font-size: 11px; }.goal-entry-form .emphasized-date { padding: 16px; } }

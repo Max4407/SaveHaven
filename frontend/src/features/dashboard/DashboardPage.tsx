@@ -58,15 +58,27 @@ function titleCase(value: string) {
 function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(!dashboard.active_goal);
+  const [showPlanInfo, setShowPlanInfo] = useState(false);
   const [name, setName] = useState("Emergency fund");
   const [targetAmount, setTargetAmount] = useState("3000");
   const [amountAlreadySaved, setAmountAlreadySaved] = useState("0");
-  const defaultTarget = useMemo(() => {
-    const target = new Date();
-    target.setMonth(target.getMonth() + 6);
-    return target.toISOString().slice(0, 10);
+  const dateOptions = useMemo(() => {
+    const now = new Date();
+    const localDate = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    return {
+      today: localDate(now),
+      minimum: localDate(tomorrow),
+      presets: [1, 3, 6, 12].map((months) => {
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + months + 1, 0).getDate();
+        const date = new Date(now.getFullYear(), now.getMonth() + months, Math.min(now.getDate(), lastDay));
+        return { months, date: localDate(date) };
+      }),
+    };
   }, []);
-  const [targetDate, setTargetDate] = useState(defaultTarget);
+  const [targetDate, setTargetDate] = useState(dateOptions.presets[2].date);
+  const daysToSave = Math.ceil((Date.parse(targetDate) - Date.parse(dateOptions.today)) / 86400000);
+  const weeksToSave = Math.ceil(daysToSave / 7);
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["dashboard"] });
   const createMutation = useMutation({
     mutationFn: createGoal,
@@ -84,15 +96,16 @@ function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
   return (
     <section className="panel planner-panel" aria-labelledby="planner-heading">
       <div className="panel-heading">
-        <div><p className="eyebrow">Nessie-powered recommendation</p><h2 id="planner-heading">Savings plan</h2></div>
-        {goal && !showForm ? (
-          <button className="text-button" type="button" onClick={() => setShowForm(true)}>Replace goal</button>
-        ) : null}
+        <div><p className="eyebrow">Your weekly guide</p><h2 id="planner-heading">Savings plan</h2></div>
+        <div className="plan-header-actions">
+          {goal && !showForm ? <button className="text-button" type="button" onClick={() => setShowForm(true)}>Replace goal</button> : null}
+          {goal && plan && !showForm ? <button className="plan-info-button" type="button" aria-label="Savings plan information" aria-expanded={showPlanInfo} aria-controls="savings-plan-info" title="How your plan is calculated" onClick={() => setShowPlanInfo((open) => !open)}><span aria-hidden="true">i</span></button> : null}
+        </div>
       </div>
 
       {showForm ? (
         <form
-          className="goal-form"
+          className="goal-form goal-entry-form"
           onSubmit={(event) => {
             event.preventDefault();
             createMutation.mutate({
@@ -103,26 +116,39 @@ function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
             });
           }}
         >
-          <label>Goal name<input required value={name} onChange={(event) => setName(event.target.value)} /></label>
-          <label>Target amount<input required min="1" step="1" type="number" value={targetAmount} onChange={(event) => setTargetAmount(event.target.value)} /></label>
-          <label>
-            Already saved toward goal
-            <input
-              required
-              min="0"
-              max={dashboard.summary.savings_balance_cents / 100}
-              step="1"
-              type="number"
-              aria-label="Already saved toward goal"
-              value={amountAlreadySaved}
-              onChange={(event) => setAmountAlreadySaved(event.target.value)}
-            />
-            <small>{formatDollars(dashboard.summary.savings_balance_cents)} currently in savings</small>
-          </label>
-          <label>Target date<input required type="date" value={targetDate} onChange={(event) => setTargetDate(event.target.value)} /></label>
-          <button className="primary-button" disabled={createMutation.isPending} type="submit">
-            {createMutation.isPending ? "Calculating…" : "Generate recommendation"}
-          </button>
+          <p className="goal-form-intro">Choose an amount and a date. We’ll work out a weekly savings plan.</p>
+          <div className="goal-entry-field goal-name-field">
+            <label htmlFor="savings-goal-name">Goal name</label>
+            <input id="savings-goal-name" required value={name} placeholder="e.g. Emergency fund" onChange={(event) => setName(event.target.value)} />
+          </div>
+          <div className="goal-entry-field">
+            <label htmlFor="savings-target-amount">Target amount</label>
+            <div className="goal-currency-field"><span aria-hidden="true">$</span><input id="savings-target-amount" required min="1" step="0.01" inputMode="decimal" type="number" value={targetAmount} onChange={(event) => setTargetAmount(event.target.value)} /></div>
+          </div>
+          <div className="goal-entry-field">
+            <label htmlFor="savings-starting-amount">Already saved toward goal</label>
+            <div className="goal-currency-field"><span aria-hidden="true">$</span><input id="savings-starting-amount" required min="0" max={dashboard.summary.savings_balance_cents / 100} step="0.01" inputMode="decimal" type="number" aria-describedby="savings-available-hint" value={amountAlreadySaved} onChange={(event) => setAmountAlreadySaved(event.target.value)} /></div>
+            <small id="savings-available-hint">{formatDollars(dashboard.summary.savings_balance_cents)} currently in savings</small>
+          </div>
+          <div className="goal-entry-field goal-date-field emphasized-date">
+            <div className="goal-date-heading">
+              <label htmlFor="savings-target-date">Target date</label>
+              <span>When do you want to reach your goal?</span>
+            </div>
+            <div className="goal-date-options" role="group" aria-label="Quick target dates">
+              {dateOptions.presets.map((option) => <button key={option.months} type="button" aria-pressed={targetDate === option.date} onClick={() => setTargetDate(option.date)}>{option.months} {option.months === 1 ? "month" : "months"}</button>)}
+            </div>
+            <div className="goal-date-selection">
+              <input id="savings-target-date" required type="date" min={dateOptions.minimum} aria-describedby="goal-date-preview" value={targetDate} onChange={(event) => setTargetDate(event.target.value)} />
+              <p id="goal-date-preview" className="goal-date-preview" aria-live="polite">{Number.isFinite(daysToSave) && daysToSave > 0 ? <><strong>{weeksToSave} {weeksToSave === 1 ? "week" : "weeks"}</strong><span>to build your savings · {formatDate(targetDate)}</span></> : <span>Choose a future date to set your timeline.</span>}</p>
+            </div>
+          </div>
+          <div className="goal-entry-footer">
+            {goal ? <button className="text-button" type="button" disabled={createMutation.isPending} onClick={() => { setShowForm(false); createMutation.reset(); }}>Cancel</button> : null}
+            <button className="primary-button" disabled={createMutation.isPending} type="submit">
+              {createMutation.isPending ? "Creating plan…" : "Create plan"}
+            </button>
+          </div>
         </form>
       ) : goal && plan ? (
         <div className="plan-result">
@@ -130,22 +156,32 @@ function GoalPlanner({ dashboard }: { dashboard: Dashboard }) {
             <div><strong>{goal.name}</strong><small>{formatDollars(goal.amount_already_saved_cents)} of {formatDollars(goal.target_amount_cents)} saved</small></div>
             <span className={`plan-status ${plan.status}`}>{titleCase(plan.status)}</span>
           </div>
-          <div className="plan-metrics">
-            <span><small>Save weekly</small><strong>{formatDollars(plan.weekly_savings_cents)}</strong></span>
-            <span><small>Safe to spend</small><strong>{formatDollars(plan.safe_to_spend_cents)}</strong></span>
-            <span><small>Income signal</small><strong>{titleCase(plan.income_cadence)}</strong></span>
+          <div className="plan-metrics simple-plan-metrics">
+            <span><small>Save this week</small><strong>{formatDollars(plan.weekly_savings_cents)}</strong></span>
+            <span><small>Safe to spend this week</small><strong>{formatDollars(plan.safe_to_spend_cents)}</strong></span>
           </div>
           {!plan.feasible ? (
-            <p className="fallback-warning">This target is not feasible with the current cash flow. {plan.suggested_target_date ? `Suggested date: ${formatDate(plan.suggested_target_date)}.` : "No positive weekly capacity is available yet."}</p>
+            <p className="fallback-warning">This goal needs a smaller target or more time.{plan.suggested_target_date ? ` Try ${formatDate(plan.suggested_target_date)}.` : " Review the details before accepting."}</p>
           ) : null}
-          <p className="plan-explanation">{plan.explanation}</p>
-          <ul className="evidence-list">{plan.evidence.map((item) => <li key={item}>{item}</li>)}</ul>
+          <div id="savings-plan-info" className="plan-info-details" hidden={!showPlanInfo}>
+            <h3>How we worked this out</h3>
+            <dl className="plan-info-breakdown">
+              <div><dt>Expected weekly income</dt><dd>{formatDollars(plan.weekly_income_cents)}</dd></div>
+              <div><dt>Weekly bills</dt><dd>{formatDollars(plan.weekly_recurring_bills_cents)}</dd></div>
+              <div><dt>Typical variable spending</dt><dd>{formatDollars(plan.weekly_variable_spending_cents)}</dd></div>
+              <div><dt>Safety buffer</dt><dd>{formatDollars(plan.safety_buffer_cents)}</dd></div>
+              <div><dt>Income pattern</dt><dd>{titleCase(plan.income_cadence)}</dd></div>
+              <div><dt>Forecast confidence</dt><dd>{titleCase(plan.confidence)}</dd></div>
+            </dl>
+            <p className="plan-explanation">{plan.explanation}</p>
+            <ul className="evidence-list">{plan.evidence.map((item) => <li key={item}>{item}</li>)}</ul>
+            {plan.status === "accepted" ? <p className="accepted-note">Accepted recommendations stay fixed when later sandbox events arrive.</p> : <button className="secondary-button" type="button" disabled={regenerateMutation.isPending} onClick={() => regenerateMutation.mutate(goal.id)}>{regenerateMutation.isPending ? "Recalculating…" : "Recalculate from latest sync"}</button>}
+          </div>
           {plan.status === "draft" ? (
             <div className="plan-actions">
-              <button className="secondary-button" type="button" disabled={regenerateMutation.isPending} onClick={() => regenerateMutation.mutate(goal.id)}>Recalculate from latest sync</button>
               <button className="primary-button" type="button" disabled={acceptMutation.isPending} onClick={() => acceptMutation.mutate(goal.id)}>{acceptMutation.isPending ? "Accepting…" : "Accept this plan"}</button>
             </div>
-          ) : <p className="accepted-note">Accepted recommendations stay fixed when later sandbox events arrive.</p>}
+          ) : <p className="accepted-note">Your weekly plan is active.</p>}
         </div>
       ) : null}
       {error ? <p className="error-banner" role="alert">{isApiError(error) ? error.message : "The savings plan could not be updated."}</p> : null}
@@ -257,12 +293,15 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
         <p className="fallback-warning" role="status"><strong>Fixture fallback:</strong> Nessie was unavailable or live mode is not enabled. This data is fictional local fallback data, not a live sandbox sync.</p>
       ) : null}
 
-      <section className="import-strip" aria-label="Nessie import provenance">
+      <details className="sync-details">
+        <summary>Last sync details</summary>
+        <section className="import-strip" aria-label="Nessie import provenance">
         <span><small>Last sync</small><strong>{formatDateTime(dashboard.connection.last_synced_at)}</strong></span>
         <span><small>Accounts imported</small><strong>{dashboard.import_summary.account_count}</strong></span>
         <span><small>Transactions imported</small><strong>{dashboard.import_summary.transaction_count}</strong></span>
         <span><small>Resources represented</small><strong>{dashboard.import_summary.transaction_types.map(titleCase).join(", ") || "None"}</strong></span>
-      </section>
+        </section>
+      </details>
 
       <section className="stat-grid bank-summary-grid" aria-label="Financial summary">
         <article className="stat-card">

@@ -308,6 +308,19 @@ describe("application API integration", () => {
     expect(screen.queryByText("Connect a fictional bank profile.")).not.toBeInTheDocument();
   });
 
+  it("updates the goal deadline from quick date choices and shows time to save", async () => {
+    const user = userEvent.setup();
+    renderApp();
+    const date = await screen.findByLabelText("Target date");
+    const original = (date as HTMLInputElement).value;
+    await user.click(screen.getByRole("button", { name: "1 month" }));
+    expect((date as HTMLInputElement).value).not.toBe(original);
+    expect(screen.getByRole("button", { name: "1 month" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText(/to build your savings/)).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "6 months" }));
+    expect((date as HTMLInputElement).value).toBe(original);
+  });
+
   it("submits a savings goal in integer cents for a data-driven recommendation", async () => {
     const user = userEvent.setup();
     mocks.createGoal.mockResolvedValue({ goal: {}, forecast: dashboard.forecast, plan: {} });
@@ -319,7 +332,7 @@ describe("application API integration", () => {
     await user.clear(screen.getByLabelText("Already saved toward goal"));
     await user.type(screen.getByLabelText("Already saved toward goal"), "1250");
     expect(screen.getByText("$6,250 currently in savings")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Generate recommendation" }));
+    await user.click(screen.getByRole("button", { name: "Create plan" }));
 
     expect(mocks.createGoal).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -370,6 +383,15 @@ describe("application API integration", () => {
       "17",
     );
     expect(screen.queryByText(/Fixture fallback:/)).not.toBeInTheDocument();
-    expect(screen.getByText(/stay fixed/)).toBeInTheDocument();
+    expect(screen.getByText("Your weekly plan is active.")).toBeInTheDocument();
+    expect(screen.getByText(/stay fixed/)).not.toBeVisible();
+    const information = screen.getByRole("button", { name: "Savings plan information" });
+    expect(information).toHaveAttribute("aria-expanded", "false");
+    await userEvent.click(information);
+    expect(information).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText(/stay fixed/)).toBeVisible();
+    expect(screen.getByText("Detected two biweekly deposits.")).toBeVisible();
+    await userEvent.click(information);
+    expect(screen.getByText("Detected two biweekly deposits.")).not.toBeVisible();
   });
 });
