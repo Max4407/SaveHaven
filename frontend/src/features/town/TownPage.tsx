@@ -15,6 +15,7 @@ import {
   simulateWeek,
 } from "../../api/game";
 import type { GameState, SimulatedWeek, TownCatalogItem } from "../../api/types";
+import { TownMusic } from "./TownMusic";
 import { TownCanvas } from "./TownCanvas";
 import { CATALOG_DRAG_TYPE, createTownBridge } from "./townBridge";
 
@@ -211,6 +212,7 @@ function TownPage() {
   return (
     <main className={`town-page${isSidebarOpen ? " sidebar-open" : ""}`}>
       <TownCanvas bridge={bridge} catalog={catalog} state={state} />
+      <TownMusic />
 
       {placement.active && (
         <div className={`placement-banner ${placement.valid ? "valid" : "invalid"}`} role="status">
@@ -301,7 +303,7 @@ function TownPage() {
                 const disabled = levelLocked || unaffordable || isMutating;
                 return (
                   <article
-                    className={`catalog-card${levelLocked ? " locked" : ""}`}
+                    className={`catalog-card${levelLocked ? " locked" : ""}${unaffordable && !levelLocked ? " unaffordable" : ""}`}
                     key={item.id}
                     draggable={!disabled}
                     onDragStart={(event) => beginCatalogDrag(event, item)}
@@ -316,8 +318,14 @@ function TownPage() {
                       <span className="level-pill">{levelLocked ? `Unlocks Level ${item.level_required}` : `${item.footprint.width}×${item.footprint.height}${item.landmark ? " landmark" : ""}`}</span>
                       <h3>{item.name}</h3>
                       <p><i aria-hidden="true">◆</i> {item.cost_coins}</p>
+                      {unaffordable && !levelLocked ? (
+                        <small className="affordability-note" id={`affordability-${item.id}`}>
+                          You can’t afford this
+                          <span>Need {item.cost_coins - state.wallet.coin_balance} more Coins</span>
+                        </small>
+                      ) : null}
                     </div>
-                    <button type="button" disabled={disabled} aria-label={levelLocked ? `${item.name} locked until level ${item.level_required}` : `Place ${item.name}`} title={unaffordable && !levelLocked ? "Not enough Coins" : undefined} onClick={() => beginPurchase(item)}>
+                    <button type="button" disabled={disabled} aria-label={levelLocked ? `${item.name} locked until level ${item.level_required}` : `Place ${item.name}`} aria-describedby={unaffordable && !levelLocked ? `affordability-${item.id}` : undefined} title={unaffordable && !levelLocked ? "You can’t afford this yet" : undefined} onClick={() => beginPurchase(item)}>
                       {levelLocked ? "⌾" : "+"}
                     </button>
                   </article>

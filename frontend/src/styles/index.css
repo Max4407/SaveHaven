@@ -557,3 +557,18 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .category-color { border-radius: 50%; }
 .pie-selection-summary { background: transparent; border: 0; border-top: 1px solid #dfd2a6; border-radius: 0; }
 @media (max-width: 600px) { .spending-pie-chart { height: 260px; } .donut-center strong { font-size: 22px; } }
+
+.catalog-card.unaffordable .catalog-art { opacity: .65; filter: saturate(.6); }
+.catalog-card .affordability-note { display: block; margin-top: 6px; padding: 5px 3px; color: #8a4936; background: #f1dfc4; font-size: 9px; font-weight: 700; line-height: 1.4; }
+.affordability-note span { display: block; margin-top: 2px; color: #7d6745; font-size: 8px; font-weight: 400; }
+
+
+.town-sound-control { position: absolute; z-index: 30; left: 16px; bottom: max(16px, env(safe-area-inset-bottom)); }
+.pixel-sound-button { display: grid; place-items: center; width: 48px; height: 48px; padding: 7px; color: #f4e6ab; background: #275237; border: 3px solid #b49a58; border-radius: 0; box-shadow: 3px 3px 0 #243d27, inset 2px 2px 0 rgba(255,255,255,.12); cursor: pointer; image-rendering: pixelated; }
+.pixel-sound-button:hover { background: #356442; }
+.pixel-sound-button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #243d27; }
+.pixel-sound-button:focus-visible { outline: 3px solid #fff0a4; outline-offset: 4px; }
+.pixel-sound-button.muted { background: #3d4433; }
+.sound-red-slash { fill: #f16b58; }
+.town-sound-error { position: absolute; bottom: 58px; left: 0; width: 190px; padding: 9px; color: #fff0c6; background: #3f332b; border: 2px solid #b49a58; font: 10px/1.5 monospace; }
+@media (max-width: 600px) { .town-sound-control { left: 12px; bottom: max(12px, env(safe-area-inset-bottom)); } }
