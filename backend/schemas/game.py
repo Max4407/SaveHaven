@@ -83,13 +83,13 @@ class GameStateResponse(BaseModel):
 
 class PlaceBuildingRequest(BaseModel):
     catalog_item_id: str = Field(min_length=1, max_length=80)
-    grid_x: int = Field(ge=0, le=15)
-    grid_y: int = Field(ge=0, le=15)
+    grid_x: int = Field(ge=0, le=31)
+    grid_y: int = Field(ge=0, le=69)
 
 
 class MoveBuildingRequest(BaseModel):
-    grid_x: int = Field(ge=0, le=15)
-    grid_y: int = Field(ge=0, le=15)
+    grid_x: int = Field(ge=0, le=31)
+    grid_y: int = Field(ge=0, le=69)
 
 
 class EvaluationResponse(BaseModel):
