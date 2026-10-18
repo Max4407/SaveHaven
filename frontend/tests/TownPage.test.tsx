@@ -21,6 +21,9 @@ import type { GameState, SimulatedWeek, TownCatalog } from "../src/api/types";
 import TownPage from "../src/features/town/TownPage";
 import type { TownBridge } from "../src/features/town/townBridge";
 
+const placementSound = vi.hoisted(() => vi.fn());
+vi.mock("../src/features/town/usePlacementSound", () => ({ usePlacementSound: () => placementSound }));
+
 const canvasBridge = vi.hoisted(() => ({ current: null as TownBridge | null }));
 
 vi.mock("../src/features/town/TownMusic", () => ({ TownMusic: () => null }));
@@ -301,6 +304,7 @@ describe("town economy", () => {
 
     fireEvent.click(await screen.findByRole("button", { name: "Place Village Woodshed" }));
     expect(buyBuilding).not.toHaveBeenCalled();
+    expect(placementSound).not.toHaveBeenCalled();
     fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
 
     await waitFor(() => expect(buyBuilding).toHaveBeenCalledWith({
@@ -309,6 +313,7 @@ describe("town economy", () => {
       grid_y: 4,
     }, expect.anything()));
     expect(await screen.findByText("200")).toBeInTheDocument();
+    expect(placementSound).toHaveBeenCalledTimes(1);
   });
 
   it("starts catalog drag placement without charging before the snapped drop is confirmed", async () => {
@@ -356,6 +361,7 @@ describe("town economy", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Another building already occupies");
     expect(screen.getByText("300")).toBeInTheDocument();
+    expect(placementSound).not.toHaveBeenCalled();
   });
 
   it("explains level-up rewards and refreshes finance and reward state", async () => {

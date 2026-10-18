@@ -15,6 +15,7 @@ import {
   simulateWeek,
 } from "../../api/game";
 import type { GameState, SimulatedWeek, TownCatalogItem } from "../../api/types";
+import { usePlacementSound } from "./usePlacementSound";
 import { TownMusic } from "./TownMusic";
 import { TownCanvas } from "./TownCanvas";
 import { CATALOG_DRAG_TYPE, createTownBridge } from "./townBridge";
@@ -33,9 +34,11 @@ function createIdempotencyKey(scenario: string): string {
 }
 
 function TownPage() {
+  const playPlacementSound = usePlacementSound();
   const bridge = useMemo(() => createTownBridge(), []);
   const queryClient = useQueryClient();
   const actionPending = useRef(false);
+  const placementSoundPending = useRef(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [category, setCategory] = useState("all");
   const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);
@@ -52,6 +55,7 @@ function TownPage() {
     // A ref closes the same-frame gap before mutation state can rerender React.
     if (actionPending.current) return;
     actionPending.current = true;
+    placementSoundPending.current = false;
     bridge.emit("interactionLocked", { locked: true });
     bridge.emit("cancelPlacement", {});
     void queryClient.cancelQueries({ queryKey: ["game-state"] });
@@ -62,6 +66,8 @@ function TownPage() {
     // Update Phaser before accepting another action, including after a rejection.
     const confirmed = queryClient.getQueryData<GameState>(["game-state"]);
     if (confirmed) bridge.emit("stateChanged", { state: confirmed });
+    if (confirmed && placementSoundPending.current) playPlacementSound();
+    placementSoundPending.current = false;
     actionPending.current = false;
     bridge.emit("interactionLocked", { locked: false });
   };
@@ -74,7 +80,10 @@ function TownPage() {
 
   const purchaseMutation = useMutation({
     mutationFn: buyBuilding,
-    onSuccess: applyConfirmedState,
+    onSuccess: (state) => {
+      applyConfirmedState(state);
+      placementSoundPending.current = true;
+    },
     onError: (error) => setActionError(mutationMessage(error)),
     onSettled: finishAction,
   });
@@ -82,7 +91,10 @@ function TownPage() {
     mutationFn: ({ buildingId, gridX, gridY }: { buildingId: number; gridX: number; gridY: number }) => (
       moveBuilding(buildingId, { grid_x: gridX, grid_y: gridY })
     ),
-    onSuccess: applyConfirmedState,
+    onSuccess: (state) => {
+      applyConfirmedState(state);
+      placementSoundPending.current = true;
+    },
     onError: (error) => setActionError(mutationMessage(error)),
     onSettled: finishAction,
   });
