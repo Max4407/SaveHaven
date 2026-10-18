@@ -1,6 +1,7 @@
 from schemas import DistrictResponse, InfrastructureResponse, ProgressionResponse
 
-MAP_SIZE = 15
+MAP_COLUMNS = 32
+MAP_ROWS = 70
 LEVEL_THRESHOLDS = {1: 0, 2: 100, 3: 300}
 LEVEL_NAMES = {1: "Homestead", 2: "Village", 3: "Haven"}
 
@@ -15,7 +16,12 @@ def level_for_xp(xp: int) -> int:
 
 def district_for_level(level: int) -> DistrictResponse:
     # All levels can build across the whole map; levels unlock catalog items only.
-    return DistrictResponse(min_x=0, max_x=MAP_SIZE - 1, min_y=0, max_y=MAP_SIZE - 1)
+    return DistrictResponse(
+        min_x=0,
+        max_x=MAP_COLUMNS - 1,
+        min_y=0,
+        max_y=MAP_ROWS - 1,
+    )
 
 
 def infrastructure_for_level(level: int) -> InfrastructureResponse:

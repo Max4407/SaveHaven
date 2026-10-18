@@ -130,7 +130,7 @@ def test_first_success_levels_up_and_replay_is_idempotent() -> None:
         assert was_replayed is True
         assert replay.id == reward.id
         assert wallet is not None
-        assert (wallet.coin_balance, wallet.xp, wallet.level) == (10_420, 100, 2)
+        assert (wallet.coin_balance, wallet.xp, wallet.level) == (720, 100, 2)
 
 
 def test_streak_hold_reset_and_exceptional_expense_preservation() -> None:

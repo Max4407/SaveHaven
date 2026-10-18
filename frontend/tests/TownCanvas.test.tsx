@@ -58,8 +58,8 @@ const catalog: TownCatalog = {
 
 const state: GameState = {
   wallet: {
-    coin_balance: 10_000,
-    total_coins_earned: 10_000,
+    coin_balance: 300,
+    total_coins_earned: 300,
     xp: 0,
     level: 1,
     level_name: "Homestead",
@@ -91,7 +91,7 @@ describe("town canvas", () => {
 
     const updatedState = {
       ...state,
-      wallet: { ...state.wallet, coin_balance: 9_900 },
+      wallet: { ...state.wallet, coin_balance: 200 },
     };
     rerender(<TownCanvas bridge={bridge} catalog={catalog} state={updatedState} />);
     expect(mocks.gameConstructor).toHaveBeenCalledTimes(1);

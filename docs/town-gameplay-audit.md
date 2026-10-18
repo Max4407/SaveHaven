@@ -6,8 +6,8 @@ Scope: Town Experience game functionality. Preserve teammate presentation and ba
 
 - Placement guides are hidden outside placement/move mode.
 - Removed permanent road markings and all reserved route cells.
-- Every level now has the full 15×15 buildable map; catalog level unlocks, outer map bounds, and collisions remain enforced.
-- The API shape is unchanged: district covers coordinates 0–14 and infrastructure has an empty reserved-cell list. This supersedes the district-expansion and route expectations below. `docs/PLAN.md` remains unchanged pending explicit approval to edit it.
+- Every level now has the full 32×70 buildable map; catalog level unlocks, outer map bounds, and collisions remain enforced.
+- The API shape is unchanged: district covers x coordinates 0–31 and y coordinates 0–69, while infrastructure has an empty reserved-cell list. This supersedes the district-expansion and route expectations below. `docs/PLAN.md` remains unchanged pending explicit approval to edit it.
 - Verified 28 focused backend tests and all 33 frontend tests after this rule change.
 
 ## Completed

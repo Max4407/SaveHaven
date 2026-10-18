@@ -20,6 +20,10 @@ export type GridPosition = { x: number; y: number };
 export type PlacementValidation = { valid: boolean; reason: string | null };
 export type TownPlacementMode = "click" | "catalog-drag" | "building-drag";
 
+export function shouldShowPlacementGrid(mode: TownPlacementMode): boolean {
+  return mode === "catalog-drag" || mode === "building-drag";
+}
+
 function isOffsetRow(row: number) {
   return Math.abs(row % 2) === 1;
 }

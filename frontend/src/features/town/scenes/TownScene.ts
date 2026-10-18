@@ -5,6 +5,7 @@ import {
   buildingGridPosition,
   buildingWorldPosition,
   gridToWorld,
+  shouldShowPlacementGrid,
   TOWN_GRID_CELL_HEIGHT,
   TOWN_GRID_CELL_WIDTH,
   TOWN_GRID_COLUMNS,
@@ -51,7 +52,6 @@ export class TownScene extends Phaser.Scene {
   private dragStart = new Phaser.Math.Vector2();
   private cameraStart = new Phaser.Math.Vector2();
   private mapLayer?: Phaser.GameObjects.Container;
-  private placementGrid?: Phaser.GameObjects.Graphics;
   private buildingLayer?: Phaser.GameObjects.Container;
   private placementGrid?: Phaser.GameObjects.Graphics;
   private previewLayer?: Phaser.GameObjects.Container;
@@ -136,42 +136,13 @@ export class TownScene extends Phaser.Scene {
     const background = this.add.image(0, 0, "grass-background")
       .setDisplaySize(TOWN_WORLD_WIDTH, TOWN_WORLD_HEIGHT)
       .setDepth(-100_000);
-    const terrain = this.add.graphics();
-    this.placementGrid = terrain;
-    terrain.setVisible(Boolean(this.placement));
-    const district = this.state.district;
-    const reserved = new Set(
-      this.state.infrastructure.reserved_cells.map((cell) => `${cell.x}:${cell.y}`),
-    );
-
-    for (let row = 0; row < TOWN_GRID_SIZE; row += 1) {
-      for (let column = 0; column < TOWN_GRID_SIZE; column += 1) {
-        const { x, y } = gridToWorld(column, row);
-        const isUnlocked = column >= district.min_x && column <= district.max_x
-          && row >= district.min_y && row <= district.max_y;
-        const isReserved = reserved.has(`${column}:${row}`);
-
-        if (isReserved) {
-          terrain.fillStyle(0xc4483d, 0.2);
-          terrain.lineStyle(2, 0xffd3cb, 0.5);
-        } else if (isUnlocked) {
-          terrain.fillStyle(0xd8f0a7, 0.13);
-          terrain.lineStyle(2, 0xf3ffe2, 0.42);
-        } else {
-          terrain.fillStyle(0x183d28, 0.16);
-          terrain.lineStyle(1, 0x173d27, 0.35);
-        }
-        terrain.fillPoints(this.diamond(x, y), true);
-        terrain.strokePoints(this.diamond(x, y), true);
-      }
-    }
     const trees = generatePerimeterTrees(TOWN_WORLD_WIDTH, TOWN_WORLD_HEIGHT).map((tree) => (
       this.add.image(tree.x, tree.y, `tree-${tree.variant}`)
         .setScale(tree.scale)
         .setFlipX(tree.flipX)
         .setDepth(tree.y)
     ));
-    this.mapLayer?.add([background, terrain, ...trees]);
+    this.mapLayer?.add([background, ...trees]);
     this.mapLayer?.sort("depth");
   }
 
@@ -221,7 +192,6 @@ export class TownScene extends Phaser.Scene {
       mode,
     };
     if (detail.buildingId != null) this.setBuildingDimmed(detail.buildingId, true);
-    this.placementGrid?.setVisible(true);
     this.refreshPreview();
   }
 
@@ -230,7 +200,6 @@ export class TownScene extends Phaser.Scene {
       this.setBuildingDimmed(this.placement.buildingId, false);
     }
     this.placement = undefined;
-    this.placementGrid?.setVisible(false);
     this.placementPointerDown = false;
     this.placementGrid?.destroy();
     this.placementGrid = undefined;

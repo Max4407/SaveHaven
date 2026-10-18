@@ -112,8 +112,8 @@ const catalog: TownCatalog = {
 
 const initialState: GameState = {
   wallet: {
-    coin_balance: 10_000,
-    total_coins_earned: 10_000,
+    coin_balance: 300,
+    total_coins_earned: 300,
     xp: 0,
     level: 1,
     level_name: "Homestead",
@@ -262,7 +262,7 @@ describe("town economy", () => {
     renderTown();
 
     const sidebar = await screen.findByLabelText("Building catalog");
-    expect(within(sidebar).getByText("10000")).toBeInTheDocument();
+    expect(within(sidebar).getByText("300")).toBeInTheDocument();
     expect(within(sidebar).getByText("Homestead")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Corner Bakery locked until level 2" })).toBeDisabled();
     expect(screen.getByText("Village Woodshed").closest("article")).toHaveAttribute("draggable", "true");
@@ -283,7 +283,7 @@ describe("town economy", () => {
   it("charges only after Phaser confirms a valid placement", async () => {
     const purchased: GameState = {
       ...initialState,
-      wallet: { ...initialState.wallet, coin_balance: 9_900 },
+      wallet: { ...initialState.wallet, coin_balance: 200 },
       buildings: [{
         id: 1,
         catalog_item_id: "woodshed_01",
@@ -306,13 +306,13 @@ describe("town economy", () => {
       grid_x: 4,
       grid_y: 4,
     }, expect.anything()));
-    expect(await screen.findByText("9900")).toBeInTheDocument();
+    expect(await screen.findByText("200")).toBeInTheDocument();
   });
 
   it("starts catalog drag placement without charging before the snapped drop is confirmed", async () => {
     vi.mocked(buyBuilding).mockResolvedValue({
       ...initialState,
-      wallet: { ...initialState.wallet, coin_balance: 9_900 },
+      wallet: { ...initialState.wallet, coin_balance: 200 },
     });
     renderTown();
     const card = (await screen.findByText("Village Woodshed")).closest("article");
@@ -353,15 +353,15 @@ describe("town economy", () => {
     fireEvent.click(screen.getByRole("button", { name: "Place Village Woodshed" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Another building already occupies");
-    expect(screen.getByText("10000")).toBeInTheDocument();
+    expect(screen.getByText("300")).toBeInTheDocument();
   });
 
   it("explains level-up rewards and refreshes finance and reward state", async () => {
     const villageState: GameState = {
       ...initialState,
       wallet: {
-        coin_balance: 10_420,
-        total_coins_earned: 10_420,
+        coin_balance: 720,
+        total_coins_earned: 720,
         xp: 100,
         level: 2,
         level_name: "Village",
@@ -392,7 +392,7 @@ describe("town economy", () => {
   it("moves for free and shows the original-price sale refund", async () => {
     const placedState: GameState = {
       ...initialState,
-      wallet: { ...initialState.wallet, coin_balance: 9_900 },
+      wallet: { ...initialState.wallet, coin_balance: 200 },
       buildings: [{
         id: 7,
         catalog_item_id: "woodshed_01",
@@ -407,7 +407,7 @@ describe("town economy", () => {
     vi.mocked(moveBuilding).mockResolvedValue(placedState);
     vi.mocked(sellBuilding).mockResolvedValue({
       ...initialState,
-      wallet: { ...initialState.wallet, coin_balance: 9_960 },
+      wallet: { ...initialState.wallet, coin_balance: 260 },
     });
     renderTown();
 
@@ -420,7 +420,7 @@ describe("town economy", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
     fireEvent.click(screen.getByRole("button", { name: "Sell" }));
     await waitFor(() => expect(sellBuilding).toHaveBeenCalledWith(7, expect.anything()));
-    expect(await screen.findByText("9960")).toBeInTheDocument();
+    expect(await screen.findByText("260")).toBeInTheDocument();
   });
 
   it("keeps the last server-confirmed position when an occupied move is rejected", async () => {

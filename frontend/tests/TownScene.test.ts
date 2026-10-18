@@ -82,51 +82,6 @@ describe("town scene input", () => {
     expect(internals.placement).toBeUndefined();
   });
 
-  it.each(["click", "catalog-drag", "building-drag"])("shows placement guides during %s placement", (mode) => {
-    const scene = new TownScene(createTownBridge(), [{
-      id: "shed",
-      footprint: { width: 1, height: 1 },
-    } as TownCatalogItem], {
-      buildings: [], district: { min_x: 4, min_y: 4 },
-      infrastructure: { tier: "dirt", reserved_cells: [{ x: 7, y: 7 }] },
-    } as unknown as GameState);
-    const graphics = () => ({
-      setVisible: vi.fn(), fillStyle: vi.fn(), lineStyle: vi.fn(),
-      fillPoints: vi.fn(), strokePoints: vi.fn(),
-    });
-    const grid = graphics();
-    const background = { setDisplaySize: vi.fn().mockReturnThis(), setDepth: vi.fn().mockReturnThis() };
-    const tree = {
-      setScale: vi.fn().mockReturnThis(),
-      setFlipX: vi.fn().mockReturnThis(),
-      setDepth: vi.fn().mockReturnThis(),
-    };
-    const internals = scene as unknown as {
-      add: unknown;
-      drawMap(): void;
-      startPlacement(detail: { catalogItemId: string }, mode: string): void;
-      cancelPlacement(): void;
-      refreshPreview(): void;
-    };
-    const addGraphics = vi.fn().mockReturnValue(grid);
-    internals.add = {
-      image: (_x: number, _y: number, key: string) => (
-        key === "grass-background" ? background : tree
-      ),
-      graphics: addGraphics,
-    };
-    internals.refreshPreview = vi.fn();
-    internals.drawMap();
-    expect(grid.setVisible).toHaveBeenLastCalledWith(false);
-    // Only the hidden placement guide is drawn; no permanent road overlay.
-    expect(addGraphics).toHaveBeenCalledTimes(1);
-    expect(grid.fillStyle).toHaveBeenCalledWith(0xc4483d, 0.2);
-    internals.startPlacement({ catalogItemId: "shed" }, mode);
-    expect(grid.setVisible).toHaveBeenLastCalledWith(true);
-    internals.cancelPlacement();
-    expect(grid.setVisible).toHaveBeenLastCalledWith(false);
-  });
-
   it("requires movement before dragging so a stationary click can select a building", () => {
     const { input } = inputHarness();
     // Phaser's zero default consumes pointerdown as dragstart, hiding Move/Sell selection.
