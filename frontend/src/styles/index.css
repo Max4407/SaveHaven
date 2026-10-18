@@ -227,7 +227,7 @@ a { color: inherit; }
 .town-session-controls .text-button:hover { color: #e6c766; }
 
 .dashboard-error { margin-top: 20px; }
-.fallback-warning { margin: 18px 0 0; padding: 12px 14px; color: #74551f; background: #fbf1d8; border: 1px solid #ead59e; border-radius: 10px; font-size: 11px; line-height: 1.5; }
+.fallback-warning { margin: 18px 0 0; padding: 12px 14px; color: #74551f; background: #fbf1d8; border: 1px solid #ead59e; border-radius: 0; font-size: 11px; line-height: 1.5; }
 .import-strip { display: grid; grid-template-columns: 1fr .8fr .9fr 1.6fr; gap: 1px; overflow: hidden; margin-top: 18px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; }
 .import-strip > span { min-width: 0; padding: 13px 15px; background: rgba(255,255,255,.8); }
 .import-strip small, .import-strip strong { display: block; }
