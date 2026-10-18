@@ -1,6 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { logout } from "../api/auth";
+import { getGameState } from "../api/game";
 import type { SessionUser } from "../api/types";
 
 type AppShellProps = {
@@ -10,6 +11,10 @@ type AppShellProps = {
 export function AppShell({ user }: AppShellProps) {
   const location = useLocation();
   const queryClient = useQueryClient();
+  const isTown = location.pathname.startsWith("/town");
+  const { data: town } = useQuery({ queryKey: ["game-state"], queryFn: getGameState, enabled: isTown });
+  const names = user.display_name.trim().split(/\s+/);
+  const initials = `${names[0]?.[0] ?? ""}${names.length > 1 ? names[names.length - 1][0] : ""}`.toUpperCase();
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSuccess: async () => {
@@ -42,7 +47,7 @@ export function AppShell({ user }: AppShellProps) {
         className={`session-controls${location.pathname.startsWith("/dashboard") ? " bank-session-controls" : ""}${location.pathname.startsWith("/town") ? " town-session-controls" : ""}`}
         aria-label="Demo session"
       >
-        <span className="avatar" aria-hidden="true">{user.display_name.slice(0, 2).toUpperCase()}</span>
+        <span className="avatar" aria-hidden="true">{initials}</span>
         <span>{user.display_name}</span>
         <button
           className="text-button"
@@ -54,6 +59,13 @@ export function AppShell({ user }: AppShellProps) {
             ? "Signing out…"
             : logoutMutation.isError ? "Retry sign out" : "Sign out"}
         </button>
+        {isTown && town && (
+          <section className="town-level-card" aria-label="Town level progress">
+            <div><strong>LEVEL {town.wallet.level} · {town.wallet.level_name.toUpperCase()}</strong><span>{town.progression.next_level_xp == null ? "Future XP banked" : `${town.wallet.xp} / ${town.progression.next_level_xp} XP`}</span></div>
+            <div className="level-track" role="progressbar" aria-label="Town XP" aria-valuemin={0} aria-valuemax={100} aria-valuenow={town.progression.progress_percent}><span style={{ width: `${town.progression.progress_percent}%` }} /></div>
+            <p>XP comes only from verified savings</p>
+          </section>
+        )}
       </div>
     </div>
   );
