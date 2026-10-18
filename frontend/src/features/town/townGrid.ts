@@ -79,6 +79,13 @@ export function buildingDisplayWidth(item: TownCatalogItem): number {
   return 210;
 }
 
+// Drag coordinates describe the sprite's footprint center, not its top-left cell.
+export function buildingGridPosition(item: TownCatalogItem, worldX: number, worldY: number): GridPosition {
+  const row = Math.round((worldY - TOWN_GRID_TOP) / TOWN_GRID_ROW_STEP - (item.footprint.height - 1) / 2);
+  const center = buildingWorldPosition(item, 0, row);
+  return { x: Math.round((worldX - center.x) / TOWN_GRID_CELL_WIDTH), y: row };
+}
+
 function footprintCells(item: TownCatalogItem, gridX: number, gridY: number) {
   const cells = new Set<string>();
   for (let x = gridX; x < gridX + item.footprint.width; x += 1) {

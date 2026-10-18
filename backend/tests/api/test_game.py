@@ -14,8 +14,8 @@ def test_catalog_and_starter_wallet_are_server_authoritative(
     assert (dirt_road["cost_coins"], dirt_road["render_kind"]) == (1, "ground")
     assert state.status_code == 200
     assert state.json()["wallet"] == {
-        "coin_balance": 10_000,
-        "total_coins_earned": 10_000,
+        "coin_balance": 300,
+        "total_coins_earned": 300,
         "xp": 0,
         "level": 1,
         "level_name": "Homestead",
@@ -39,15 +39,15 @@ def test_purchase_move_and_sale_return_confirmed_state(
     sale = logged_in_client.delete(f"/api/game/buildings/{building_id}")
 
     assert purchase.status_code == 201
-    assert purchase.json()["wallet"]["coin_balance"] == 9_900
+    assert purchase.json()["wallet"]["coin_balance"] == 200
     assert move.status_code == 200
-    assert move.json()["wallet"]["coin_balance"] == 9_900
+    assert move.json()["wallet"]["coin_balance"] == 200
     assert (move.json()["buildings"][0]["grid_x"], move.json()["buildings"][0]["grid_y"]) == (
         5,
         4,
     )
     assert sale.status_code == 200
-    assert sale.json()["wallet"]["coin_balance"] == 9_960
+    assert sale.json()["wallet"]["coin_balance"] == 260
     assert sale.json()["buildings"] == []
 
 
@@ -67,7 +67,7 @@ def test_failed_mutations_return_structured_conflicts_without_charging(
     assert locked.status_code == 409
     assert locked.json()["detail"]["code"] == "level_locked"
     assert outside.json()["detail"]["code"] == "outside_town_map"
-    assert state.json()["wallet"]["coin_balance"] == 10_000
+    assert state.json()["wallet"]["coin_balance"] == 300
     assert state.json()["buildings"] == []
 
 

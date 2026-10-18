@@ -2,7 +2,7 @@
 
 import "@testing-library/jest-dom/vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../src/api/client";
@@ -21,6 +21,8 @@ import type { GameState, SimulatedWeek, TownCatalog } from "../src/api/types";
 import TownPage from "../src/features/town/TownPage";
 import type { TownBridge } from "../src/features/town/townBridge";
 
+const canvasBridge = vi.hoisted(() => ({ current: null as TownBridge | null }));
+
 vi.mock("../src/api/finance", () => ({ getHealth: vi.fn() }));
 vi.mock("../src/api/game", () => ({
   buyBuilding: vi.fn(),
@@ -36,6 +38,7 @@ vi.mock("../src/features/town/TownCanvas", async () => {
   const React = await import("react");
   return {
     TownCanvas: ({ bridge, state }: { bridge: TownBridge; state: GameState }) => {
+      canvasBridge.current = bridge;
       const [request, setRequest] = React.useState<{
         catalogItemId: string;
         buildingId?: number;
@@ -122,8 +125,8 @@ const catalog: TownCatalog = {
 
 const initialState: GameState = {
   wallet: {
-    coin_balance: 10_000,
-    total_coins_earned: 10_000,
+    coin_balance: 300,
+    total_coins_earned: 300,
     xp: 0,
     level: 1,
     level_name: "Homestead",
@@ -208,11 +211,71 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("town economy", () => {
+  it.each(["Sell", "Simulate success", "Reset town demo"])("blocks canvas changes during %s and releases the lock on failure", async (action) => {
+    const placed: GameState = { ...initialState, buildings: [{
+      id: 7, catalog_item_id: "woodshed_01", grid_x: 5, grid_y: 4,
+      purchase_price_coins: 100, purchased_at: "2026-10-17T12:00:00Z", updated_at: "2026-10-17T12:00:00Z",
+    }] };
+    vi.mocked(getGameState).mockResolvedValue(placed);
+    vi.mocked(getHealth).mockResolvedValue({ status: "ok", data_mode: "fixture", nessie_configured: false, demo_controls_enabled: true });
+    let reject!: (error: Error) => void;
+    const pending = () => new Promise<never>((_resolve, no) => { reject = no; });
+    vi.mocked(sellBuilding).mockImplementation(pending);
+    vi.mocked(simulateWeek).mockImplementation(pending);
+    vi.mocked(resetDemo).mockImplementation(pending);
+    renderTown();
+    if (action === "Sell") fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
+    fireEvent.click(await screen.findByRole("button", { name: action }));
+    await waitFor(() => expect(reject).toBeDefined());
+    act(() => canvasBridge.current!.emit("placementConfirmed", {
+      catalogItemId: "woodshed_01", buildingId: 7, gridX: 6, gridY: 4,
+    }));
+    expect(moveBuilding).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Reset town demo" })).toBeDisabled();
+    await act(async () => reject(new Error("Network unavailable")));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Reset town demo" })).toBeEnabled());
+    expect(screen.getByTestId("persisted-position")).toHaveTextContent("5,4");
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+  });
+
+  it.each(["resolve", "reject"])("blocks duplicate and competing actions until a slow purchase settles (%s)", async (outcome) => {
+    let resolve!: (state: GameState) => void;
+    let reject!: (error: Error) => void;
+    vi.mocked(buyBuilding).mockImplementationOnce(() => new Promise((yes, no) => {
+      resolve = yes;
+      reject = no;
+    }));
+    renderTown();
+    await screen.findByRole("button", { name: "Place Village Woodshed" });
+    const bridge = canvasBridge.current!;
+    const events: string[] = [];
+    bridge.subscribe("stateChanged", () => events.push("state"));
+    bridge.subscribe("interactionLocked", ({ locked }) => events.push(locked ? "lock" : "unlock"));
+    act(() => {
+      bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", gridX: 4, gridY: 4 });
+      bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", gridX: 5, gridY: 4 });
+      bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", buildingId: 7, gridX: 6, gridY: 4 });
+    });
+    await waitFor(() => expect(buyBuilding).toHaveBeenCalledTimes(1));
+    expect(moveBuilding).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Place Village Woodshed" })).toBeDisabled();
+    await act(async () => {
+      if (outcome === "resolve") resolve({ ...initialState, wallet: { ...initialState.wallet, coin_balance: 200 } });
+      else reject(new ApiError(409, "Placement rejected", "occupied"));
+    });
+    await waitFor(() => expect(screen.getByRole("button", { name: "Place Village Woodshed" })).toBeEnabled());
+    expect(events).toEqual(["lock", "state", "unlock"]);
+    if (outcome === "reject") expect(screen.getByRole("alert")).toHaveTextContent("Placement rejected");
+    vi.mocked(buyBuilding).mockResolvedValue(initialState);
+    act(() => bridge.emit("placementConfirmed", { catalogItemId: "woodshed_01", gridX: 4, gridY: 4 }));
+    await waitFor(() => expect(buyBuilding).toHaveBeenCalledTimes(2));
+  });
+
   it("shows server-owned resources and keeps locked catalog items unavailable", async () => {
     renderTown();
 
     const sidebar = await screen.findByLabelText("Building catalog");
-    expect(within(sidebar).getByText("10000")).toBeInTheDocument();
+    expect(within(sidebar).getByText("300")).toBeInTheDocument();
     expect(within(sidebar).getByText("Homestead")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Corner Bakery locked until level 2" })).toBeDisabled();
     expect(screen.getByText("Village Woodshed").closest("article")).toHaveAttribute("draggable", "true");
@@ -236,7 +299,7 @@ describe("town economy", () => {
   it("charges only after Phaser confirms a valid placement", async () => {
     const purchased: GameState = {
       ...initialState,
-      wallet: { ...initialState.wallet, coin_balance: 9_900 },
+      wallet: { ...initialState.wallet, coin_balance: 200 },
       buildings: [{
         id: 1,
         catalog_item_id: "woodshed_01",
@@ -259,13 +322,13 @@ describe("town economy", () => {
       grid_x: 4,
       grid_y: 4,
     }, expect.anything()));
-    expect(await screen.findByText("9900")).toBeInTheDocument();
+    expect(await screen.findByText("200")).toBeInTheDocument();
   });
 
   it("starts catalog drag placement without charging before the snapped drop is confirmed", async () => {
     vi.mocked(buyBuilding).mockResolvedValue({
       ...initialState,
-      wallet: { ...initialState.wallet, coin_balance: 9_900 },
+      wallet: { ...initialState.wallet, coin_balance: 200 },
     });
     renderTown();
     const card = (await screen.findByText("Village Woodshed")).closest("article");
@@ -306,15 +369,15 @@ describe("town economy", () => {
     fireEvent.click(screen.getByRole("button", { name: "Place Village Woodshed" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Another building already occupies");
-    expect(screen.getByText("10000")).toBeInTheDocument();
+    expect(screen.getByText("300")).toBeInTheDocument();
   });
 
   it("explains level-up rewards and refreshes finance and reward state", async () => {
     const villageState: GameState = {
       ...initialState,
       wallet: {
-        coin_balance: 10_420,
-        total_coins_earned: 10_420,
+        coin_balance: 720,
+        total_coins_earned: 720,
         xp: 100,
         level: 2,
         level_name: "Village",
@@ -345,7 +408,7 @@ describe("town economy", () => {
   it("moves for free and shows the original-price sale refund", async () => {
     const placedState: GameState = {
       ...initialState,
-      wallet: { ...initialState.wallet, coin_balance: 9_900 },
+      wallet: { ...initialState.wallet, coin_balance: 200 },
       buildings: [{
         id: 7,
         catalog_item_id: "woodshed_01",
@@ -360,20 +423,20 @@ describe("town economy", () => {
     vi.mocked(moveBuilding).mockResolvedValue(placedState);
     vi.mocked(sellBuilding).mockResolvedValue({
       ...initialState,
-      wallet: { ...initialState.wallet, coin_balance: 9_960 },
+      wallet: { ...initialState.wallet, coin_balance: 260 },
     });
     renderTown();
 
     fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
     expect(screen.getByText("sells for 60", { exact: false })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Move free" }));
+    fireEvent.click(screen.getByRole("button", { name: "Move" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
     await waitFor(() => expect(moveBuilding).toHaveBeenCalledWith(7, { grid_x: 4, grid_y: 4 }));
 
     fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
     fireEvent.click(screen.getByRole("button", { name: "Sell" }));
     await waitFor(() => expect(sellBuilding).toHaveBeenCalledWith(7, expect.anything()));
-    expect(await screen.findByText("9960")).toBeInTheDocument();
+    expect(await screen.findByText("260")).toBeInTheDocument();
   });
 
   it("keeps the last server-confirmed position when an occupied move is rejected", async () => {
@@ -396,7 +459,7 @@ describe("town economy", () => {
     renderTown();
 
     fireEvent.click(await screen.findByRole("button", { name: "Select building" }));
-    fireEvent.click(screen.getByRole("button", { name: "Move free" }));
+    fireEvent.click(screen.getByRole("button", { name: "Move" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm placement" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Another building already occupies");

@@ -41,12 +41,12 @@ def test_starter_grant_purchase_move_and_original_price_refund() -> None:
             building_id=purchased.buildings[0].id,
         )
 
-        assert (initial.wallet.coin_balance, initial.wallet.xp) == (10_000, 0)
-        assert purchased.wallet.coin_balance == 9_900
+        assert (initial.wallet.coin_balance, initial.wallet.xp) == (300, 0)
+        assert purchased.wallet.coin_balance == 200
         assert purchased.buildings[0].purchase_price_coins == 100
-        assert moved.wallet.coin_balance == 9_900
+        assert moved.wallet.coin_balance == 200
         assert (moved.buildings[0].grid_x, moved.buildings[0].grid_y) == (5, 4)
-        assert sold.wallet.coin_balance == 9_960
+        assert sold.wallet.coin_balance == 260
         assert sold.buildings == []
 
 
@@ -74,7 +74,7 @@ def test_failed_purchase_is_atomic(item_id: str, grid_x: int, grid_y: int, code:
         state = game.get_state(session, user_id="demo-player")
 
         assert error.value.code == code
-        assert state.wallet.coin_balance == 10_000
+        assert state.wallet.coin_balance == 300
         assert state.buildings == []
 
 
@@ -151,7 +151,7 @@ def test_collision_and_cross_user_ownership_are_server_authoritative() -> None:
         wallet = session.get(GameWallet, "demo-player")
         assert collision.value.code == "occupied"
         assert wallet is not None
-        assert wallet.coin_balance == 9_850
+        assert wallet.coin_balance == 150
 
 
 def test_insufficient_funds_never_create_a_negative_wallet() -> None:
@@ -177,3 +177,24 @@ def test_insufficient_funds_never_create_a_negative_wallet() -> None:
         assert error.value.code == "insufficient_coins"
         assert state.wallet.coin_balance == 99
         assert state.buildings == []
+
+
+@pytest.mark.parametrize("level", [1, 2, 3])
+def test_all_levels_can_build_at_map_edges_and_on_former_routes(level: int) -> None:
+    session, game = game_session()
+    with session:
+        wallet = ensure_wallet(session, "demo-player")
+        wallet.level = level
+        session.commit()
+        state = game.buy_building(
+            session, user_id="demo-player",
+            request=PlaceBuildingRequest(catalog_item_id="woodshed_01", grid_x=0, grid_y=0),
+        )
+        assert state.district.model_dump() == dict(min_x=0, max_x=31, min_y=0, max_y=69)
+        assert state.infrastructure.reserved_cells == []
+        moved = game.move_building(
+            session, user_id="demo-player", building_id=state.buildings[0].id,
+            grid_x=7, grid_y=5,
+        )
+        assert (moved.buildings[0].grid_x, moved.buildings[0].grid_y) == (7, 5)
+        assert moved.wallet.coin_balance == 200

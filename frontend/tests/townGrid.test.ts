@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { GameState, TownCatalogItem } from "../src/api/types";
 import {
   buildingDisplayWidth,
+  buildingGridPosition,
   buildingWorldPosition,
   clampGridPosition,
   gridToWorld,
@@ -27,8 +28,8 @@ const oneCellItem: TownCatalogItem = {
 
 const initialState: GameState = {
   wallet: {
-    coin_balance: 10_000,
-    total_coins_earned: 10_000,
+    coin_balance: 300,
+    total_coins_earned: 300,
     xp: 0,
     level: 1,
     level_name: "Homestead",
@@ -49,6 +50,20 @@ const initialState: GameState = {
 };
 
 describe("town grid", () => {
+  it.each([1, 2, 3])("keeps a %s-cell building anchored to its preview", (size) => {
+    const item = { ...oneCellItem, footprint: { width: size, height: size } };
+    const positions = [
+      { x: 0, y: 0 },
+      { x: 7, y: 12 },
+      { x: TOWN_GRID_COLUMNS - size, y: TOWN_GRID_ROWS - size },
+    ];
+    positions.forEach(({ x, y }) => {
+      const center = buildingWorldPosition(item, x, y);
+      expect(buildingGridPosition(item, center.x, center.y)).toEqual({ x, y });
+      expect(buildingGridPosition(item, center.x + 2, center.y + 2)).toEqual({ x, y });
+    });
+  });
+
   it("centers the expanded staggered grid inside the perimeter gap", () => {
     expect(gridToWorld(0, 0)).toEqual({ x: -1512, y: -828 });
     expect(gridToWorld(0, 1)).toEqual({ x: -1464, y: -804 });
@@ -80,7 +95,7 @@ describe("town grid", () => {
     expect(buildingDisplayWidth(threeCellItem)).toBe(510);
   });
 
-  it("shows the placement grid only during drag-and-drop", () => {
+  it("shows placement guides only during drag-and-drop", () => {
     expect(shouldShowPlacementGrid("catalog-drag")).toBe(true);
     expect(shouldShowPlacementGrid("building-drag")).toBe(true);
     expect(shouldShowPlacementGrid("click")).toBe(false);
@@ -90,6 +105,10 @@ describe("town grid", () => {
     const catalog = [oneCellItem];
 
     expect(validateTownPlacement(initialState, catalog, oneCellItem, -1, 4)).toEqual({
+      valid: false,
+      reason: "That footprint extends beyond the town map",
+    });
+    expect(validateTownPlacement(initialState, catalog, oneCellItem, 32, 69)).toEqual({
       valid: false,
       reason: "That footprint extends beyond the town map",
     });

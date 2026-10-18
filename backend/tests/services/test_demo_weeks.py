@@ -112,7 +112,7 @@ def test_fixture_fallback_success_is_explained_and_idempotent() -> None:
         assert first.unlocks.infrastructure is not None
         assert replay.replayed is True
         assert replay.reward.id == first.reward.id
-        assert replay.game_state.wallet.coin_balance == 10_420
+        assert replay.game_state.wallet.coin_balance == 720
 
 
 def test_three_successful_periods_unlock_haven_without_rewriting_history() -> None:
@@ -132,7 +132,8 @@ def test_three_successful_periods_unlock_haven_without_rewriting_history() -> No
         assert [result.reward.coins_awarded for result in results] == [420, 440, 460]
         assert results[-1].game_state.wallet.xp == 300
         assert results[-1].game_state.wallet.level_name == "Haven"
-        assert results[-1].game_state.district.max_x == 15
+        assert results[-1].game_state.district.max_x == 31
+        assert results[-1].game_state.district.max_y == 69
         assert results[-1].game_state.infrastructure.tier == "stone"
 
 
@@ -163,8 +164,8 @@ def test_unlocked_bakery_persists_moves_free_and_refunds_original_price() -> Non
             grid_y=4,
         )
 
-        assert purchased.wallet.coin_balance == 10_020
-        assert moved.wallet.coin_balance == 10_020
+        assert purchased.wallet.coin_balance == 320
+        assert moved.wallet.coin_balance == 320
 
     with database.session_factory() as reloaded_session:
         reloaded = service.game.get_state(reloaded_session, user_id="demo-player")
@@ -175,7 +176,7 @@ def test_unlocked_bakery_persists_moves_free_and_refunds_original_price() -> Non
         )
 
         assert (reloaded.buildings[0].grid_x, reloaded.buildings[0].grid_y) == (9, 4)
-        assert sold.wallet.coin_balance == 10_260
+        assert sold.wallet.coin_balance == 560
 
 
 def test_off_plan_week_is_bounded_and_never_damages_the_town() -> None:
@@ -228,7 +229,7 @@ def test_reset_removes_demo_transactions_rewards_and_town_state() -> None:
         )
 
         assert warnings == []
-        assert (state.wallet.coin_balance, state.wallet.xp, state.wallet.level) == (10_000, 0, 1)
+        assert (state.wallet.coin_balance, state.wallet.xp, state.wallet.level) == (300, 0, 1)
         assert state.buildings == []
         assert evaluation_count == 0
         assert [reward.reward_type for reward in rewards] == ["starter_grant"]

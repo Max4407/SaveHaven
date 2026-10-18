@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from models import GameWallet, PlacedBuilding, PlanPeriodEvaluation, RewardEvent
 
-STARTER_COINS = 10_000
+STARTER_COINS = 300
 
 
 def ensure_wallet(session: Session, user_id: str) -> GameWallet:
@@ -39,7 +39,7 @@ def ensure_wallet(session: Session, user_id: str) -> GameWallet:
                     previous_level=1,
                     new_level=1,
                     streak_weeks=0,
-                    explanation="A starter grant gives every new haven room to begin building.",
+                    explanation="A starter grant lets every new haven place its first building.",
                     created_at=now,
                 )
             )

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { DragEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -34,6 +34,7 @@ function createIdempotencyKey(scenario: string): string {
 function TownPage() {
   const bridge = useMemo(() => createTownBridge(), []);
   const queryClient = useQueryClient();
+  const actionPending = useRef(false);
   const [zoom, setZoom] = useState(90);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [category, setCategory] = useState("all");
@@ -47,6 +48,24 @@ function TownPage() {
   const rewardsQuery = useQuery({ queryKey: ["game-rewards"], queryFn: getGameRewards });
   const healthQuery = useQuery({ queryKey: ["health"], queryFn: getHealth });
 
+  const startAction = useCallback((submit: () => void) => {
+    // A ref closes the same-frame gap before mutation state can rerender React.
+    if (actionPending.current) return;
+    actionPending.current = true;
+    bridge.emit("interactionLocked", { locked: true });
+    bridge.emit("cancelPlacement", {});
+    void queryClient.cancelQueries({ queryKey: ["game-state"] });
+    submit();
+  }, [bridge, queryClient]);
+
+  const finishAction = () => {
+    // Update Phaser before accepting another action, including after a rejection.
+    const confirmed = queryClient.getQueryData<GameState>(["game-state"]);
+    if (confirmed) bridge.emit("stateChanged", { state: confirmed });
+    actionPending.current = false;
+    bridge.emit("interactionLocked", { locked: false });
+  };
+
   const applyConfirmedState = (state: GameState) => {
     queryClient.setQueryData(["game-state"], state);
     setActionError(null);
@@ -57,6 +76,7 @@ function TownPage() {
     mutationFn: buyBuilding,
     onSuccess: applyConfirmedState,
     onError: (error) => setActionError(mutationMessage(error)),
+    onSettled: finishAction,
   });
   const moveMutation = useMutation({
     mutationFn: ({ buildingId, gridX, gridY }: { buildingId: number; gridX: number; gridY: number }) => (
@@ -64,11 +84,13 @@ function TownPage() {
     ),
     onSuccess: applyConfirmedState,
     onError: (error) => setActionError(mutationMessage(error)),
+    onSettled: finishAction,
   });
   const sellMutation = useMutation({
     mutationFn: sellBuilding,
     onSuccess: applyConfirmedState,
     onError: (error) => setActionError(mutationMessage(error)),
+    onSettled: finishAction,
   });
   const simulateMutation = useMutation({
     mutationFn: (scenario: "successful" | "off-plan") => simulateWeek(
@@ -82,6 +104,7 @@ function TownPage() {
       void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => setActionError(mutationMessage(error)),
+    onSettled: finishAction,
   });
   const resetMutation = useMutation({
     mutationFn: resetDemo,
@@ -95,6 +118,7 @@ function TownPage() {
       void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => setActionError(mutationMessage(error)),
+    onSettled: finishAction,
   });
 
   useEffect(() => {
@@ -107,21 +131,22 @@ function TownPage() {
     });
     const unsubscribePlacement = bridge.subscribe("placementChanged", setPlacement);
     const unsubscribeConfirmation = bridge.subscribe("placementConfirmed", (detail) => {
-      setActionError(null);
-      bridge.emit("cancelPlacement", {});
-      if (detail.buildingId == null) {
-        purchaseMutation.mutate({
-          catalog_item_id: detail.catalogItemId,
-          grid_x: detail.gridX,
-          grid_y: detail.gridY,
-        });
-      } else {
-        moveMutation.mutate({
-          buildingId: detail.buildingId,
-          gridX: detail.gridX,
-          gridY: detail.gridY,
-        });
-      }
+      startAction(() => {
+        setActionError(null);
+        if (detail.buildingId == null) {
+          purchaseMutation.mutate({
+            catalog_item_id: detail.catalogItemId,
+            grid_x: detail.gridX,
+            grid_y: detail.gridY,
+          });
+        } else {
+          moveMutation.mutate({
+            buildingId: detail.buildingId,
+            gridX: detail.gridX,
+            gridY: detail.gridY,
+          });
+        }
+      });
     });
     return () => {
       unsubscribeCamera();
@@ -129,7 +154,7 @@ function TownPage() {
       unsubscribePlacement();
       unsubscribeConfirmation();
     };
-  }, [bridge, purchaseMutation, moveMutation]);
+  }, [bridge, purchaseMutation, moveMutation, startAction]);
 
   const catalog = catalogQuery.data;
   const state = stateQuery.data;
@@ -140,16 +165,22 @@ function TownPage() {
     (item) => category === "all" || item.category === category,
   ) ?? [];
   const latestReward = rewardsQuery.data?.rewards.find((reward) => reward.reward_type === "weekly_plan");
-  const isMutating = purchaseMutation.isPending || moveMutation.isPending || sellMutation.isPending;
+  const isMutating = purchaseMutation.isPending || moveMutation.isPending || sellMutation.isPending
+    || simulateMutation.isPending || resetMutation.isPending;
   const loadError = catalogQuery.error ?? stateQuery.error;
 
   const beginPurchase = (item: TownCatalogItem) => {
+    if (actionPending.current) return;
     setSelectedBuildingId(null);
     setActionError(null);
     bridge.emit("startPlacement", { catalogItemId: item.id });
   };
 
   const beginCatalogDrag = (event: DragEvent<HTMLElement>, item: TownCatalogItem) => {
+    if (actionPending.current) {
+      event.preventDefault();
+      return;
+    }
     setSelectedBuildingId(null);
     setActionError(null);
     event.dataTransfer.effectAllowed = "copy";
@@ -205,7 +236,7 @@ function TownPage() {
           <div>
             <p className="eyebrow">Level {state.wallet.level} · {state.wallet.level_name}</p>
             <h1>Your future haven</h1>
-            <p>Saving progress grows your town. Buildings make it yours.</p>
+            <p>Saving progress unlocks buildings. Make this town yours.</p>
           </div>
           <Link className="route-arrow" to="/dashboard" aria-label="Open bank and goals">
             <span aria-hidden="true">→</span>
@@ -244,8 +275,8 @@ function TownPage() {
             </div>
             <button className="secondary-button" type="button" disabled={isMutating} onClick={() => {
               bridge.emit("startPlacement", { catalogItemId: selectedItem.id, buildingId: selectedBuilding.id });
-            }}>Move free</button>
-            <button className="sell-button" type="button" disabled={isMutating} onClick={() => sellMutation.mutate(selectedBuilding.id)}>Sell</button>
+            }}>Move</button>
+            <button className="sell-button" type="button" disabled={isMutating} onClick={() => startAction(() => sellMutation.mutate(selectedBuilding.id))}>Sell</button>
           </section>
         ) : (
           <>
@@ -307,10 +338,10 @@ function TownPage() {
           <section className="demo-week-controls" aria-label="Demo week controls">
             <p className="eyebrow">Protected demo controls</p>
             <div>
-              <button className="primary-button" type="button" disabled={simulateMutation.isPending} onClick={() => simulateMutation.mutate("successful")}>Simulate success</button>
-              <button className="secondary-button" type="button" disabled={simulateMutation.isPending} onClick={() => simulateMutation.mutate("off-plan")}>Try off-plan</button>
+              <button className="primary-button" type="button" disabled={isMutating} onClick={() => startAction(() => simulateMutation.mutate("successful"))}>Simulate success</button>
+              <button className="secondary-button" type="button" disabled={isMutating} onClick={() => startAction(() => simulateMutation.mutate("off-plan"))}>Try off-plan</button>
             </div>
-            <button className="text-button" type="button" disabled={resetMutation.isPending} onClick={() => resetMutation.mutate()}>Reset town demo</button>
+            <button className="text-button" type="button" disabled={isMutating} onClick={() => startAction(() => resetMutation.mutate())}>Reset town demo</button>
           </section>
         )}
         </div>
