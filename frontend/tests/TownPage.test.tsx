@@ -23,6 +23,8 @@ import type { TownBridge } from "../src/features/town/townBridge";
 
 const canvasBridge = vi.hoisted(() => ({ current: null as TownBridge | null }));
 
+vi.mock("../src/features/town/TownMusic", () => ({ TownMusic: () => null }));
+
 vi.mock("../src/api/finance", () => ({ getHealth: vi.fn() }));
 vi.mock("../src/api/game", () => ({
   buyBuilding: vi.fn(),
