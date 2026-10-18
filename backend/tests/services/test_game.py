@@ -159,3 +159,24 @@ def test_insufficient_funds_never_create_a_negative_wallet() -> None:
         assert error.value.code == "insufficient_coins"
         assert state.wallet.coin_balance == 99
         assert state.buildings == []
+
+
+@pytest.mark.parametrize("level", [1, 2, 3])
+def test_all_levels_can_build_at_map_edges_and_on_former_routes(level: int) -> None:
+    session, game = game_session()
+    with session:
+        wallet = ensure_wallet(session, "demo-player")
+        wallet.level = level
+        session.commit()
+        state = game.buy_building(
+            session, user_id="demo-player",
+            request=PlaceBuildingRequest(catalog_item_id="woodshed_01", grid_x=0, grid_y=0),
+        )
+        assert state.district.model_dump() == dict(min_x=0, max_x=14, min_y=0, max_y=14)
+        assert state.infrastructure.reserved_cells == []
+        moved = game.move_building(
+            session, user_id="demo-player", building_id=state.buildings[0].id,
+            grid_x=7, grid_y=5,
+        )
+        assert (moved.buildings[0].grid_x, moved.buildings[0].grid_y) == (7, 5)
+        assert moved.wallet.coin_balance == 200

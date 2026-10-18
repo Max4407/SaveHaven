@@ -20,10 +20,6 @@ export type GridPosition = { x: number; y: number };
 export type PlacementValidation = { valid: boolean; reason: string | null };
 export type TownPlacementMode = "click" | "catalog-drag" | "building-drag";
 
-export function shouldShowPlacementGrid(mode: TownPlacementMode): boolean {
-  return mode === "catalog-drag" || mode === "building-drag";
-}
-
 function isOffsetRow(row: number) {
   return Math.abs(row % 2) === 1;
 }
@@ -77,6 +73,13 @@ export function buildingDisplayWidth(item: TownCatalogItem): number {
   if (largestDimension >= 3) return 510;
   if (largestDimension === 2) return 360;
   return 210;
+}
+
+// Drag coordinates describe the sprite's footprint center, not its top-left cell.
+export function buildingGridPosition(item: TownCatalogItem, worldX: number, worldY: number): GridPosition {
+  const row = Math.round((worldY - TOWN_GRID_TOP) / TOWN_GRID_ROW_STEP - (item.footprint.height - 1) / 2);
+  const center = buildingWorldPosition(item, 0, row);
+  return { x: Math.round((worldX - center.x) / TOWN_GRID_CELL_WIDTH), y: row };
 }
 
 function footprintCells(item: TownCatalogItem, gridX: number, gridY: number) {

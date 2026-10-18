@@ -1,6 +1,6 @@
-from schemas import DistrictResponse, GridCellResponse, InfrastructureResponse, ProgressionResponse
+from schemas import DistrictResponse, InfrastructureResponse, ProgressionResponse
 
-MAP_SIZE = 16
+MAP_SIZE = 15
 LEVEL_THRESHOLDS = {1: 0, 2: 100, 3: 300}
 LEVEL_NAMES = {1: "Homestead", 2: "Village", 3: "Haven"}
 
@@ -14,34 +14,14 @@ def level_for_xp(xp: int) -> int:
 
 
 def district_for_level(level: int) -> DistrictResponse:
-    if level >= 3:
-        inset = 0
-    elif level == 2:
-        inset = 2
-    else:
-        inset = 4
-    return DistrictResponse(
-        min_x=inset,
-        max_x=MAP_SIZE - inset - 1,
-        min_y=inset,
-        max_y=MAP_SIZE - inset - 1,
-    )
+    # All levels can build across the whole map; levels unlock catalog items only.
+    return DistrictResponse(min_x=0, max_x=MAP_SIZE - 1, min_y=0, max_y=MAP_SIZE - 1)
 
 
 def infrastructure_for_level(level: int) -> InfrastructureResponse:
-    district = district_for_level(level)
-    cells = {
-        (coordinate, 7)
-        for coordinate in range(district.min_x, district.max_x + 1)
-    } | {
-        (7, coordinate)
-        for coordinate in range(district.min_y, district.max_y + 1)
-    }
+    # Retain the response shape for existing clients without reserving buildable land.
     tier = "stone" if level >= 3 else "gravel" if level == 2 else "dirt"
-    return InfrastructureResponse(
-        tier=tier,
-        reserved_cells=[GridCellResponse(x=x, y=y) for x, y in sorted(cells)],
-    )
+    return InfrastructureResponse(tier=tier, reserved_cells=[])
 
 
 def progression_for_xp(xp: int) -> ProgressionResponse:

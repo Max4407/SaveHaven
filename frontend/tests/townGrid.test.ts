@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { GameState, TownCatalogItem } from "../src/api/types";
 import {
   buildingDisplayWidth,
+  buildingGridPosition,
   buildingWorldPosition,
   clampGridPosition,
   gridToWorld,
@@ -80,16 +81,14 @@ describe("town grid", () => {
     expect(buildingDisplayWidth(threeCellItem)).toBe(510);
   });
 
-  it("shows the placement grid only during drag-and-drop", () => {
-    expect(shouldShowPlacementGrid("catalog-drag")).toBe(true);
-    expect(shouldShowPlacementGrid("building-drag")).toBe(true);
-    expect(shouldShowPlacementGrid("click")).toBe(false);
-  });
-
   it("keeps map bounds and collision rules without district or road restrictions", () => {
     const catalog = [oneCellItem];
 
     expect(validateTownPlacement(initialState, catalog, oneCellItem, -1, 4)).toEqual({
+      valid: false,
+      reason: "That footprint extends beyond the town map",
+    });
+    expect(validateTownPlacement(initialState, catalog, oneCellItem, 15, 14)).toEqual({
       valid: false,
       reason: "That footprint extends beyond the town map",
     });
