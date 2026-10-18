@@ -152,9 +152,32 @@ describe("application API integration", () => {
     expect(screen.queryByText("Everyday Checking")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Transactions" })).toBeInTheDocument();
     expect(screen.getByText("Paycheck")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Back to town" })).toHaveAttribute("href", "/town");
+    expect(screen.getByRole("link", { name: /Build your town/ })).toHaveAttribute("href", "/town");
     expect(screen.getAllByLabelText("Nessie import provenance")).toHaveLength(1);
     expect(screen.getByText(/Fixture fallback:/)).toBeInTheDocument();
+  });
+
+  it("keeps the transaction preview compact and lets users expand the imported history", async () => {
+    const user = userEvent.setup();
+    mocks.getDashboard.mockResolvedValue({
+      ...dashboard,
+      recent_transactions: Array.from({ length: 8 }, (_, index) => ({
+        ...dashboard.recent_transactions[0],
+        source_id: `transaction-${index}`,
+        merchant_name: `Merchant ${index + 1}`,
+      })),
+    });
+    renderApp();
+    const viewAll = await screen.findByRole("button", { name: "View all (8)" });
+    expect(screen.getByText("Merchant 5")).toBeInTheDocument();
+    expect(screen.queryByText("Merchant 6")).not.toBeInTheDocument();
+    expect(viewAll).toHaveAttribute("aria-expanded", "false");
+    await user.click(viewAll);
+    expect(screen.getByText("Merchant 8")).toBeInTheDocument();
+    const showLess = screen.getByRole("button", { name: "Show less" });
+    expect(showLess).toHaveAttribute("aria-expanded", "true");
+    await user.click(showLess);
+    expect(screen.queryByText("Merchant 6")).not.toBeInTheDocument();
   });
 
   it("shows demo login when there is no signed session", async () => {
