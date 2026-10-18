@@ -4,14 +4,15 @@ export const TOWN_WORLD_WIDTH = 3650;
 export const TOWN_WORLD_HEIGHT = 2296;
 export const TOWN_WORLD_LEFT = -TOWN_WORLD_WIDTH / 2;
 export const TOWN_WORLD_TOP = -TOWN_WORLD_HEIGHT / 2;
-export const TOWN_GRID_SIZE = 15;
+export const TOWN_GRID_COLUMNS = 32;
+export const TOWN_GRID_ROWS = 70;
 export const TOWN_GRID_CELL_WIDTH = 96;
 export const TOWN_GRID_CELL_HEIGHT = 48;
 export const TOWN_GRID_ROW_STEP = TOWN_GRID_CELL_HEIGHT / 2;
 
-const GRID_CENTER_SPAN_X = (TOWN_GRID_SIZE - 1) * TOWN_GRID_CELL_WIDTH
+const GRID_CENTER_SPAN_X = (TOWN_GRID_COLUMNS - 1) * TOWN_GRID_CELL_WIDTH
   + TOWN_GRID_CELL_WIDTH / 2;
-const GRID_CENTER_SPAN_Y = (TOWN_GRID_SIZE - 1) * TOWN_GRID_ROW_STEP;
+const GRID_CENTER_SPAN_Y = (TOWN_GRID_ROWS - 1) * TOWN_GRID_ROW_STEP;
 const TOWN_GRID_LEFT = -GRID_CENTER_SPAN_X / 2;
 const TOWN_GRID_TOP = -GRID_CENTER_SPAN_Y / 2;
 
@@ -34,8 +35,8 @@ export function gridToWorld(column: number, row: number): GridPosition {
 
 export function clampGridPosition(position: GridPosition): GridPosition {
   return {
-    x: Math.min(TOWN_GRID_SIZE - 1, Math.max(0, position.x)),
-    y: Math.min(TOWN_GRID_SIZE - 1, Math.max(0, position.y)),
+    x: Math.min(TOWN_GRID_COLUMNS - 1, Math.max(0, position.x)),
+    y: Math.min(TOWN_GRID_ROWS - 1, Math.max(0, position.y)),
   };
 }
 
@@ -102,7 +103,7 @@ export function validateTownPlacement(
   const cells = footprintCells(item, gridX, gridY);
   if ([...cells].some((key) => {
     const [x, y] = key.split(":").map(Number);
-    return x < 0 || x >= TOWN_GRID_SIZE || y < 0 || y >= TOWN_GRID_SIZE;
+    return x < 0 || x >= TOWN_GRID_COLUMNS || y < 0 || y >= TOWN_GRID_ROWS;
   })) {
     return { valid: false, reason: "That footprint extends beyond the town map" };
   }

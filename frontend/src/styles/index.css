@@ -178,7 +178,7 @@ a { color: inherit; }
 .savings-goal-card p strong { color: var(--ink); font-size: 20px; }
 .savings-goal-card .progress-track { height: 6px; }
 
-.app-shell:has(.bank-page) { min-height: 100vh; background: #d8cc93; }
+.app-shell:has(.bank-page) { min-height: 100vh; background: #61c832 url("/patches_bg.png") center / cover no-repeat fixed; }
 .bank-page { --bank-forest: #175c32; --bank-forest-dark: #243d27; --bank-brown: #58432f; --bank-cream: #f2e7b5; --bank-line: #9d7e43; width: min(1080px, calc(100% - 32px)); min-height: 100vh; padding: 72px 24px 48px; color: #352f24; font-family: "Courier New", ui-monospace, monospace; }
 .bank-topbar { padding: 18px; color: #fff8d8; background: var(--bank-forest); border: 4px solid var(--bank-forest-dark); box-shadow: 6px 6px 0 rgba(61,49,27,.34); }
 .bank-topbar .page-heading { min-width: 0; }

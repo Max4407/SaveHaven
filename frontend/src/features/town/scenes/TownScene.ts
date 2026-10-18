@@ -7,7 +7,8 @@ import {
   gridToWorld,
   TOWN_GRID_CELL_HEIGHT,
   TOWN_GRID_CELL_WIDTH,
-  TOWN_GRID_SIZE,
+  TOWN_GRID_COLUMNS,
+  TOWN_GRID_ROWS,
   TOWN_WORLD_HEIGHT,
   TOWN_WORLD_LEFT,
   TOWN_WORLD_TOP,
@@ -52,6 +53,7 @@ export class TownScene extends Phaser.Scene {
   private mapLayer?: Phaser.GameObjects.Container;
   private placementGrid?: Phaser.GameObjects.Graphics;
   private buildingLayer?: Phaser.GameObjects.Container;
+  private placementGrid?: Phaser.GameObjects.Graphics;
   private previewLayer?: Phaser.GameObjects.Container;
   private placement?: Placement;
   private buildingDisplays = new Map<number, BuildingDisplay>();
@@ -212,8 +214,8 @@ export class TownScene extends Phaser.Scene {
     this.placement = {
       catalogItemId: detail.catalogItemId,
       buildingId: detail.buildingId,
-      gridX: existing?.grid_x ?? Math.floor((TOWN_GRID_SIZE - item.footprint.width) / 2),
-      gridY: existing?.grid_y ?? Math.floor((TOWN_GRID_SIZE - item.footprint.height) / 2),
+      gridX: existing?.grid_x ?? Math.floor((TOWN_GRID_COLUMNS - item.footprint.width) / 2),
+      gridY: existing?.grid_y ?? Math.floor((TOWN_GRID_ROWS - item.footprint.height) / 2),
       valid: false,
       reason: null,
       mode,
@@ -230,6 +232,8 @@ export class TownScene extends Phaser.Scene {
     this.placement = undefined;
     this.placementGrid?.setVisible(false);
     this.placementPointerDown = false;
+    this.placementGrid?.destroy();
+    this.placementGrid = undefined;
     this.previewLayer?.destroy(true);
     this.previewLayer = undefined;
     if (emitChange) {
@@ -276,6 +280,18 @@ export class TownScene extends Phaser.Scene {
     );
     this.placement.valid = result.valid;
     this.placement.reason = result.reason;
+    if (shouldShowPlacementGrid(this.placement.mode) && !this.placementGrid) {
+      const grid = this.add.graphics();
+      grid.lineStyle(2, 0x143f26, 0.72);
+      for (let row = 0; row < TOWN_GRID_ROWS; row += 1) {
+        for (let column = 0; column < TOWN_GRID_COLUMNS; column += 1) {
+          const position = gridToWorld(column, row);
+          grid.strokePoints(this.diamond(position.x, position.y), true);
+        }
+      }
+      this.placementGrid = grid.setDepth(99_999);
+    }
+
     this.previewLayer?.destroy(true);
     this.previewLayer = this.add.container(0, 0).setDepth(100_000);
 

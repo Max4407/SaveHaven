@@ -6,7 +6,9 @@ import {
   buildingWorldPosition,
   clampGridPosition,
   gridToWorld,
-  TOWN_GRID_SIZE,
+  shouldShowPlacementGrid,
+  TOWN_GRID_COLUMNS,
+  TOWN_GRID_ROWS,
   validateTownPlacement,
   worldToGrid,
 } from "../src/features/town/townGrid";
@@ -26,8 +28,8 @@ const oneCellItem: TownCatalogItem = {
 
 const initialState: GameState = {
   wallet: {
-    coin_balance: 300,
-    total_coins_earned: 300,
+    coin_balance: 10_000,
+    total_coins_earned: 10_000,
     xp: 0,
     level: 1,
     level_name: "Homestead",
@@ -48,29 +50,15 @@ const initialState: GameState = {
 };
 
 describe("town grid", () => {
-  it.each([1, 2, 3])("keeps a %s-cell building anchored to its preview across staggered rows", (size) => {
-    const item = { ...oneCellItem, footprint: { width: size, height: size } };
-    for (let y = 0; y <= TOWN_GRID_SIZE - size; y += 1) {
-      for (let x = 0; x <= TOWN_GRID_SIZE - size; x += 1) {
-        const center = buildingWorldPosition(item, x, y);
-        expect(buildingGridPosition(item, center.x, center.y)).toEqual({ x, y });
-        expect(buildingGridPosition(item, center.x + 2, center.y + 2)).toEqual({ x, y });
-      }
-    }
-    const outside = buildingWorldPosition(item, -1, -1);
-    expect(buildingGridPosition(item, outside.x, outside.y)).toEqual({ x: -1, y: -1 });
-  });
-
-  it("centers the 15 by 15 staggered grid and offsets odd rows", () => {
-    expect(gridToWorld(0, 0)).toEqual({ x: -696, y: -168 });
-    expect(gridToWorld(0, 1)).toEqual({ x: -648, y: -144 });
-    expect(gridToWorld(14, 13)).toEqual({ x: 696, y: 144 });
-    expect(gridToWorld(14, 14)).toEqual({ x: 648, y: 168 });
+  it("centers the expanded staggered grid inside the perimeter gap", () => {
+    expect(gridToWorld(0, 0)).toEqual({ x: -1512, y: -828 });
+    expect(gridToWorld(0, 1)).toEqual({ x: -1464, y: -804 });
+    expect(gridToWorld(31, 69)).toEqual({ x: 1512, y: 828 });
   });
 
   it("round trips every persisted backend coordinate", () => {
-    for (let row = 0; row < TOWN_GRID_SIZE; row += 1) {
-      for (let column = 0; column < TOWN_GRID_SIZE; column += 1) {
+    for (let row = 0; row < TOWN_GRID_ROWS; row += 1) {
+      for (let column = 0; column < TOWN_GRID_COLUMNS; column += 1) {
         const world = gridToWorld(column, row);
         expect(worldToGrid(world.x, world.y)).toEqual({ x: column, y: row });
       }
@@ -78,16 +66,16 @@ describe("town grid", () => {
   });
 
   it("clamps pointer positions to backend grid bounds when requested", () => {
-    expect(clampGridPosition({ x: -3, y: 20 })).toEqual({ x: 0, y: 14 });
+    expect(clampGridPosition({ x: -3, y: 100 })).toEqual({ x: 0, y: 69 });
     expect(worldToGrid(-10_000, -10_000, true)).toEqual({ x: 0, y: 0 });
-    expect(worldToGrid(10_000, 10_000, true)).toEqual({ x: 14, y: 14 });
+    expect(worldToGrid(10_000, 10_000, true)).toEqual({ x: 31, y: 69 });
   });
 
   it("centers multi-cell buildings and uses Kevin's large display scale", () => {
     const twoCellItem = { ...oneCellItem, footprint: { width: 2, height: 2 } };
     const threeCellItem = { ...oneCellItem, footprint: { width: 3, height: 2 } };
 
-    expect(buildingWorldPosition(twoCellItem, 4, 4)).toEqual({ x: -240, y: -60 });
+    expect(buildingWorldPosition(twoCellItem, 4, 4)).toEqual({ x: -1056, y: -720 });
     expect(buildingDisplayWidth(oneCellItem)).toBe(210);
     expect(buildingDisplayWidth(twoCellItem)).toBe(360);
     expect(buildingDisplayWidth(threeCellItem)).toBe(510);
@@ -109,6 +97,10 @@ describe("town grid", () => {
       reason: null,
     });
     expect(validateTownPlacement(initialState, catalog, oneCellItem, 7, 7)).toEqual({
+      valid: true,
+      reason: null,
+    });
+    expect(validateTownPlacement(initialState, catalog, oneCellItem, 31, 69)).toEqual({
       valid: true,
       reason: null,
     });

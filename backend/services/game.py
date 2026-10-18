@@ -18,7 +18,8 @@ from services.progression import (
     progression_for_xp,
 )
 
-TOWN_GRID_SIZE = 15
+TOWN_GRID_COLUMNS = 32
+TOWN_GRID_ROWS = 70
 
 
 class GameRuleError(RuntimeError):
@@ -175,9 +176,9 @@ class GameService:
         }
         if any(
             x < 0
-            or x >= TOWN_GRID_SIZE
+            or x >= TOWN_GRID_COLUMNS
             or y < 0
-            or y >= TOWN_GRID_SIZE
+            or y >= TOWN_GRID_ROWS
             for x, y in cells
         ):
             raise GameRuleError(

@@ -41,12 +41,12 @@ def test_starter_grant_purchase_move_and_original_price_refund() -> None:
             building_id=purchased.buildings[0].id,
         )
 
-        assert (initial.wallet.coin_balance, initial.wallet.xp) == (300, 0)
-        assert purchased.wallet.coin_balance == 200
+        assert (initial.wallet.coin_balance, initial.wallet.xp) == (10_000, 0)
+        assert purchased.wallet.coin_balance == 9_900
         assert purchased.buildings[0].purchase_price_coins == 100
-        assert moved.wallet.coin_balance == 200
+        assert moved.wallet.coin_balance == 9_900
         assert (moved.buildings[0].grid_x, moved.buildings[0].grid_y) == (5, 4)
-        assert sold.wallet.coin_balance == 260
+        assert sold.wallet.coin_balance == 9_960
         assert sold.buildings == []
 
 
@@ -54,7 +54,7 @@ def test_starter_grant_purchase_move_and_original_price_refund() -> None:
     ("item_id", "grid_x", "grid_y", "code"),
     [
         ("bakery_01", 4, 4, "level_locked"),
-        ("hut_01", 15, 15, "outside_town_map"),
+        ("hut_01", 31, 4, "outside_town_map"),
     ],
 )
 def test_failed_purchase_is_atomic(item_id: str, grid_x: int, grid_y: int, code: str) -> None:
@@ -74,7 +74,7 @@ def test_failed_purchase_is_atomic(item_id: str, grid_x: int, grid_y: int, code:
         state = game.get_state(session, user_id="demo-player")
 
         assert error.value.code == code
-        assert state.wallet.coin_balance == 300
+        assert state.wallet.coin_balance == 10_000
         assert state.buildings == []
 
 
@@ -133,7 +133,7 @@ def test_collision_and_cross_user_ownership_are_server_authoritative() -> None:
         wallet = session.get(GameWallet, "demo-player")
         assert collision.value.code == "occupied"
         assert wallet is not None
-        assert wallet.coin_balance == 150
+        assert wallet.coin_balance == 9_850
 
 
 def test_insufficient_funds_never_create_a_negative_wallet() -> None:

@@ -49,6 +49,6 @@ def test_concurrent_first_load_reuses_one_wallet_and_starter_grant(tmp_path) -> 
             )
         )
 
-    assert balances == [300, 300]
+    assert balances == [10_000, 10_000]
     assert wallet_count == 1
     assert starter_count == 1
