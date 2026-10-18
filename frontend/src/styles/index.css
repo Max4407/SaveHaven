@@ -636,3 +636,94 @@ footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 1
 .goal-date-preview { margin: 0; color: #7a8972; font-size: 11px; line-height: 1.6; }
 .goal-date-preview strong, .goal-date-preview span { display: block; }.goal-date-preview strong { color: #3a6544; font-size: 21px; font-weight: 600; }
 @media (max-width: 540px) { .goal-date-selection { grid-template-columns: 1fr; gap: 12px; }.goal-date-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }.goal-date-options button { padding: 8px 5px; font-size: 11px; }.goal-entry-form .emphasized-date { padding: 16px; } }
+
+.goal-journey { margin-top: 20px; padding-top: 16px; border-top: 1px solid #bba466; }
+.goal-journey-time { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.goal-journey-time > span:first-child > strong { color: #315e3e; font-size: 14px; }
+.bank-goal-card .goal-journey-time small { margin-top: 4px; color: #7c714e; font-size: 10px; font-weight: 400; }
+.goal-days-left { padding: 5px 8px; color: #6a613f; background: #e0d399; font-size: 10px; }
+.goal-milestones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 20px 0 16px; padding: 0; list-style: none; }
+.goal-milestones li { position: relative; display: grid; justify-items: center; text-align: center; }
+.goal-milestones li::before { content: ""; position: absolute; top: 11px; left: 55%; width: 100%; height: 2px; background: #c4b27d; }
+.goal-milestones li:last-child::before { display: none; }
+.goal-milestones li > span { position: relative; z-index: 1; display: grid; place-items: center; width: 24px; height: 24px; color: #f2e7b5; background: #eadca6; border: 2px solid #ae9c66; font-size: 12px; }
+.goal-milestones li.reached > span { background: #487653; border-color: #315e3e; }.goal-milestones li.next > span { border-color: #487653; box-shadow: 0 0 0 3px #d7dba7; }
+.goal-milestones li > strong { margin-top: 8px; color: #635c3e; font-size: 11px; }.bank-goal-card .goal-milestones small { margin-top: 3px; font-size: 8px; color: #8a7c52; font-weight: 400; }.goal-milestones li.reached small { color: #315e3e; }
+.bank-goal-card .goal-next-step { margin: 0; color: #5e6447; font-size: 11px; line-height: 1.6; }.bank-goal-card .goal-next-step strong { font-size: 14px; color: #315e3e; }
+.bank-goal-card .goal-weekly-step { margin: 7px 0 0; color: #81744f; font-size: 10px; line-height: 1.6; }.bank-goal-card .goal-weekly-step strong { color: #4d6846; font-size: 11px; }
+
+.goal-journey-time { flex-wrap: wrap; }
+.goal-xp { display: grid; gap: 3px; padding: 6px 10px; border: 1px solid #c5a45e; background: #fff3ce; color: #654914; }
+.goal-xp strong { font-size: 13px; }
+.goal-xp small { font-size: 11px; }
+
+/* Keep the guide and sync disclosure consistent with the bank cards. */
+.bank-page .planner-panel,
+.bank-page .sync-details {
+  margin-top: 18px;
+  padding: clamp(18px, 3vw, 26px);
+  color: #352f24;
+  background: var(--bank-cream);
+  border: 3px solid var(--bank-line);
+  border-radius: 0;
+  box-shadow: 6px 6px 0 rgba(94,72,34,.28);
+}
+.bank-page .planner-panel .eyebrow { color: #6b7d4d; }
+.bank-page .planner-panel h2 {
+  font-size: clamp(19px, 3vw, 26px);
+  letter-spacing: .01em;
+  text-transform: uppercase;
+}
+.bank-page .sync-details summary {
+  width: auto;
+  padding: 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+.bank-page .sync-details[open] summary { margin-bottom: 16px; }
+.bank-page .sync-details .import-strip {
+  margin-top: 0;
+  background: var(--bank-line);
+  border: 2px solid var(--bank-line);
+  border-radius: 0;
+}
+.bank-page .sync-details .import-strip > span { background: #eadca6; }
+.bank-page .sync-details .import-strip small { color: #675938; }
+
+/* Bank controls share the town's square, earthy palette. */
+.bank-page .spending-pie-panel {
+  background: var(--bank-cream);
+  border: 3px solid var(--bank-line);
+  border-radius: 0;
+  box-shadow: 6px 6px 0 rgba(94,72,34,.28);
+}
+.bank-page .spending-category-list button,
+.bank-page .spending-pie-chart,
+.bank-page .category-color,
+.bank-page .plan-info-button,
+.bank-page .plan-status,
+.bank-page .sandbox-pill,
+.bank-page .secondary-button,
+.bank-page .primary-button { border-radius: 0; }
+.bank-page .spending-category-list button:hover,
+.bank-page .spending-category-list button[aria-pressed="true"] { background: #dce2b5; border-color: var(--bank-line); }
+.bank-page .plan-metrics > span,
+.bank-page .plan-info-details {
+  color: #352f24;
+  background: #eadca6;
+  border: 2px solid #b49a58;
+  border-radius: 0;
+}
+.bank-page .plan-metrics small,
+.bank-page .plan-info-breakdown dt { color: #675938; }
+.bank-page .plan-metrics strong { color: var(--bank-forest); }
+.bank-page .plan-info-button { color: var(--bank-forest); background: #eadca6; border: 2px solid var(--bank-line); }
+.bank-page .plan-info-button:hover,
+.bank-page .plan-info-button[aria-expanded="true"] { color: #fff3c0; background: var(--bank-forest); }
+.bank-page .goal-entry-form .goal-entry-field input,
+.bank-page .goal-date-options button { background: #fff6d8; border: 2px solid #b49a58; border-radius: 0; }
+.bank-page .goal-entry-form .emphasized-date { background: #dce2b5; border: 2px solid #9baf72; border-left: 4px solid var(--bank-forest); border-radius: 0; }
+.bank-page .goal-date-options button:hover { background: #eadca6; border-color: var(--bank-forest); }
+.bank-page .goal-date-options button[aria-pressed="true"] { color: #fff3c0; background: var(--bank-forest); border-color: var(--bank-forest-dark); }
+.bank-page .goal-entry-footer .primary-button { background: var(--bank-forest); color: #fff3c0; border: 2px solid var(--bank-forest-dark); border-radius: 0; box-shadow: 3px 3px 0 rgba(61,49,27,.25); }

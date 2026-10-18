@@ -42,6 +42,7 @@ def goal_response(
         target_amount_cents=goal.target_amount_cents,
         amount_already_saved_cents=amount_saved,
         target_date=goal.target_date,
+        created_at=goal.created_at,
     )
 
 

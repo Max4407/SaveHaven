@@ -74,6 +74,7 @@ export type SavingsGoal = {
   target_amount_cents: number;
   amount_already_saved_cents: number;
   target_date: string;
+  created_at?: string | null;
 };
 
 export type SavingsPlan = {

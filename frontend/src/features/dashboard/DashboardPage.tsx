@@ -22,6 +22,8 @@ import {
   regenerateGoalPlan,
   syncBank,
 } from "../../api/finance";
+import { getGameState } from "../../api/game";
+import { GoalJourney } from "./GoalJourney";
 import { LastRefreshed } from "../../components/LastRefreshed";
 import type { Dashboard, Transaction } from "../../api/types";
 import { buildBalanceHistory } from "./balanceHistory";
@@ -239,6 +241,7 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
     () => buildBalanceHistory(dashboard, formatDate),
     [dashboard],
   );
+  const gameStateQuery = useQuery({ queryKey: ["game-state"], queryFn: getGameState, enabled: Boolean(dashboard.active_goal) });
   const activeGoal = dashboard.active_goal;
   const activeGoalProgress = activeGoal
     ? Math.min(100, Math.round(
@@ -404,6 +407,7 @@ function ConnectedDashboard({ dashboard }: { dashboard: Dashboard }) {
                 <span style={{ width: `${activeGoalProgress}%` }} />
               </div>
               <small>{activeGoalProgress}% complete · Target {formatDate(activeGoal.target_date)}</small>
+              <GoalJourney goal={activeGoal} wallet={gameStateQuery.data?.wallet} weeklySavings={dashboard.current_plan?.feasible ? dashboard.current_plan.weekly_savings_cents : null} />
             </article>
           ) : (
             <p className="empty-state">Create a savings goal below to track a real milestone here.</p>

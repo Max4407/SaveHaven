@@ -98,6 +98,7 @@ class GoalResponse(BaseModel):
     target_amount_cents: int
     amount_already_saved_cents: int
     target_date: date
+    created_at: datetime | None = None
 
 
 class SavingsPlanResponse(BaseModel):
