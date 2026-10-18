@@ -56,19 +56,14 @@ def test_failed_mutations_return_structured_conflicts_without_charging(
         "/api/game/buildings",
         json={"catalog_item_id": "bakery_01", "grid_x": 4, "grid_y": 4},
     )
-    road = logged_in_client.post(
-        "/api/game/buildings",
-        json={"catalog_item_id": "woodshed_01", "grid_x": 7, "grid_y": 5},
-    )
     outside = logged_in_client.post(
         "/api/game/buildings",
-        json={"catalog_item_id": "woodshed_01", "grid_x": 3, "grid_y": 4},
+        json={"catalog_item_id": "hut_01", "grid_x": 15, "grid_y": 15},
     )
     state = logged_in_client.get("/api/game/state")
 
     assert locked.status_code == 409
     assert locked.json()["detail"]["code"] == "level_locked"
-    assert road.json()["detail"]["code"] == "infrastructure_reserved"
     assert outside.json()["detail"]["code"] == "outside_unlocked_district"
     assert state.json()["wallet"]["coin_balance"] == 300
     assert state.json()["buildings"] == []

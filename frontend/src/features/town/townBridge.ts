@@ -3,6 +3,7 @@ import type { GameState } from "../../api/types";
 export const CATALOG_DRAG_TYPE = "application/x-savehaven-catalog-item";
 
 export type TownBridgeEvents = {
+  interactionLocked: { locked: boolean };
   cameraChanged: { zoom: number };
   buildingSelected: { buildingId: number };
   catalogDragStarted: { catalogItemId: string };

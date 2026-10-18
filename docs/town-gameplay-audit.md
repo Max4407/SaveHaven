@@ -2,6 +2,14 @@
 
 Scope: Town Experience game functionality. Preserve teammate presentation and backend economy ownership.
 
+## Subsequent requested map changes
+
+- Placement guides are hidden outside placement/move mode.
+- Removed permanent road markings and all reserved route cells.
+- Every level now has the full 16×16 buildable map; catalog level unlocks, outer map bounds, and collisions remain enforced.
+- The API shape is unchanged: district covers coordinates 0–15 and infrastructure has an empty reserved-cell list. This supersedes the district-expansion and route expectations below. `docs/PLAN.md` remains unchanged pending explicit approval to edit it.
+- Verified 28 focused backend tests and all 33 frontend tests after this rule change.
+
 ## Completed
 
 - Fixed stationary building clicks being consumed as drags. Move/Sell selection now opens.
@@ -14,10 +22,12 @@ Scope: Town Experience game functionality. Preserve teammate presentation and ba
 
 ## Remaining acceptance checks
 
-1. Prevent overlapping scene requests while a purchase/move/sale is pending; exercise delayed and failed responses and repeated input. Catalog buttons currently disable, but scene drag input is independent.
-2. Verify drag anchoring for 2×2 and 3×3 buildings and releasing outside the canvas. Compare ghost footprint, final snapped cells, and reloaded position.
+1. Completed action serialization within the town page: purchase, move, sale, simulation, and reset share a synchronous pending guard and scene lock. Confirmed state reaches Phaser before unlocking; rejected requests restore the last confirmed state. Regression tests cover same-frame duplicates, delayed purchase success/failure, and competing actions during sale/simulation/reset.
+2. Fixed drag anchoring: sprite-center coordinates now convert back to the footprint's top-left cell for 1×1, 2×2, and 3×3 buildings, including odd/even rows. Invalid, outside-canvas, and sidebar drops cancel. Browser-checked a 2×2 hut move and sidebar cancellation; 3×3 coverage is automated, with representative art review still below.
 3. Check small, large, tall, wide, and transparent assets for pivots, hit areas, scale, and depth ordering; exercise pan/zoom at laptop sizes.
 4. Rehearse level 2/3 unlocks and expanded districts against server rewards, then repeat the loop in deployment with durable persistence. This browser run used an in-memory fixture backend; page reload persistence does not establish restart durability.
 5. Coordinate catalog completeness with its owner: the current catalog presents 12 buildings; the plan also targets 4–8 decorations. Do not add economy rules or unlicensed assets to fill the gap.
 
 Existing grid and page tests cover placement validation and rejected server operations, but mocked canvas tests do not replace the remaining real Phaser checks.
+
+Latest gameplay verification: 34 targeted tests passed across scene, page, and grid suites; production build and lint passed. Local preview now uses an isolated temporary SQLite file instead of in-memory SQLite. Deployment durability still requires a separate rehearsal.

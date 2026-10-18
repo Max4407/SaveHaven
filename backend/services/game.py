@@ -184,7 +184,7 @@ class GameService:
         ):
             raise GameRuleError(
                 "outside_unlocked_district",
-                "That footprint extends beyond the currently unlocked district.",
+                "That footprint extends beyond the town map.",
             )
         reserved = {
             (cell.x, cell.y) for cell in infrastructure_for_level(level).reserved_cells
