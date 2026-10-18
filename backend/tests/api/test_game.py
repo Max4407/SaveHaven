@@ -58,7 +58,7 @@ def test_failed_mutations_return_structured_conflicts_without_charging(
     )
     outside = logged_in_client.post(
         "/api/game/buildings",
-        json={"catalog_item_id": "hut_01", "grid_x": 15, "grid_y": 4},
+        json={"catalog_item_id": "hut_01", "grid_x": 15, "grid_y": 15},
     )
     state = logged_in_client.get("/api/game/state")
 

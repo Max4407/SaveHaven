@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import type { GameState, PlacedBuilding, TownCatalogItem } from "../../../api/types";
 import {
   buildingDisplayWidth,
+  buildingGridPosition,
   buildingWorldPosition,
   gridToWorld,
   shouldShowPlacementGrid,
@@ -45,10 +46,12 @@ export class TownScene extends Phaser.Scene {
   private readonly catalog: TownCatalogItem[];
   private state: GameState;
   private isDraggingCamera = false;
+  private interactionLocked = false;
   private placementPointerDown = false;
   private dragStart = new Phaser.Math.Vector2();
   private cameraStart = new Phaser.Math.Vector2();
   private mapLayer?: Phaser.GameObjects.Container;
+  private placementGrid?: Phaser.GameObjects.Graphics;
   private buildingLayer?: Phaser.GameObjects.Container;
   private previewLayer?: Phaser.GameObjects.Container;
   private placement?: Placement;
@@ -79,6 +82,10 @@ export class TownScene extends Phaser.Scene {
     this.configureCamera();
     this.configureInput();
     this.unsubscribers = [
+      this.bridge.subscribe("interactionLocked", ({ locked }) => {
+        this.interactionLocked = locked;
+        if (locked) this.cancelPlacement();
+      }),
       this.bridge.subscribe("startPlacement", (detail) => {
         this.startPlacement(detail, "click");
       }),
@@ -128,6 +135,36 @@ export class TownScene extends Phaser.Scene {
     const background = this.add.image(0, 0, "grass-background")
       .setDisplaySize(TOWN_WORLD_WIDTH, TOWN_WORLD_HEIGHT)
       .setDepth(-100_000);
+    const terrain = this.add.graphics();
+    this.placementGrid = terrain;
+    terrain.setVisible(Boolean(this.placement));
+    const district = this.state.district;
+    const reserved = new Set(
+      this.state.infrastructure.reserved_cells.map((cell) => `${cell.x}:${cell.y}`),
+    );
+
+    for (let row = 0; row < TOWN_GRID_SIZE; row += 1) {
+      for (let column = 0; column < TOWN_GRID_SIZE; column += 1) {
+        const { x, y } = gridToWorld(column, row);
+        const isUnlocked = column >= district.min_x && column <= district.max_x
+          && row >= district.min_y && row <= district.max_y;
+        const isReserved = reserved.has(`${column}:${row}`);
+
+        if (isReserved) {
+          terrain.fillStyle(0xc4483d, 0.2);
+          terrain.lineStyle(2, 0xffd3cb, 0.5);
+        } else if (isUnlocked) {
+          terrain.fillStyle(0xd8f0a7, 0.13);
+          terrain.lineStyle(2, 0xf3ffe2, 0.42);
+        } else {
+          terrain.fillStyle(0x183d28, 0.16);
+          terrain.lineStyle(1, 0x173d27, 0.35);
+        }
+        terrain.fillPoints(this.diamond(x, y), true);
+        terrain.strokePoints(this.diamond(x, y), true);
+      }
+    }
+    this.mapLayer?.add([background, terrain]);
     const trees = generatePerimeterTrees(TOWN_WORLD_WIDTH, TOWN_WORLD_HEIGHT).map((tree) => (
       this.add.image(tree.x, tree.y, `tree-${tree.variant}`)
         .setScale(tree.scale)
@@ -166,6 +203,7 @@ export class TownScene extends Phaser.Scene {
     detail: { catalogItemId: string; buildingId?: number },
     mode: TownPlacementMode,
   ) {
+    if (this.interactionLocked) return;
     const item = this.catalog.find((candidate) => candidate.id === detail.catalogItemId);
     if (!item) return;
     const existing = detail.buildingId == null
@@ -183,6 +221,7 @@ export class TownScene extends Phaser.Scene {
       mode,
     };
     if (detail.buildingId != null) this.setBuildingDimmed(detail.buildingId, true);
+    this.placementGrid?.setVisible(true);
     this.refreshPreview();
   }
 
@@ -191,6 +230,7 @@ export class TownScene extends Phaser.Scene {
       this.setBuildingDimmed(this.placement.buildingId, false);
     }
     this.placement = undefined;
+    this.placementGrid?.setVisible(false);
     this.placementPointerDown = false;
     this.previewLayer?.destroy(true);
     this.previewLayer = undefined;
@@ -280,7 +320,7 @@ export class TownScene extends Phaser.Scene {
   }
 
   private confirmPlacement() {
-    if (!this.placement || !this.placement.valid) return;
+    if (this.interactionLocked || !this.placement || !this.placement.valid) return;
     this.bridge.emit("placementConfirmed", {
       catalogItemId: this.placement.catalogItemId,
       buildingId: this.placement.buildingId,
@@ -362,12 +402,13 @@ export class TownScene extends Phaser.Scene {
     this.input.on("pointerupoutside", () => {
       this.isDraggingCamera = false;
       this.placementPointerDown = false;
+      if (this.placement?.mode === "building-drag") this.cancelPlacement();
     });
     this.input.on("dragstart", (
       _pointer: Phaser.Input.Pointer,
       gameObject: Phaser.GameObjects.Image,
     ) => {
-      if (this.placement) return;
+      if (this.interactionLocked || this.placement) return;
       const buildingId = gameObject.getData("buildingId") as number | undefined;
       const building = this.state.buildings.find((candidate) => candidate.id === buildingId);
       if (!building) return;
@@ -382,16 +423,25 @@ export class TownScene extends Phaser.Scene {
       dragX: number,
       dragY: number,
     ) => {
-      if (gameObject.getData("buildingId") !== this.placement?.buildingId) return;
-      this.updatePlacementAtWorld(dragX, dragY);
+      if (this.placement?.mode !== "building-drag"
+        || gameObject.getData("buildingId") !== this.placement.buildingId) return;
+      const item = this.catalog.find((candidate) => candidate.id === this.placement?.catalogItemId);
+      if (!item) return;
+      const cell = buildingGridPosition(item, dragX, dragY);
+      this.placement.gridX = cell.x;
+      this.placement.gridY = cell.y;
+      this.refreshPreview();
     });
     this.input.on("dragend", (
-      _pointer: Phaser.Input.Pointer,
+      pointer: Phaser.Input.Pointer,
       gameObject: Phaser.GameObjects.Image,
     ) => {
       const placement = this.placement;
-      if (!placement || gameObject.getData("buildingId") !== placement.buildingId) return;
-      if (placement.valid) this.confirmPlacement();
+      if (placement?.mode !== "building-drag" || gameObject.getData("buildingId") !== placement.buildingId) return;
+      const insideCanvas = pointer.x >= 0 && pointer.y >= 0
+        && pointer.x < this.scale.width && pointer.y < this.scale.height
+        && pointer.event.target === this.game.canvas;
+      if (insideCanvas && placement.valid) this.confirmPlacement();
       else this.cancelPlacement();
     });
     this.input.on("wheel", (

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { GameState, TownCatalogItem } from "../src/api/types";
 import {
   buildingDisplayWidth,
+  buildingGridPosition,
   buildingWorldPosition,
   clampGridPosition,
   gridToWorld,
@@ -48,6 +49,19 @@ const initialState: GameState = {
 };
 
 describe("town grid", () => {
+  it.each([1, 2, 3])("keeps a %s-cell building anchored to its preview across staggered rows", (size) => {
+    const item = { ...oneCellItem, footprint: { width: size, height: size } };
+    for (let y = 0; y <= TOWN_GRID_SIZE - size; y += 1) {
+      for (let x = 0; x <= TOWN_GRID_SIZE - size; x += 1) {
+        const center = buildingWorldPosition(item, x, y);
+        expect(buildingGridPosition(item, center.x, center.y)).toEqual({ x, y });
+        expect(buildingGridPosition(item, center.x + 2, center.y + 2)).toEqual({ x, y });
+      }
+    }
+    const outside = buildingWorldPosition(item, -1, -1);
+    expect(buildingGridPosition(item, outside.x, outside.y)).toEqual({ x: -1, y: -1 });
+  });
+
   it("centers the 16 by 16 staggered grid and offsets odd rows", () => {
     expect(gridToWorld(0, 0)).toEqual({ x: -744, y: -180 });
     expect(gridToWorld(0, 1)).toEqual({ x: -696, y: -156 });
