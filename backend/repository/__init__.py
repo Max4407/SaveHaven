@@ -3,6 +3,7 @@ from repository.finance import list_accounts, list_transactions, replace_financi
 from repository.game import (
     ensure_wallet,
     get_evaluation_by_key,
+    get_latest_evaluation,
     get_placed_building,
     get_reward_by_source,
     list_placed_buildings,
@@ -25,6 +26,7 @@ __all__ = [
     "get_accepted_plan",
     "get_active_goal",
     "get_evaluation_by_key",
+    "get_latest_evaluation",
     "get_goal",
     "get_placed_building",
     "get_reward_by_source",

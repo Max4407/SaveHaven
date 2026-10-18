@@ -145,6 +145,21 @@ class NessieEventService:
                     description="Demo paycheck",
                 )
             ]
+        if event.event_type == "recurring_bill":
+            return [
+                self._operation(
+                    label="recurring bill",
+                    account_id=checking,
+                    resource="withdrawals",
+                    event=event,
+                    amount=amount,
+                    kind="bill",
+                    category="housing",
+                    plan_status="planned",
+                    merchant="Recurring Bills",
+                    description="Simulated recurring weekly bills",
+                )
+            ]
         if event.event_type in {"planned_purchase", "unplanned_purchase"}:
             planned = event.event_type == "planned_purchase"
             return [
@@ -220,7 +235,7 @@ class NessieEventService:
             resource=resource,
             payload={
                 "medium": "balance",
-                "transaction_date": date.today().isoformat(),
+                "transaction_date": (event.occurred_at or date.today()).isoformat(),
                 "status": "completed",
                 "amount": amount,
                 "description": encoded,

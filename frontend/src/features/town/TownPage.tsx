@@ -14,12 +14,21 @@ import {
   sellBuilding,
   simulateWeek,
 } from "../../api/game";
-import type { GameState, SimulatedWeek, TownCatalogItem } from "../../api/types";
+import type {
+  BuildingFacing,
+  GameState,
+  SimulatedWeek,
+  TownCatalogItem,
+} from "../../api/types";
 import { usePlacementSound } from "./usePlacementSound";
 import { TownMusic } from "./TownMusic";
 import { TownCanvas } from "./TownCanvas";
 import { TownName } from "./TownName";
-import { CATALOG_DRAG_TYPE, createTownBridge } from "./townBridge";
+import {
+  CATALOG_DRAG_TYPE,
+  CATALOG_FACING_TYPE,
+  createTownBridge,
+} from "./townBridge";
 
 type PlacementStatus = { active: boolean; valid: boolean; reason: string | null };
 
@@ -50,6 +59,7 @@ function TownPage() {
   const placementSoundPending = useRef(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [category, setCategory] = useState("all");
+  const [placementFacing, setPlacementFacing] = useState<BuildingFacing>("left");
   const [selectedBuildingId, setSelectedBuildingId] = useState<number | null>(null);
   const [placement, setPlacement] = useState<PlacementStatus>({ active: false, valid: false, reason: null });
   const [actionError, setActionError] = useState<string | null>(null);
@@ -97,8 +107,13 @@ function TownPage() {
     onSettled: finishAction,
   });
   const moveMutation = useMutation({
-    mutationFn: ({ buildingId, gridX, gridY }: { buildingId: number; gridX: number; gridY: number }) => (
-      moveBuilding(buildingId, { grid_x: gridX, grid_y: gridY })
+    mutationFn: ({ buildingId, gridX, gridY, facing }: {
+      buildingId: number;
+      gridX: number;
+      gridY: number;
+      facing: BuildingFacing;
+    }) => (
+      moveBuilding(buildingId, { grid_x: gridX, grid_y: gridY, facing })
     ),
     onSuccess: (state) => {
       applyConfirmedState(state);
@@ -120,9 +135,9 @@ function TownPage() {
     ),
     onSuccess: (result) => {
       applyConfirmedState(result.game_state);
+      queryClient.setQueryData(["dashboard"], result.dashboard);
       setCelebration(result);
       void queryClient.invalidateQueries({ queryKey: ["game-rewards"] });
-      void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (error) => setActionError(mutationMessage(error)),
     onSettled: finishAction,
@@ -147,6 +162,9 @@ function TownPage() {
       setSelectedBuildingId(buildingId);
       setIsSidebarOpen(true);
     });
+    const unsubscribeDeselection = bridge.subscribe("buildingDeselected", () => {
+      setSelectedBuildingId(null);
+    });
     const unsubscribePlacement = bridge.subscribe("placementChanged", (status) => {
       setPlacement(status);
       if (!status.active) setSelectedBuildingId(null);
@@ -159,18 +177,21 @@ function TownPage() {
             catalog_item_id: detail.catalogItemId,
             grid_x: detail.gridX,
             grid_y: detail.gridY,
+            facing: detail.facing,
           });
         } else {
           moveMutation.mutate({
             buildingId: detail.buildingId,
             gridX: detail.gridX,
             gridY: detail.gridY,
+            facing: detail.facing,
           });
         }
       });
     });
     return () => {
       unsubscribeSelection();
+      unsubscribeDeselection();
       unsubscribePlacement();
       unsubscribeConfirmation();
     };
@@ -193,7 +214,7 @@ function TownPage() {
     if (actionPending.current) return;
     setSelectedBuildingId(null);
     setActionError(null);
-    bridge.emit("startPlacement", { catalogItemId: item.id });
+    bridge.emit("startPlacement", { catalogItemId: item.id, facing: placementFacing });
   };
 
   const beginCatalogDrag = (event: DragEvent<HTMLElement>, item: TownCatalogItem) => {
@@ -205,8 +226,9 @@ function TownPage() {
     setActionError(null);
     event.dataTransfer.effectAllowed = "copy";
     event.dataTransfer.setData(CATALOG_DRAG_TYPE, item.id);
+    event.dataTransfer.setData(CATALOG_FACING_TYPE, placementFacing);
     event.dataTransfer.setData("text/plain", item.id);
-    bridge.emit("catalogDragStarted", { catalogItemId: item.id });
+    bridge.emit("catalogDragStarted", { catalogItemId: item.id, facing: placementFacing });
   };
 
   if (catalogQuery.isLoading || stateQuery.isLoading) {
@@ -274,14 +296,38 @@ function TownPage() {
 
         {selectedBuilding && selectedItem ? (
           <section className="building-actions" aria-label="Selected building">
-            <div className="catalog-art"><img src={selectedItem.asset} alt="" /></div>
+            <div className={`catalog-art${(selectedBuilding.facing ?? "left") === "right" ? " facing-right" : ""}`}><img src={selectedItem.asset} alt="" /></div>
             <div>
               <p className="eyebrow">Selected building</p>
               <h2>{selectedItem.name}</h2>
               <p>Purchased for {selectedBuilding.purchase_price_coins} Coins · sells for {Math.floor(selectedBuilding.purchase_price_coins * 0.6)}</p>
             </div>
+            {selectedItem.render_kind !== "ground" && (
+              <div className="building-facing-controls" aria-label="Building facing">
+                {(["left", "right"] as const).map((facing) => (
+                  <button
+                    className={(selectedBuilding.facing ?? "left") === facing ? "active" : ""}
+                    type="button"
+                    key={facing}
+                    disabled={isMutating || (selectedBuilding.facing ?? "left") === facing}
+                    onClick={() => startAction(() => moveMutation.mutate({
+                      buildingId: selectedBuilding.id,
+                      gridX: selectedBuilding.grid_x,
+                      gridY: selectedBuilding.grid_y,
+                      facing,
+                    }))}
+                  >
+                    {facing === "left" ? "← Face left" : "Face right →"}
+                  </button>
+                ))}
+              </div>
+            )}
             <button className="secondary-button" type="button" disabled={isMutating} onClick={() => {
-              bridge.emit("startPlacement", { catalogItemId: selectedItem.id, buildingId: selectedBuilding.id });
+              bridge.emit("startPlacement", {
+                catalogItemId: selectedItem.id,
+                buildingId: selectedBuilding.id,
+                facing: selectedBuilding.facing ?? "left",
+              });
             }}>Move</button>
             <button className="sell-button" type="button" disabled={isMutating} onClick={() => startAction(() => sellMutation.mutate(selectedBuilding.id))}>Sell</button>
           </section>
@@ -292,6 +338,21 @@ function TownPage() {
               <span className="preview-pill">Server verified</span>
             </div>
             <p className="catalog-intro">Drag a building onto the grid, or click + and then click a green highlighted cell to place it.</p>
+
+            <div className="building-facing-picker" aria-label="New building facing">
+              <span>Facing</span>
+              {(["left", "right"] as const).map((facing) => (
+                <button
+                  className={placementFacing === facing ? "active" : ""}
+                  type="button"
+                  key={facing}
+                  aria-pressed={placementFacing === facing}
+                  onClick={() => setPlacementFacing(facing)}
+                >
+                  {facing === "left" ? "← Left" : "Right →"}
+                </button>
+              ))}
+            </div>
 
             <div className="catalog-filters" aria-label="Catalog categories">
               {categories.map((itemCategory) => (
@@ -318,7 +379,7 @@ function TownPage() {
                       }
                     }}
                   >
-                    <div className="catalog-art"><img src={item.asset} alt="" /></div>
+                    <div className={`catalog-art${item.render_kind !== "ground" && placementFacing === "right" ? " facing-right" : ""}`}><img src={item.asset} alt="" /></div>
                     <div className="catalog-card-copy">
                       <span className="level-pill">{levelLocked ? `Unlocks Level ${item.level_required}` : `${item.footprint.width}×${item.footprint.height}${item.landmark ? " landmark" : ""}`}</span>
                       <h3>{item.name}</h3>
@@ -352,8 +413,8 @@ function TownPage() {
             <p className="eyebrow">Protected demo controls</p>
             <p className="demo-week-note">
               {healthQuery.data.data_mode === "live" && healthQuery.data.nessie_configured
-                ? "Writes to a live Nessie sandbox connection, syncs it, then evaluates the imported transactions. Fixture fallback is labeled in the result."
-                : "Fixture mode creates local bank-shaped transactions, then evaluates the week."}
+                ? "Advances one week, writes that week's activity to the live Nessie sandbox, syncs it, then evaluates the imported transactions."
+                : "Advances one week and creates local bank-shaped income, bills, spending, and savings transactions before evaluating it."}
             </p>
             <div>
               <button className="primary-button" type="button" disabled={isMutating} onClick={() => startAction(() => simulateMutation.mutate("successful"))}>Simulate success</button>

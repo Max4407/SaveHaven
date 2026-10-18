@@ -38,3 +38,6 @@ data/fixtures/nessie_demo_state.local.json
 *.db-wal
 *.db-shm
 *.db-journal
+
+# Local backend test output
+backend/.pytest-tmp*/

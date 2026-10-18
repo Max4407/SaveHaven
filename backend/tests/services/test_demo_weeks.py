@@ -14,7 +14,13 @@ from models import (
     PlanPeriodEvaluation,
     RewardEvent,
 )
-from repository import get_bank_connection, replace_active_goal, seed_demo_users
+from repository import (
+    get_active_goal,
+    get_bank_connection,
+    list_accounts,
+    replace_active_goal,
+    seed_demo_users,
+)
 from schemas import NessieRecordReference, PlaceBuildingRequest
 from services import BankSyncService, DemoWeekService, GameService, NessieEventService, TownCatalog
 
@@ -29,13 +35,13 @@ class ResyncingNessieEvents:
     def run(self, session, *, user_id: str, event):
         self.events.append(event)
         now = datetime.now(UTC)
-        session.add_all(
-            [
+        if event.event_type == "move_to_savings":
+            rows = [
                 NormalizedTransaction(
                     user_id=user_id,
                     source_account_id="jordan-checking",
                     source_id=f"withdrawal:demo:{event.idempotency_key}:withdrawal:fake",
-                    occurred_at=date.today(),
+                    occurred_at=event.occurred_at,
                     signed_amount_cents=-event.amount_cents,
                     direction="outflow",
                     kind="transfer",
@@ -48,7 +54,7 @@ class ResyncingNessieEvents:
                     user_id=user_id,
                     source_account_id="jordan-savings",
                     source_id=f"deposit:demo:{event.idempotency_key}:deposit:fake",
-                    occurred_at=date.today(),
+                    occurred_at=event.occurred_at,
                     signed_amount_cents=event.amount_cents,
                     direction="inflow",
                     kind="transfer",
@@ -58,14 +64,59 @@ class ResyncingNessieEvents:
                     synced_at=now,
                 ),
             ]
-        )
-        session.flush()
-        return SimpleNamespace(
-            remote_records=[
-                NessieRecordReference(resource="withdrawals", record_id="withdrawal-live-1"),
-                NessieRecordReference(resource="deposits", record_id="deposit-live-1"),
+            remote_records = [
+                NessieRecordReference(
+                    resource="withdrawals",
+                    record_id=f"withdrawal-{event.idempotency_key}",
+                ),
+                NessieRecordReference(
+                    resource="deposits",
+                    record_id=f"deposit-{event.idempotency_key}",
+                ),
             ]
-        )
+        else:
+            inflow = event.event_type == "paycheck"
+            resource = "deposits" if inflow else "withdrawals"
+            kind = (
+                "deposit"
+                if inflow
+                else "bill"
+                if event.event_type == "recurring_bill"
+                else "purchase"
+            )
+            category = (
+                "income"
+                if inflow
+                else "housing"
+                if event.event_type == "recurring_bill"
+                else "groceries"
+                if event.event_type == "planned_purchase"
+                else "discretionary"
+            )
+            rows = [
+                NormalizedTransaction(
+                    user_id=user_id,
+                    source_account_id="jordan-checking",
+                    source_id=f"{resource}:demo:{event.idempotency_key}:{resource}:fake",
+                    occurred_at=event.occurred_at,
+                    signed_amount_cents=event.amount_cents if inflow else -event.amount_cents,
+                    direction="inflow" if inflow else "outflow",
+                    kind=kind,
+                    merchant_name="Simulated activity",
+                    category=category,
+                    description="Simulated weekly activity",
+                    synced_at=now,
+                )
+            ]
+            remote_records = [
+                NessieRecordReference(
+                    resource=resource,
+                    record_id=f"{resource}-{event.idempotency_key}",
+                )
+            ]
+        session.add_all(rows)
+        session.flush()
+        return SimpleNamespace(remote_records=remote_records)
 
 
 def setup_demo_week_service():
@@ -132,6 +183,7 @@ def setup_demo_week_service():
 def test_fixture_fallback_success_is_explained_and_idempotent() -> None:
     database, service = setup_demo_week_service()
     with database.session_factory() as session:
+        initial_transaction_count = session.scalar(select(func.count(NormalizedTransaction.id)))
         first = service.simulate(
             session,
             user_id="demo-player",
@@ -144,6 +196,7 @@ def test_fixture_fallback_success_is_explained_and_idempotent() -> None:
             idempotency_key="successful-week-001",
             scenario="successful",
         )
+        final_transaction_count = session.scalar(select(func.count(NormalizedTransaction.id)))
 
         assert first.source == "fixture_fallback"
         assert first.replayed is False
@@ -161,6 +214,26 @@ def test_fixture_fallback_success_is_explained_and_idempotent() -> None:
         assert replay.replayed is True
         assert replay.reward.id == first.reward.id
         assert replay.game_state.wallet.coin_balance == 720
+        assert final_transaction_count == initial_transaction_count + 5
+        assert first.evaluation.period_start == date.today() + timedelta(days=1)
+        assert first.evaluation.period_end == date.today() + timedelta(days=7)
+        assert first.dashboard.summary.as_of == first.evaluation.period_end
+        assert first.dashboard.summary.checking_balance_cents == 362_650
+        assert first.dashboard.summary.savings_balance_cents == 645_000
+        assert first.dashboard.active_goal is not None
+        assert first.dashboard.active_goal.amount_already_saved_cents == 20_000
+        generated = [
+            transaction
+            for transaction in first.dashboard.recent_transactions
+            if "successful-week-001" in transaction.source_id
+        ]
+        assert len(generated) == 5
+        assert {transaction.kind for transaction in generated} == {
+            "bill",
+            "deposit",
+            "purchase",
+            "transfer",
+        }
 
 
 def test_live_week_uses_the_resynced_nessie_amount_for_rewards() -> None:
@@ -186,13 +259,21 @@ def test_live_week_uses_the_resynced_nessie_amount_for_rewards() -> None:
         remote_records = list(session.scalars(select(DemoNessieRecord)))
 
     assert result.source == "live"
-    assert nessie_events.events[0].event_type == "move_to_savings"
-    assert nessie_events.events[0].amount_cents == 20_000
+    assert [event.event_type for event in nessie_events.events] == [
+        "paycheck",
+        "recurring_bill",
+        "planned_purchase",
+        "move_to_savings",
+    ]
+    assert nessie_events.events[-1].amount_cents == 20_000
+    assert nessie_events.events[0].occurred_at == result.evaluation.period_start
+    assert nessie_events.events[-1].occurred_at == result.evaluation.period_end
     assert result.evaluation.actual_net_savings_cents == 20_000
-    assert {record.remote_id for record in remote_records} == {
-        "withdrawal-live-1",
-        "deposit-live-1",
-    }
+    assert result.dashboard.summary.checking_balance_cents == 362_650
+    assert result.dashboard.summary.savings_balance_cents == 645_000
+    assert result.dashboard.active_goal is not None
+    assert result.dashboard.active_goal.amount_already_saved_cents == 20_000
+    assert len(remote_records) == 5
 
 
 def test_three_successful_periods_unlock_haven_without_rewriting_history() -> None:
@@ -215,6 +296,19 @@ def test_three_successful_periods_unlock_haven_without_rewriting_history() -> No
         assert results[-1].game_state.district.max_x == 31
         assert results[-1].game_state.district.max_y == 69
         assert results[-1].game_state.infrastructure.tier == "stone"
+        assert [result.evaluation.period_end for result in results] == [
+            date.today() + timedelta(weeks=week) for week in range(1, 4)
+        ]
+        assert [result.dashboard.summary.savings_balance_cents for result in results] == [
+            645_000,
+            665_000,
+            685_000,
+        ]
+        assert [result.dashboard.summary.total_balance_cents for result in results] == [
+            1_007_650,
+            1_047_650,
+            1_087_650,
+        ]
 
 
 def test_unlocked_bakery_persists_moves_free_and_refunds_original_price() -> None:
@@ -279,6 +373,10 @@ def test_off_plan_week_is_bounded_and_never_damages_the_town() -> None:
 def test_reset_removes_demo_transactions_rewards_and_town_state() -> None:
     database, service = setup_demo_week_service()
     with database.session_factory() as session:
+        starting_balances = {
+            account.source_account_id: account.balance_cents
+            for account in list_accounts(session, "demo-player")
+        }
         service.simulate(
             session,
             user_id="demo-player",
@@ -307,6 +405,10 @@ def test_reset_removes_demo_transactions_rewards_and_town_state() -> None:
                 NormalizedTransaction.source_id.contains(":demo:")
             )
         )
+        reset_balances = {
+            account.source_account_id: account.balance_cents
+            for account in list_accounts(session, "demo-player")
+        }
 
         assert warnings == []
         assert (state.wallet.coin_balance, state.wallet.xp, state.wallet.level) == (300, 0, 1)
@@ -314,6 +416,10 @@ def test_reset_removes_demo_transactions_rewards_and_town_state() -> None:
         assert evaluation_count == 0
         assert [reward.reward_type for reward in rewards] == ["starter_grant"]
         assert local_demo_count == 0
+        assert reset_balances == starting_balances
+        reset_goal = get_active_goal(session, "demo-player")
+        assert reset_goal is not None
+        assert reset_goal.amount_already_saved_cents == 0
 
 
 def test_reset_retains_unavailable_remote_cleanup_for_a_later_retry() -> None:

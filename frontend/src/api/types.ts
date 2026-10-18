@@ -109,6 +109,7 @@ export type CreateGoalInput = {
 
 export type NessieEventType =
   | "paycheck"
+  | "recurring_bill"
   | "planned_purchase"
   | "unplanned_purchase"
   | "move_to_savings";
@@ -170,11 +171,14 @@ export type GameWallet = {
   streak_weeks: number;
 };
 
+export type BuildingFacing = "left" | "right";
+
 export type PlacedBuilding = {
   id: number;
   catalog_item_id: string;
   grid_x: number;
   grid_y: number;
+  facing?: BuildingFacing;
   purchase_price_coins: number;
   purchased_at: string;
   updated_at: string;
@@ -233,4 +237,5 @@ export type SimulatedWeek = {
     infrastructure: GameState["infrastructure"] | null;
   };
   game_state: GameState;
+  dashboard: Dashboard;
 };

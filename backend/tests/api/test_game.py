@@ -48,19 +48,26 @@ def test_purchase_move_and_sale_return_confirmed_state(
 ) -> None:
     purchase = logged_in_client.post(
         "/api/game/buildings",
-        json={"catalog_item_id": "woodshed_01", "grid_x": 4, "grid_y": 4},
+        json={
+            "catalog_item_id": "woodshed_01",
+            "grid_x": 4,
+            "grid_y": 4,
+            "facing": "right",
+        },
     )
     building_id = purchase.json()["buildings"][0]["id"]
     move = logged_in_client.patch(
         f"/api/game/buildings/{building_id}",
-        json={"grid_x": 5, "grid_y": 4},
+        json={"grid_x": 5, "grid_y": 4, "facing": "left"},
     )
     sale = logged_in_client.delete(f"/api/game/buildings/{building_id}")
 
     assert purchase.status_code == 201
     assert purchase.json()["wallet"]["coin_balance"] == 200
+    assert purchase.json()["buildings"][0]["facing"] == "right"
     assert move.status_code == 200
     assert move.json()["wallet"]["coin_balance"] == 200
+    assert move.json()["buildings"][0]["facing"] == "left"
     assert (move.json()["buildings"][0]["grid_x"], move.json()["buildings"][0]["grid_y"]) == (
         5,
         4,

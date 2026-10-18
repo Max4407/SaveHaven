@@ -104,3 +104,12 @@ def get_evaluation_by_key(
             PlanPeriodEvaluation.idempotency_key == idempotency_key,
         )
     )
+
+
+def get_latest_evaluation(session: Session, user_id: str) -> PlanPeriodEvaluation | None:
+    return session.scalar(
+        select(PlanPeriodEvaluation)
+        .where(PlanPeriodEvaluation.user_id == user_id)
+        .order_by(PlanPeriodEvaluation.period_end.desc(), PlanPeriodEvaluation.id.desc())
+        .limit(1)
+    )

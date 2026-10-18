@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from schemas.finance import DashboardResponse
+
 
 class GridSize(BaseModel):
     width: int = Field(ge=1, le=16)
@@ -70,6 +72,7 @@ class PlacedBuildingResponse(BaseModel):
     catalog_item_id: str
     grid_x: int
     grid_y: int
+    facing: Literal["left", "right"]
     purchase_price_coins: int
     purchased_at: datetime
     updated_at: datetime
@@ -87,11 +90,13 @@ class PlaceBuildingRequest(BaseModel):
     catalog_item_id: str = Field(min_length=1, max_length=80)
     grid_x: int = Field(ge=0, le=31)
     grid_y: int = Field(ge=0, le=69)
+    facing: Literal["left", "right"] = "left"
 
 
 class MoveBuildingRequest(BaseModel):
     grid_x: int = Field(ge=0, le=31)
     grid_y: int = Field(ge=0, le=69)
+    facing: Literal["left", "right"] | None = None
 
 
 class EvaluationResponse(BaseModel):
@@ -144,6 +149,7 @@ class SimulateWeekResponse(BaseModel):
     reward: RewardResponse
     unlocks: LevelUnlocksResponse
     game_state: GameStateResponse
+    dashboard: DashboardResponse
 
 
 class DemoResetResponse(BaseModel):

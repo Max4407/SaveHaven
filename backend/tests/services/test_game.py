@@ -26,7 +26,12 @@ def test_starter_grant_purchase_move_and_original_price_refund() -> None:
         purchased = game.buy_building(
             session,
             user_id="demo-player",
-            request=PlaceBuildingRequest(catalog_item_id="woodshed_01", grid_x=4, grid_y=4),
+            request=PlaceBuildingRequest(
+                catalog_item_id="woodshed_01",
+                grid_x=4,
+                grid_y=4,
+                facing="right",
+            ),
         )
         moved = game.move_building(
             session,
@@ -34,6 +39,7 @@ def test_starter_grant_purchase_move_and_original_price_refund() -> None:
             building_id=purchased.buildings[0].id,
             grid_x=5,
             grid_y=4,
+            facing="left",
         )
         sold = game.sell_building(
             session,
@@ -44,7 +50,9 @@ def test_starter_grant_purchase_move_and_original_price_refund() -> None:
         assert (initial.wallet.coin_balance, initial.wallet.xp) == (300, 0)
         assert purchased.wallet.coin_balance == 200
         assert purchased.buildings[0].purchase_price_coins == 100
+        assert purchased.buildings[0].facing == "right"
         assert moved.wallet.coin_balance == 200
+        assert moved.buildings[0].facing == "left"
         assert (moved.buildings[0].grid_x, moved.buildings[0].grid_y) == (5, 4)
         assert sold.wallet.coin_balance == 260
         assert sold.buildings == []
@@ -117,7 +125,7 @@ def test_dirt_road_uses_the_standard_purchase_and_placement_flow() -> None:
             ),
         )
 
-        assert state.wallet.coin_balance == 9_999
+        assert state.wallet.coin_balance == 299
         assert state.buildings[0].catalog_item_id == "dirt_road_01"
         assert (state.buildings[0].grid_x, state.buildings[0].grid_y) == (12, 20)
 

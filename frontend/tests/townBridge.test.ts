@@ -9,12 +9,14 @@ describe("town bridge", () => {
 
     bridge.emit("placementConfirmed", {
       catalogItemId: "woodshed_01",
+      facing: "right",
       gridX: 4,
       gridY: 5,
     });
     unsubscribe();
     bridge.emit("placementConfirmed", {
       catalogItemId: "hut_01",
+      facing: "left",
       gridX: 6,
       gridY: 6,
     });
@@ -22,6 +24,7 @@ describe("town bridge", () => {
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener).toHaveBeenCalledWith({
       catalogItemId: "woodshed_01",
+      facing: "right",
       gridX: 4,
       gridY: 5,
     });
@@ -34,12 +37,14 @@ describe("town bridge", () => {
 
     bridge.emit("catalogDropped", {
       catalogItemId: "bakery_01",
+      facing: "right",
       canvasX: 320,
       canvasY: 180,
     });
 
     expect(listener).toHaveBeenCalledWith({
       catalogItemId: "bakery_01",
+      facing: "right",
       canvasX: 320,
       canvasY: 180,
     });
